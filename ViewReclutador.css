@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Nunito:wght@300;400;600&display=swap');
+
+header {
+    font-family: 'Poppins', sans-serif;
+    align-items: center;
+    font-size: x-large;
+}
+
+body {
+    margin: 20px;
+    font-family: 'Nunito', sans-serif;
+    background-color: #fdf6ec; 
+    color: #2a2a2a; 
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+}
+
+#hero {
+    padding-top: 2rem;
+    min-height: 35vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('img/bussiness-people-working-in-team-in-an-office-scaled1.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding-left: 2rem;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+#container-upload-bnt {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+    margin-bottom: 20px;
+}
+
+main > section, #container-info > div {
+    margin-bottom: 10px;
+}
+
+button, .add-button, #upload-btn, #download-btn, #container-info > div > button {
+    padding: 1rem;
+    font-family: 'Poppins', sans-serif;
+    background-color: rgb(241, 174, 110); 
+    border-radius: 25px;
+    font-size: medium;
+    color: white;
+    border: none;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    margin: 10px;
+}
+
+button:hover, .add-button:hover, #upload-btn:hover, #download-btn:hover, #container-info > div > button:hover {
+    background-color: rgb(235, 147, 65);
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+#container-info {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 20px;
+}
+
+#container-info > div {
+    width: 30%;
+    background-color: rgba(206, 125, 60, 0.9); 
+    padding: 40px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#container-info > div:hover {
+    transform: translateY(-5px);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.descarga-template a {
+    text-decoration: none; 
+    color: inherit; 
+    font-size: inherit; 
+    display: inline-block; 
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
+th {
+    background-color: rgba(206, 125, 60, 0.9); 
+    color: white;
+}
+
+td {
+    background-color: #fff;
+}
+
+.apt {
+    background-color: #03b1a1;
+    color: white;
+}
+
+.no-apt {
+    background-color: #d62828;
+    color: white;
+}
+
+.filter-toggle {
+    padding: 8px 12px;
+    margin-right: 10px;
+    border: none;
+    background-color: #eee;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.filter-toggle[data-enabled="false"] {
+    background-color: #ccc;
+    text-decoration: line-through;
+}
+
+.filter-toggle {
+    padding: 8px 16px;
+    margin-right: 10px;
+    border: 2px solid transparent;
+    background-color: #eee;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+#toggle-aptos {
+    border-color: #3bbf3b;
+    background-color: #3bbf3b;
+    color: white;
+}
+
+#toggle-noaptos {
+    border-color: #d9534f;
+    background-color: #d9534f;
+    color: white;
+}
+
+#toggle-aptos[data-enabled="false"] {
+    background-color: transparent;
+    color: #3bbf3b;
+}
+
+#toggle-noaptos[data-enabled="false"] {
+    background-color: transparent;
+    color: #d9534f;
+}
+
+.apt, .no-apt {
+transition: all 0.2s ease;
+}

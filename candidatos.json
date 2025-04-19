@@ -1,0 +1,39 @@
+[
+    {
+      "nombre": "Lucía",
+      "apellido": "Gómez",
+      "edad": 28,
+      "experiencia": 4,
+      "nivel_educativo": "Universitario completo",
+      "ingles": "Intermedio",
+      "disponibilidad": "Full time",
+      "salario": 200000,
+      "empleo_anterior": 12,
+      "habilidades": "Liderazgo, Comunicación",
+      "adicionales": "Scrum, Office avanzado",
+      "certificaciones": "Scrum Master",
+      "mail": "lucia.gomez@mail.com",
+      "telefono": "1145567788",
+      "nacionalidad": "Argentina",
+      "localidad": "CABA"
+    },
+    {
+      "nombre": "Pedro",
+      "apellido": "Martínez",
+      "edad": 35,
+      "experiencia": 10,
+      "nivel_educativo": "Secundario completo",
+      "ingles": "Básico",
+      "disponibilidad": "Part time",
+      "salario": 150000,
+      "empleo_anterior": 24,
+      "habilidades": "Trabajo en equipo",
+      "adicionales": "AutoCAD",
+      "certificaciones": "Soldadura eléctrica",
+      "mail": "pedro.martinez@mail.com",
+      "telefono": "1122233344",
+      "nacionalidad": "Argentina",
+      "localidad": "La Matanza"
+    }
+  ]
+  

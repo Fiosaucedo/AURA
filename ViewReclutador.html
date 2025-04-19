@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Aptin</title>
+  <link rel="stylesheet" href="ViewReclutador.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<header>
+  <nav>
+    <div class="logo">Aura</div>
+  </nav>
+</header>
+<main>
+  <section id="hero">
+    <h1>Encontrá los perfiles más aptos en segundos.</h1>
+    <p>Aptin te permite evaluar fácil y rápido cuáles son los mejores candidatos.</p>
+    <button id="evaluate-btn">Evaluar candidatos</button>
+  </section>
+
+  <div id="candidate-table-container"></div>
+  <div id="evaluated-table-container" style="margin-top: 40px;"></div>
+</main>
+
+<script>
+  let candidatos = [];
+
+  fetch('candidatos.json')
+    .then(res => res.json())
+    .then(data => {
+      candidatos = data;
+      renderCandidatosTabla();
+    });
+
+  function renderCandidatosTabla() {
+    let html = '<table border="1"><thead><tr>' +
+      '<th>Nombre</th><th>Mail</th><th>Info</th><th>CV</th></tr></thead><tbody>';
+
+    candidatos.forEach((candidato, index) => {
+      html += `<tr>
+        <td>${candidato.nombre} ${candidato.apellido}</td>
+        <td>${candidato.mail}</td>
+        <td><button onclick="verInfo(${index})">Info</button></td>
+        <td><button>Descargar CV</button></td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('candidate-table-container').innerHTML = html;
+  }
+
+  function verInfo(index) {
+    const c = candidatos[index];
+    Swal.fire({
+      title: `${c.nombre} ${c.apellido}`,
+      html: `
+        <p><strong>Mail:</strong> ${c.mail}</p>
+        <p><strong>Teléfono:</strong> ${c.telefono}</p>
+        <p><strong>Nacionalidad:</strong> ${c.nacionalidad}</p>
+        <p><strong>Localidad:</strong> ${c.localidad}</p>
+      `,
+      icon: 'info',
+    });
+  }
+
+  function evaluarCandidatos() {
+    let html = '<table border="1"><thead><tr>' +
+      '<th>Nombre</th><th>Apellido</th><th>Edad</th><th>Años de experiencia</th>' +
+      '<th>Nivel educativo</th><th>Nivel de inglés</th><th>Disponibilidad</th>' +
+      '<th>Pretensión salarial</th><th>Último empleo (meses)</th>' +
+      '<th>Habilidades</th><th>Conocimientos adicionales</th>' +
+      '<th>Certificaciones</th><th>¿Es Apto?</th></tr></thead><tbody>';
+
+    candidatos.forEach(c => {
+      const esApto = Math.random() > 0.5 ? "Sí" : "No";
+      html += `<tr>
+        <td>${c.nombre}</td>
+        <td>${c.apellido}</td>
+        <td>${c.edad}</td>
+        <td>${c.experiencia}</td>
+        <td>${c.nivel_educativo}</td>
+        <td>${c.ingles}</td>
+        <td>${c.disponibilidad}</td>
+        <td>${c.salario}</td>
+        <td>${c.empleo_anterior}</td>
+        <td>${c.habilidades}</td>
+        <td>${c.adicionales}</td>
+        <td>${c.certificaciones}</td>
+        <td>${esApto}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('evaluated-table-container').innerHTML = html;
+  }
+
+  document.getElementById('evaluate-btn').addEventListener('click', evaluarCandidatos);
+</script>
+</body>
+</html>
