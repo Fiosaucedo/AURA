@@ -1,0 +1,38 @@
+[
+  {
+    "nombre": "Lucía",
+    "apellido": "Gómez",
+    "mail": "lucia.gomez@example.com",
+    "telefono": "123456789",
+    "nacionalidad": "Argentina",
+    "localidad": "Buenos Aires",
+    "edad": 29,
+    "experiencia": 5,
+    "nivel_educativo": "Universitario completo",
+    "ingles": "Intermedio",
+    "disponibilidad": "Full-time",
+    "salario": "150000",
+    "empleo_anterior": 24,
+    "habilidades": "Javascript, React, Node.js",
+    "adicionales": "Scrum, Figma",
+    "certificaciones": "Cert. React Avanzado"
+  },
+  {
+    "nombre": "Martín",
+    "apellido": "Pérez",
+    "mail": "martin.perez@example.com",
+    "telefono": "987654321",
+    "nacionalidad": "Uruguayo",
+    "localidad": "Montevideo",
+    "edad": 35,
+    "experiencia": 8,
+    "nivel_educativo": "Terciario",
+    "ingles": "Avanzado",
+    "disponibilidad": "Part-time",
+    "salario": "200000",
+    "empleo_anterior": 36,
+    "habilidades": "Java, Spring Boot",
+    "adicionales": "Gestión de equipos",
+    "certificaciones": "Scrum Master"
+  }
+]

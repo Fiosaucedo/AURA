@@ -117,12 +117,12 @@ td {
     background-color: #fff;
 }
 
-.apt {
+.apto {
     background-color: #03b1a1;
     color: white;
 }
 
-.no-apt {
+.no-apto {
     background-color: #d62828;
     color: white;
 }
@@ -176,4 +176,32 @@ td {
 
 .apt, .no-apt {
 transition: all 0.2s ease;
+}
+
+.vista-btn {
+    padding: 10px 15px;
+    font-family: 'Poppins', sans-serif;
+    background-color: rgb(241, 174, 110); /* color base */
+    border-radius: 25px;
+    font-size: medium;
+    color: white;
+    border: none;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.vista-btn:hover {
+    background-color: rgb(235, 147, 65); /* más oscuro al pasar el mouse */
+    transform: scale(1.05);
+}
+
+.vista-btn:active {
+    transform: scale(0.95);
+}
+
+.vista-btn.active {
+    background-color: rgba(206, 125, 60, 1); /* más oscuro para marcar seleccionado */
+    color: white;
 }

@@ -4,7 +4,7 @@ import './ViewReclutador.css';
 
 const ViewReclutador = () => {
   const [candidatos, setCandidatos] = useState([]);
-  const [evaluadosHTML, setEvaluadosHTML] = useState('');
+  const [vistaActual, setVistaActual] = useState('candidatos'); // 'candidatos' o 'evaluacion'
 
   useEffect(() => {
     fetch('/candidatos.json')
@@ -26,43 +26,6 @@ const ViewReclutador = () => {
     });
   };
 
-  const evaluarCandidatos = () => {
-    const html = (
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Nombre</th><th>Apellido</th><th>Edad</th><th>Años de experiencia</th>
-            <th>Nivel educativo</th><th>Nivel de inglés</th><th>Disponibilidad</th>
-            <th>Pretensión salarial</th><th>Último empleo (meses)</th>
-            <th>Habilidades</th><th>Conocimientos adicionales</th>
-            <th>Certificaciones</th><th>¿Es Apto?</th>
-          </tr>
-        </thead>
-        <tbody>
-          {candidatos.map((c, i) => (
-            <tr key={i}>
-              <td>{c.nombre}</td>
-              <td>{c.apellido}</td>
-              <td>{c.edad}</td>
-              <td>{c.experiencia}</td>
-              <td>{c.nivel_educativo}</td>
-              <td>{c.ingles}</td>
-              <td>{c.disponibilidad}</td>
-              <td>{c.salario}</td>
-              <td>{c.empleo_anterior}</td>
-              <td>{c.habilidades}</td>
-              <td>{c.adicionales}</td>
-              <td>{c.certificaciones}</td>
-              <td>{Math.random() > 0.5 ? 'Sí' : 'No'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-
-    setEvaluadosHTML(html);
-  };
-
   return (
     <div>
       <header>
@@ -74,14 +37,80 @@ const ViewReclutador = () => {
       <main>
         <section id="hero">
           <h1>Encontrá los perfiles más aptos en segundos.</h1>
-          <p>Aptin te permite evaluar fácil y rápido cuáles son los mejores candidatos.</p>
-          <button id="evaluate-btn" onClick={evaluarCandidatos}>Evaluar candidatos</button>
+          <p>Aura te permite evaluar fácil y rápido cuáles son los mejores candidatos.</p>
+          <div style={{ marginTop: '20px' }}>
+          <button onClick={() => setVistaActual('candidatos')}
+            className={`vista-btn ${vistaActual === 'candidatos' ? 'active' : ''}`}>Ver candidatos</button>
+
+          <button onClick={() => setVistaActual('evaluacion')}
+            className={`vista-btn ${vistaActual === 'evaluacion' ? 'active' : ''}`}>Ver evaluación</button>
+          </div>
         </section>
 
-        
-        <div id="evaluated-table-container" style={{ marginTop: '40px' }}>
-          {evaluadosHTML}
-        </div>
+        {vistaActual === 'candidatos' && (
+          <section style={{ marginTop: '30px' }}>
+            <h2>Candidatos que enviaron su CV</h2>
+            <table border="1" style={{ width: '100%', marginTop: '10px' }}>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Mail</th>
+                  <th>Info</th>
+                  <th>CV</th>
+                </tr>
+              </thead>
+              <tbody>
+                {candidatos.map((c, i) => (
+                  <tr key={i}>
+                    <td>{c.nombre} {c.apellido}</td>
+                    <td>{c.mail}</td>
+                    <td><button onClick={() => verInfo(i)}>Ver Info</button></td>
+                    <td><button>Descargar CV</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        )}
+
+        {vistaActual === 'evaluacion' && (
+          <div style={{ marginTop: '40px' }}>
+            <h2>Evaluación de Candidatos</h2>
+            <table border="1" style={{ width: '100%', marginTop: '10px' }}>
+              <thead>
+                <tr>
+                  <th>Nombre</th><th>Apellido</th><th>Edad</th><th>Años de experiencia</th>
+                  <th>Nivel educativo</th><th>Nivel de inglés</th><th>Disponibilidad</th>
+                  <th>Pretensión salarial</th><th>Último empleo (meses)</th>
+                  <th>Habilidades</th><th>Conocimientos adicionales</th>
+                  <th>Certificaciones</th><th>¿Es Apto?</th>
+                </tr>
+              </thead>
+              <tbody>
+                {candidatos.map((c, i) => (
+                  <tr key={i}>
+                    <td>{c.nombre}</td>
+                    <td>{c.apellido}</td>
+                    <td>{c.edad}</td>
+                    <td>{c.experiencia}</td>
+                    <td>{c.nivel_educativo}</td>
+                    <td>{c.ingles}</td>
+                    <td>{c.disponibilidad}</td>
+                    <td>{c.salario}</td>
+                    <td>{c.empleo_anterior}</td>
+                    <td>{c.habilidades}</td>
+                    <td>{c.adicionales}</td>
+                    <td>{c.certificaciones}</td>
+                    {(() => {const esApto = Math.random() > 0.5; return (
+                    <td className={esApto ? 'apto' : 'no-apto'}>{esApto ? 'Sí' : 'No'}</td>
+                  );
+                  })()}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </main>
     </div>
   );
