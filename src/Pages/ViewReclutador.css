@@ -1,11 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Nunito:wght@300;400;600&display=swap');
 
-header {
-    font-family: 'Poppins', sans-serif;
-    align-items: center;
-    font-size: x-large;
-}
-
 body {
     margin: 20px;
     font-family: 'Nunito', sans-serif;
@@ -13,8 +7,13 @@ body {
     color: #2a2a2a; 
 }
 
-h1, h2, h3, h4, h5, h6 {
+header, h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', sans-serif;
+}
+
+header {
+    align-items: center;
+    font-size: x-large;
 }
 
 #hero {
@@ -28,16 +27,16 @@ h1, h2, h3, h4, h5, h6 {
     text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
+main > section, #container-info > div {
+    margin-bottom: 10px;
+}
+
 #container-upload-bnt {
     display: flex;
     justify-content: center; 
     align-items: center; 
     width: 100%; 
     margin-bottom: 20px;
-}
-
-main > section, #container-info > div {
-    margin-bottom: 10px;
 }
 
 button, .add-button, #upload-btn, #download-btn, #container-info > div > button {
@@ -128,20 +127,6 @@ td {
 }
 
 .filter-toggle {
-    padding: 8px 12px;
-    margin-right: 10px;
-    border: none;
-    background-color: #eee;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.filter-toggle[data-enabled="false"] {
-    background-color: #ccc;
-    text-decoration: line-through;
-}
-
-.filter-toggle {
     padding: 8px 16px;
     margin-right: 10px;
     border: 2px solid transparent;
@@ -150,6 +135,11 @@ td {
     border-radius: 6px;
     font-weight: bold;
     transition: all 0.2s ease;
+}
+
+.filter-toggle[data-enabled="false"] {
+    background-color: #ccc;
+    text-decoration: line-through;
 }
 
 #toggle-aptos {
@@ -175,13 +165,13 @@ td {
 }
 
 .apt, .no-apt {
-transition: all 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .vista-btn {
     padding: 10px 15px;
     font-family: 'Poppins', sans-serif;
-    background-color: rgb(241, 174, 110); /* color base */
+    background-color: rgb(241, 174, 110);
     border-radius: 25px;
     font-size: medium;
     color: white;
@@ -193,7 +183,7 @@ transition: all 0.2s ease;
 }
 
 .vista-btn:hover {
-    background-color: rgb(235, 147, 65); /* más oscuro al pasar el mouse */
+    background-color: rgb(235, 147, 65);
     transform: scale(1.05);
 }
 
@@ -202,6 +192,6 @@ transition: all 0.2s ease;
 }
 
 .vista-btn.active {
-    background-color: rgba(206, 125, 60, 1); /* más oscuro para marcar seleccionado */
+    background-color: rgba(206, 125, 60, 1);
     color: white;
 }

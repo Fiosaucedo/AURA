@@ -4,7 +4,7 @@ import './ViewReclutador.css';
 
 const ViewReclutador = () => {
   const [candidatos, setCandidatos] = useState([]);
-  const [vistaActual, setVistaActual] = useState('candidatos'); // 'candidatos' o 'evaluacion'
+  const [vistaActual, setVistaActual] = useState('candidatos');
 
   useEffect(() => {
     fetch('/candidatos.json')
@@ -38,19 +38,27 @@ const ViewReclutador = () => {
         <section id="hero">
           <h1>Encontrá los perfiles más aptos en segundos.</h1>
           <p>Aura te permite evaluar fácil y rápido cuáles son los mejores candidatos.</p>
-          <div style={{ marginTop: '20px' }}>
-          <button onClick={() => setVistaActual('candidatos')}
-            className={`vista-btn ${vistaActual === 'candidatos' ? 'active' : ''}`}>Ver candidatos</button>
+          <div className="hero-buttons">
+            <button
+              onClick={() => setVistaActual('candidatos')}
+              className={`vista-btn ${vistaActual === 'candidatos' ? 'active' : ''}`}
+            >
+              Ver candidatos
+            </button>
 
-          <button onClick={() => setVistaActual('evaluacion')}
-            className={`vista-btn ${vistaActual === 'evaluacion' ? 'active' : ''}`}>Ver evaluación</button>
+            <button
+              onClick={() => setVistaActual('evaluacion')}
+              className={`vista-btn ${vistaActual === 'evaluacion' ? 'active' : ''}`}
+            >
+              Ver evaluación
+            </button>
           </div>
         </section>
 
         {vistaActual === 'candidatos' && (
-          <section style={{ marginTop: '30px' }}>
+          <section className="candidatos-section">
             <h2>Candidatos que enviaron su CV</h2>
-            <table border="1" style={{ width: '100%', marginTop: '10px' }}>
+            <table className="tabla-candidatos" border="1">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -74,9 +82,9 @@ const ViewReclutador = () => {
         )}
 
         {vistaActual === 'evaluacion' && (
-          <div style={{ marginTop: '40px' }}>
+          <div className="evaluacion-section">
             <h2>Evaluación de Candidatos</h2>
-            <table border="1" style={{ width: '100%', marginTop: '10px' }}>
+            <table className="tabla-candidatos" border="1">
               <thead>
                 <tr>
                   <th>Nombre</th><th>Apellido</th><th>Edad</th><th>Años de experiencia</th>
@@ -101,10 +109,14 @@ const ViewReclutador = () => {
                     <td>{c.habilidades}</td>
                     <td>{c.adicionales}</td>
                     <td>{c.certificaciones}</td>
-                    {(() => {const esApto = Math.random() > 0.5; return (
-                    <td className={esApto ? 'apto' : 'no-apto'}>{esApto ? 'Sí' : 'No'}</td>
-                  );
-                  })()}
+                    {(() => {
+                      const esApto = Math.random() > 0.5;
+                      return (
+                        <td className={esApto ? 'apto' : 'no-apto'}>
+                          {esApto ? 'Sí' : 'No'}
+                        </td>
+                      );
+                    })()}
                   </tr>
                 ))}
               </tbody>
