@@ -1,11 +1,11 @@
 # DOCUMENTACIÓN DE LA INVESTIGACIÓN PARA EL TP INICIAL
 
 ## Integrantes del equipo:
-- Facundo Gil ()
+- Facundo Gil (facugil61@gmail.com)
 - Fiorella Saucedo (saucedo.fiorella00@gmail.com)
 - Catalina Schamberger (catalinaschamberger@hotmail.com.ar)
 - Tomas Navarro (Tomasnavarro0511@hotmail.com)
-- Luca Diaz ()
+- Luca Diaz (luca-diaz@live.com)
 - Román Quevedo (romanquevedo02@gmail.com) 
 
 ## Profesores:
