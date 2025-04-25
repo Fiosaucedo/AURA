@@ -69,6 +69,7 @@ const ViewPostulante = () => {
     formDataToSend.append("surname", formData.surname)
     formDataToSend.append("email", formData.email)
     formDataToSend.append("phone", formData.phone)
+    formDataToSend.append("cv", formData.cv)
 
       try {
         const response = await fetch("http://127.0.0.1:5000/postulacion", 
