@@ -1,0 +1,9 @@
+.detalle-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 12px;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f3f3f3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }

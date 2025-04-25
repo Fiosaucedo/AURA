@@ -1,58 +1,92 @@
+body{
+  background-color: #2c3e50;
+}
+
 .postulante-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: #6277b48a;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  .postulante-container h2 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 20px;
-  }
-  
-  form label {
-    display: block;
-    margin-bottom: 15px;
-    font-weight: 500;
-  }
-  
-  input[type="text"],
-  input[type="email"],
-  input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
-  
-  .error {
-    color: red;
-    font-size: 0.9em;
-    margin-top: 4px;
-    display: block;
-  }
-  
-  button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #dd5e24;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #da7b2e;
-    transition: 1s;
-  }
-  
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  border-radius: 12px;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s, color 0.3s;
+}
+
+.postulante-container.dark {
+  background-color: #6277b48a;
+  color: white;
+}
+
+.postulante-container.light {
+  background-color: #f2f2f2;
+  color: #2c3e50;
+}
+
+.theme-switch {
+  display: flex;
+  justify-content: flex-end;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+  display: block;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #dd5e24;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+button[type="submit"]:hover {
+  background-color: #da7b2e;
+  transition: 1s;
+}
+
+
+.theme-switch {
+  display: flex;
+  justify-content: flex-end;
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.theme-switch:hover {
+  opacity: 0.7;
+}
+
+.theme-switch svg {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  padding: 8px;
+  transition: 0.3s ease;
+}

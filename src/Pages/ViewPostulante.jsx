@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { FaMoon, FaSun } from 'react-icons/fa';
 import './ViewPostulante.css';
 
 const ViewPostulante = () => {
@@ -12,11 +13,14 @@ const ViewPostulante = () => {
   });
 
   const [errores, setErrores] = useState({});
+  const [darkMode, setDarkMode] = useState(true);
+
+  const toggleTheme = () => {
+    setDarkMode(prev => !prev);
+  };
 
   const validar = () => {
     const nuevosErrores = {};
-
-    // Nombre y Apellido: solo letras y espacios (con tildes)
     const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     if (!formData.name.trim()) {
       nuevosErrores.nombre = 'El nombre es obligatorio';
@@ -30,7 +34,6 @@ const ViewPostulante = () => {
       nuevosErrores.apellido = 'El apellido solo debe contener letras';
     }
 
-    // Email
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       nuevosErrores.email = 'El email es obligatorio';
@@ -38,7 +41,6 @@ const ViewPostulante = () => {
       nuevosErrores.email = 'El email no es válido';
     }
 
-    // Teléfono: solo números, entre 8 y 15 dígitos
     const regexTelefono = /^\d{8,15}$/;
     if (!formData.phone.trim()) {
       nuevosErrores.telefono = 'El teléfono es obligatorio';
@@ -46,7 +48,6 @@ const ViewPostulante = () => {
       nuevosErrores.telefono = 'El teléfono debe tener entre 8 y 15 números';
     }
 
-    // CV: obligatorio y con extensión válida
     const cv = formData.cv;
     if (!cv) {
       nuevosErrores.cv = 'Debés subir tu CV';
@@ -71,38 +72,34 @@ const ViewPostulante = () => {
     formDataToSend.append("phone", formData.phone)
     formDataToSend.append("cv", formData.cv)
 
-      try {
-        const response = await fetch("http://127.0.0.1:5000/postulacion", 
-          {
-          method: "POST",
-          body: formDataToSend
-          } 
-        );
-        const result = await response.json();
-        if (response.ok) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Postulación enviada',
-            text: '¡Gracias por postularte! Te contactaremos pronto.',
-            confirmButtonColor: '#4e73df' 
-          })
-        }
-
-      } catch (err) {
-        console.error(err)
-      }
-
-      // Limpiar el formulario
-      setFormData({
-        name: '',
-        surname: '',
-        email: '',
-        phone: '',
-        cv: null,
+    try {
+      const response = await fetch("http://127.0.0.1:5000/postulacion", {
+        method: "POST",
+        body: formDataToSend
       });
-      setErrores({});
-      e.target.reset();
+      const result = await response.json();
+      if (response.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Postulación enviada',
+          text: '¡Gracias por postularte! Te contactaremos pronto.',
+          confirmButtonColor: '#4e73df'
+        });
+      }
+    } catch (err) {
+      console.error(err);
     }
+
+    setFormData({
+      name: '',
+      surname: '',
+      email: '',
+      phone: '',
+      cv: null,
+    });
+    setErrores({});
+    e.target.reset();
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -113,35 +110,30 @@ const ViewPostulante = () => {
   };
 
   return (
-    <div className="postulante-container">
+    <div className={`postulante-container ${darkMode ? 'dark' : 'light'}`}>
+      <div className="theme-switch" onClick={toggleTheme}>
+        {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
+      </div>
+
       <h2>Postulate a una vacante</h2>
       <form onSubmit={handleSubmit} noValidate>
-        <label>
-          Nombre:
+        <label>Nombre:
           <input type="text" name="name" value={formData.name} onChange={handleChange} />
           {errores.nombre && <span className="error">{errores.nombre}</span>}
         </label>
-
-        <label>
-          Apellido:
+        <label>Apellido:
           <input type="text" name="surname" value={formData.surname} onChange={handleChange} />
           {errores.apellido && <span className="error">{errores.apellido}</span>}
         </label>
-
-        <label>
-          Email:
+        <label>Email:
           <input type="email" name="email" value={formData.email} onChange={handleChange} />
           {errores.email && <span className="error">{errores.email}</span>}
         </label>
-
-        <label>
-          Teléfono:
+        <label>Teléfono:
           <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
           {errores.telefono && <span className="error">{errores.telefono}</span>}
         </label>
-
-        <label>
-          Cargar CV:
+        <label>Cargar CV:
           <input type="file" name="cv" accept=".pdf,.doc,.docx" onChange={handleChange} />
           {errores.cv && <span className="error">{errores.cv}</span>}
         </label>
