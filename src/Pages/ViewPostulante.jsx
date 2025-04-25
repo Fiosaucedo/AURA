@@ -4,10 +4,10 @@ import './ViewPostulante.css';
 
 const ViewPostulante = () => {
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
+    name: '',
+    surname: '',
     email: '',
-    telefono: '',
+    phone: '',
     cv: null,
   });
 
@@ -18,15 +18,15 @@ const ViewPostulante = () => {
 
     // Nombre y Apellido: solo letras y espacios (con tildes)
     const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-    if (!formData.nombre.trim()) {
+    if (!formData.name.trim()) {
       nuevosErrores.nombre = 'El nombre es obligatorio';
-    } else if (!regexNombre.test(formData.nombre)) {
+    } else if (!regexNombre.test(formData.name)) {
       nuevosErrores.nombre = 'El nombre solo debe contener letras';
     }
 
-    if (!formData.apellido.trim()) {
+    if (!formData.surname.trim()) {
       nuevosErrores.apellido = 'El apellido es obligatorio';
-    } else if (!regexNombre.test(formData.apellido)) {
+    } else if (!regexNombre.test(formData.surname)) {
       nuevosErrores.apellido = 'El apellido solo debe contener letras';
     }
 
@@ -40,9 +40,9 @@ const ViewPostulante = () => {
 
     // Teléfono: solo números, entre 8 y 15 dígitos
     const regexTelefono = /^\d{8,15}$/;
-    if (!formData.telefono.trim()) {
+    if (!formData.phone.trim()) {
       nuevosErrores.telefono = 'El teléfono es obligatorio';
-    } else if (!regexTelefono.test(formData.telefono)) {
+    } else if (!regexTelefono.test(formData.phone)) {
       nuevosErrores.telefono = 'El teléfono debe tener entre 8 y 15 números';
     }
 
@@ -62,30 +62,47 @@ const ViewPostulante = () => {
     return Object.keys(nuevosErrores).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validar()) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Postulación enviada',
-        text: '¡Gracias por postularte! Te contactaremos pronto.',
-        confirmButtonColor: '#4e73df',
-      });
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name)
+    formDataToSend.append("surname", formData.surname)
+    formDataToSend.append("email", formData.email)
+    formDataToSend.append("phone", formData.phone)
+    formDataToSend.append("cv", formData.cv)
 
-      console.log('Datos enviados:', formData);
+      try {
+        const response = await fetch("http://127.0.0.1:5000/postulacion", 
+          {
+          method: "POST",
+          body: formDataToSend
+          } 
+        );
+        const result = await response.json();
+        if (response.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Postulación enviada',
+            text: '¡Gracias por postularte! Te contactaremos pronto.',
+            confirmButtonColor: '#4e73df' 
+          })
+        }
+
+      } catch (err) {
+        console.error(err)
+      }
 
       // Limpiar el formulario
       setFormData({
-        nombre: '',
-        apellido: '',
+        name: '',
+        surname: '',
         email: '',
-        telefono: '',
+        phone: '',
         cv: null,
       });
       setErrores({});
       e.target.reset();
     }
-  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -101,13 +118,13 @@ const ViewPostulante = () => {
       <form onSubmit={handleSubmit} noValidate>
         <label>
           Nombre:
-          <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} />
+          <input type="text" name="name" value={formData.name} onChange={handleChange} />
           {errores.nombre && <span className="error">{errores.nombre}</span>}
         </label>
 
         <label>
           Apellido:
-          <input type="text" name="apellido" value={formData.apellido} onChange={handleChange} />
+          <input type="text" name="surname" value={formData.surname} onChange={handleChange} />
           {errores.apellido && <span className="error">{errores.apellido}</span>}
         </label>
 
@@ -119,7 +136,7 @@ const ViewPostulante = () => {
 
         <label>
           Teléfono:
-          <input type="text" name="telefono" value={formData.telefono} onChange={handleChange} />
+          <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
           {errores.telefono && <span className="error">{errores.telefono}</span>}
         </label>
 
