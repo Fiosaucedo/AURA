@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { FaMoon, FaSun } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import './ViewPostulante.css';
 
 const ViewPostulante = () => {
@@ -14,6 +15,7 @@ const ViewPostulante = () => {
 
   const [errores, setErrores] = useState({});
   const [darkMode, setDarkMode] = useState(true);
+  const navigate = useNavigate();
 
   const toggleTheme = () => {
     setDarkMode(prev => !prev);
@@ -66,11 +68,13 @@ const ViewPostulante = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name)
-    formDataToSend.append("surname", formData.surname)
-    formDataToSend.append("email", formData.email)
-    formDataToSend.append("phone", formData.phone)
-    formDataToSend.append("cv", formData.cv)
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("surname", formData.surname);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("phone", formData.phone);
+    formDataToSend.append("cv", formData.cv);
+
+    if (!validar()) return;
 
     try {
       const response = await fetch("http://127.0.0.1:5000/postulacion", {
@@ -111,6 +115,11 @@ const ViewPostulante = () => {
 
   return (
     <div className={`postulante-container ${darkMode ? 'dark' : 'light'}`}>
+
+      <div className="aura-label" onClick={() => navigate('/home')}>
+        ✨Aura✨
+      </div>
+
       <div className="theme-switch" onClick={toggleTheme}>
         {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
       </div>
