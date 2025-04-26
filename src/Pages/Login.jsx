@@ -1,0 +1,168 @@
+import React, { useState, useContext } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../Context/AuthContext.jsx";
+import "./Login.css";
+
+function Login() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState(""); // "success" o "error"
+  const [resetPasswordMode, setResetPasswordMode] = useState(false);
+  const { handleLogin } = useContext(AuthContext);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+
+  const onSubmitLogin = async (data) => {
+    setLoading(true);
+    setAlertMessage("");
+
+    setTimeout(() => {
+      setAlertMessage("Bienvenido");
+      setAlertType("success");
+      navigate("/home");
+      setLoading(false);
+    }, 1000);
+  };
+
+  const onSubmitReset = async (data) => {
+    setLoading(true);
+    setAlertMessage("");
+
+    try {
+      const response = await fetch("/api/verificar-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: data.email }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.exists) {
+        setAlertMessage("Se ha enviado un enlace de recuperación a tu email.");
+        setAlertType("success");
+        setTimeout(() => {
+          setResetPasswordMode(false);
+          reset();
+        }, 1500);
+      } else {
+        setAlertMessage("No hay ninguna cuenta registrada con ese email.");
+        setAlertType("error");
+      }
+    } catch (error) {
+      console.error("Error verificando email:", error);
+      setAlertMessage("Ocurrió un error. Intenta de nuevo.");
+      setAlertType("error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="login-container">
+      {/* Label arriba a la izquierda */}
+      <div className="aura-label" onClick={() => navigate("/home")}>
+        ✨Aura✨
+      </div>
+
+      <div className="login-form">
+        <h2>{resetPasswordMode ? "Recuperar contraseña" : "Iniciar sesión"}</h2>
+
+        <form onSubmit={handleSubmit(resetPasswordMode ? onSubmitReset : onSubmitLogin)}>
+          <div className="form-group">
+            <label>Email:</label>
+            <input
+              type="email"
+              {...register("email", {
+                required: "El email es obligatorio",
+                pattern: {
+                  value:
+                    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                  message: "Ingrese un email válido",
+                },
+              })}
+              placeholder="Ingrese su email"
+            />
+            {errors.email && (
+              <span className="error-message">{errors.email.message}</span>
+            )}
+          </div>
+
+          {!resetPasswordMode && (
+            <div className="form-group">
+              <label>Contraseña:</label>
+              <input
+                type="password"
+                {...register("password", {
+                  required: "La contraseña es obligatoria",
+                  minLength: {
+                    value: 6,
+                    message: "Debe tener al menos 6 caracteres",
+                  },
+                })}
+                placeholder="Ingrese su contraseña"
+              />
+              {errors.password && (
+                <span className="error-message">{errors.password.message}</span>
+              )}
+            </div>
+          )}
+
+          <button className="login-button" type="submit" disabled={loading}>
+            {loading ? "Cargando..." : resetPasswordMode ? "Enviar enlace" : "Iniciar sesión"}
+          </button>
+
+          <div className="toggle-reset-password">
+            {resetPasswordMode ? (
+              <p>
+                ¿Recordaste tu contraseña?{" "}
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => {
+                    setResetPasswordMode(false);
+                    setAlertMessage("");
+                    reset();
+                  }}
+                >
+                  Volver a iniciar sesión
+                </button>
+              </p>
+            ) : (
+              <p>
+                ¿Olvidaste tu contraseña?{" "}
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => {
+                    setResetPasswordMode(true);
+                    setAlertMessage("");
+                    reset();
+                  }}
+                >
+                  Recuperar contraseña
+                </button>
+              </p>
+            )}
+          </div>
+
+          {alertMessage && (
+            <div className={`alert-message ${alertType}`}>
+              {alertMessage}
+            </div>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default Login;

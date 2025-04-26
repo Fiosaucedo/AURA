@@ -1,0 +1,118 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f6f8;
+    padding: 20px;
+  }
+  
+  .login-form {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .login-form h2 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    color: #333;
+    transition: border-color 0.3s ease;
+  }
+  
+  .form-group input:focus {
+    border-color: #0f1a4bc2;
+    outline: none;
+  }
+  
+  .login-button {
+    width: 100%;
+    background-color: #0f1a4bc2;
+    color: #ffffff;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+  }
+  
+  .login-button:hover {
+    background-color: #042a53;
+  }
+  
+  .login-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    color: #d9534f;
+    font-size: 13px;
+    margin-top: 5px;
+  }
+  
+  .alert-message {
+    margin-top: 20px;
+    color: #28a745;
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  .forgot-password-link {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .forgot-password-link span {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .aura-label {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+    font-size: 28px;
+    color: #0f1a4bc2;
+    font-weight: bold;
+    font-family: Vegur, 'PT Sans', Verdana, sans-serif;
+  }
+  
+  .aura-label:hover {
+    color: #341f97;
+  }
+  
