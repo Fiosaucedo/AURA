@@ -240,7 +240,7 @@ const ViewReclutador = () => {
     <div>
       <header className="header">
         <nav className="nav-bar">
-          <div className="logo">✨Aura✨</div>
+          <div className="logo-logged">✨Aura✨</div>
           <button className="logout-button" id="logout-button" onClick={handleLogout} title="Cerrar sesión">
             Cerrar Sesion
           </button>

@@ -29,9 +29,10 @@ header, h1, h2, h3, h4, h5, h6 {
     align-items: center;
 }
 
-.logo {
+.logo-logged {
     font-size: x-large;
     font-weight: bold;
+    color: white;
 }
 
 .logout-button {
@@ -171,7 +172,7 @@ th, td {
 th {
     background-color: rgba(211, 220, 238, 0.9); 
     color: #2c3e50;
-    font-size: 18px; 
+    font-size: 14px; 
     font-weight: bold;
     height: 60px;
 }
