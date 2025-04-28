@@ -23,8 +23,8 @@ function Home() {
 
   const handleCardClick = (puesto) => {
     Swal.fire({
-      title: puesto.puesto,
-      html: `<div style="white-space: pre-line; line-height: 1.6;">${puesto.descripcion}</div>`,
+      title: puesto.title,
+      html: `<div style="white-space: pre-line; line-height: 1.6;">${puesto.description}</div>`,
       showCancelButton: true,
       confirmButtonText: 'Ir a postulación',
       cancelButtonText: 'Descargar template para CV',

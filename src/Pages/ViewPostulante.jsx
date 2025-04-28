@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { FaMoon, FaSun } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './ViewPostulante.css';
-import { useLocation } from 'react-router-dom';
-
 
 const ViewPostulante = () => {
   const location = useLocation();
   const jobPostId = location.state?.jobPostId;
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -21,7 +20,16 @@ const ViewPostulante = () => {
 
   const [errores, setErrores] = useState({});
   const [darkMode, setDarkMode] = useState(true);
-  const navigate = useNavigate();
+  const [jobData, setJobData] = useState(null);
+
+  useEffect(() => {
+    if (jobPostId) {
+      fetch(`http://127.0.0.1:5000/job-posts/${jobPostId}`)
+        .then(response => response.json())
+        .then(data => setJobData(data))
+        .catch(error => console.error('Error al cargar la oferta:', error));
+    }
+  }, [jobPostId]);
 
   const toggleTheme = () => {
     setDarkMode(prev => !prev);
@@ -30,41 +38,23 @@ const ViewPostulante = () => {
   const validar = () => {
     const nuevosErrores = {};
     const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-    if (!formData.name.trim()) {
-      nuevosErrores.nombre = 'El nombre es obligatorio';
-    } else if (!regexNombre.test(formData.name)) {
-      nuevosErrores.nombre = 'El nombre solo debe contener letras';
-    }
-
-    if (!formData.surname.trim()) {
-      nuevosErrores.apellido = 'El apellido es obligatorio';
-    } else if (!regexNombre.test(formData.surname)) {
-      nuevosErrores.apellido = 'El apellido solo debe contener letras';
-    }
-
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      nuevosErrores.email = 'El email es obligatorio';
-    } else if (!regexEmail.test(formData.email)) {
-      nuevosErrores.email = 'El email no es válido';
-    }
-
     const regexTelefono = /^\d{8,15}$/;
-    if (!formData.phone.trim()) {
-      nuevosErrores.telefono = 'El teléfono es obligatorio';
-    } else if (!regexTelefono.test(formData.phone)) {
-      nuevosErrores.telefono = 'El teléfono debe tener entre 8 y 15 números';
-    }
 
-    const cv = formData.cv; 
-    if (!cv) {
+    if (!formData.name.trim() || !regexNombre.test(formData.name)) {
+      nuevosErrores.nombre = 'Nombre inválido';
+    }
+    if (!formData.surname.trim() || !regexNombre.test(formData.surname)) {
+      nuevosErrores.apellido = 'Apellido inválido';
+    }
+    if (!formData.email.trim() || !regexEmail.test(formData.email)) {
+      nuevosErrores.email = 'Email inválido';
+    }
+    if (!formData.phone.trim() || !regexTelefono.test(formData.phone)) {
+      nuevosErrores.telefono = 'Teléfono inválido';
+    }
+    if (!formData.cv) {
       nuevosErrores.cv = 'Debés subir tu CV';
-    } else {
-      const extensionesPermitidas = ['pdf', 'doc', 'docx'];
-      const extension = cv.name.split('.').pop().toLowerCase();
-      if (!extensionesPermitidas.includes(extension)) {
-        nuevosErrores.cv = 'Formato de archivo no válido. Solo PDF, DOC o DOCX.';
-      }
     }
 
     setErrores(nuevosErrores);
@@ -73,6 +63,9 @@ const ViewPostulante = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validar()) return;
+
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
     formDataToSend.append("surname", formData.surname);
@@ -80,9 +73,6 @@ const ViewPostulante = () => {
     formDataToSend.append("phone", formData.phone);
     formDataToSend.append("cv", formData.cv);
     formDataToSend.append("job_post_id", formData.jobPostId);
-
-
-    if (!validar()) return;
 
     try {
       const response = await fetch("http://127.0.0.1:5000/postulacion", {
@@ -93,10 +83,13 @@ const ViewPostulante = () => {
       if (response.ok) {
         Swal.fire({
           icon: 'success',
-          title: 'Postulación enviada',
-          text: '¡Gracias por postularte! Te contactaremos pronto.',
+          title: '¡Postulación enviada!',
+          text: 'Te contactaremos pronto.',
           confirmButtonColor: '#4e73df'
         });
+        navigate('/home');
+      } else {
+        Swal.fire('Error', result.message || 'Error al postular', 'error');
       }
     } catch (err) {
       console.error(err);
@@ -123,7 +116,7 @@ const ViewPostulante = () => {
 
   return (
     <div className={`postulante-container ${darkMode ? 'dark' : 'light'}`}>
-
+      
       <div className="aura-label" onClick={() => navigate('/home')}>
         ✨Aura✨
       </div>
@@ -132,31 +125,54 @@ const ViewPostulante = () => {
         {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
       </div>
 
-      <h2>Postulate a una vacante</h2>
-      <form onSubmit={handleSubmit} noValidate>
-        <label>Nombre:
-          <input type="text" name="name" value={formData.name} onChange={handleChange} />
-          {errores.nombre && <span className="error">{errores.nombre}</span>}
-        </label>
-        <label>Apellido:
-          <input type="text" name="surname" value={formData.surname} onChange={handleChange} />
-          {errores.apellido && <span className="error">{errores.apellido}</span>}
-        </label>
-        <label>Email:
-          <input type="email" name="email" value={formData.email} onChange={handleChange} />
-          {errores.email && <span className="error">{errores.email}</span>}
-        </label>
-        <label>Teléfono:
-          <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
-          {errores.telefono && <span className="error">{errores.telefono}</span>}
-        </label>
-        <label>Cargar CV:
-          <input type="file" name="cv" accept=".pdf,.doc,.docx" onChange={handleChange} />
-          {errores.cv && <span className="error">{errores.cv}</span>}
-        </label>
+      <div className="content-wrapper">
+        <div className="form-section">
+          <h2>Completá tus datos para postularte</h2>
+          <form onSubmit={handleSubmit} noValidate>
+            <label>Nombre:
+              <input type="text" name="name" value={formData.name} onChange={handleChange} />
+              {errores.nombre && <span className="error">{errores.nombre}</span>}
+            </label>
+            <label>Apellido:
+              <input type="text" name="surname" value={formData.surname} onChange={handleChange} />
+              {errores.apellido && <span className="error">{errores.apellido}</span>}
+            </label>
+            <label>Email:
+              <input type="email" name="email" value={formData.email} onChange={handleChange} />
+              {errores.email && <span className="error">{errores.email}</span>}
+            </label>
+            <label>Teléfono:
+              <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
+              {errores.telefono && <span className="error">{errores.telefono}</span>}
+            </label>
+            <label>Cargar CV:
+              <input type="file" name="cv" accept=".pdf,.doc,.docx" onChange={handleChange} />
+              {errores.cv && <span className="error">{errores.cv}</span>}
+            </label>
 
-        <button type="submit">Enviar Postulación</button>
-      </form>
+            <button type="submit">Enviar Postulación</button>
+          </form>
+        </div>
+
+        <div className="job-info-section">
+          {jobData ? (
+            <>
+              {jobData.organization.logo_url && (
+                <img src={jobData.organization.logo_url} alt="Logo Empresa" className="company-logo" />
+              )}
+              <h2>{jobData.title}</h2>
+              <p><strong>{jobData.organization.name}</strong></p>
+              <p><strong>Ubicación:</strong> {jobData.location}</p>
+              <p><strong>Modalidad:</strong> {jobData.job_type}</p>
+              <p><strong>Requisitos:</strong> {jobData.required_experience_years} años de experiencia, {jobData.required_education_level}</p>
+              <p><strong>Descripción:</strong></p>
+              <p>{jobData.description}</p>
+            </>
+          ) : (
+            <p>Cargando información de la vacante...</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

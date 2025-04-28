@@ -8,7 +8,7 @@ function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
-  const [alertType, setAlertType] = useState(""); // "success" o "error"
+  const [alertType, setAlertType] = useState("");
   const [resetPasswordMode, setResetPasswordMode] = useState(false);
   const { handleLogin } = useContext(AuthContext);
 
@@ -22,13 +22,44 @@ function Login() {
   const onSubmitLogin = async (data) => {
     setLoading(true);
     setAlertMessage("");
-
-    setTimeout(() => {
-      setAlertMessage("Bienvenido");
-      setAlertType("success");
-      navigate("/home");
+  
+    try {
+      const response = await fetch("http://127.0.0.1:5000/login-admin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        localStorage.setItem("token", result.token);
+  
+        setAlertMessage("Inicio de sesión exitoso");
+        setAlertType("success");
+        if (handleLogin) {
+          handleLogin(result.token);
+        }
+  
+        setTimeout(() => {
+          navigate("/vista-reclutador");
+        }, 1000);
+      } else {
+        setAlertMessage(result.message || "Error al iniciar sesión");
+        setAlertType("error");
+      }
+    } catch (error) {
+      console.error("Error de login:", error);
+      setAlertMessage("Ocurrió un error inesperado");
+      setAlertType("error");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const onSubmitReset = async (data) => {
