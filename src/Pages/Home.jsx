@@ -12,13 +12,13 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('/puestos.json')
+    fetch('http://127.0.0.1:5000/job-posts')
       .then(response => response.json())
       .then(data => {
-        console.log('Puestos cargados:', data);
+        console.log('Jobs cargados:', data);
         setPuestos(data);
       })
-      .catch((error) => console.error('Error al cargar los puestos:', error));
+      .catch((error) => console.error('Error al cargar los jobs:', error));
   }, []);
 
   const handleCardClick = (puesto) => {
@@ -34,7 +34,7 @@ function Home() {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        navigate('/vista-postulante');
+        navigate('/vista-postulante', { state: { jobPostId: puesto.id } });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         const link = document.createElement('a');
         link.href = '/plantilla-cv.docx';
@@ -83,16 +83,14 @@ function Home() {
         {filteredPuestos.map((item, index) => (
           <div key={index} className="job-card" onClick={() => handleCardClick(item)}>
             <div className="job-logo">
-              {item.empresa === 'Globant' ? (
-                <img src={globantLogo} alt="Globant Logo" width="50" height="50" />
-              ) : item.empresa === 'Accenture' ? (
-                <img src={accentureLogo} alt="Accenture Logo" width="50" height="50" />
+              {item.organization.logo_url ? (
+                <img src={item.organization.logo_url} alt="Logo Empresa" width="50" height="50" />
               ) : (
                 '[Logo]'
               )}
             </div>
-            <div className="job-title">{item.puesto}</div>
-            <div className="job-company">{item.empresa}</div>
+            <div className="job-title">{item.title}</div>
+            <div className="job-company">{item.organization.name}</div>
           </div>
         ))}
       </div>

@@ -3,14 +3,20 @@ import Swal from 'sweetalert2';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './ViewPostulante.css';
+import { useLocation } from 'react-router-dom';
+
 
 const ViewPostulante = () => {
+  const location = useLocation();
+  const jobPostId = location.state?.jobPostId;
+
   const [formData, setFormData] = useState({
     name: '',
     surname: '',
     email: '',
     phone: '',
     cv: null,
+    jobPostId: jobPostId || '',
   });
 
   const [errores, setErrores] = useState({});
@@ -50,7 +56,7 @@ const ViewPostulante = () => {
       nuevosErrores.telefono = 'El teléfono debe tener entre 8 y 15 números';
     }
 
-    const cv = formData.cv;
+    const cv = formData.cv; 
     if (!cv) {
       nuevosErrores.cv = 'Debés subir tu CV';
     } else {
@@ -73,6 +79,8 @@ const ViewPostulante = () => {
     formDataToSend.append("email", formData.email);
     formDataToSend.append("phone", formData.phone);
     formDataToSend.append("cv", formData.cv);
+    formDataToSend.append("job_post_id", formData.jobPostId);
+
 
     if (!validar()) return;
 
