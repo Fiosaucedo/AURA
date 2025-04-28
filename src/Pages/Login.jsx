@@ -40,8 +40,7 @@ function Login() {
       if (response.ok) {
         localStorage.setItem("token", result.token);
   
-        setAlertMessage("Inicio de sesión exitoso");
-        setAlertType("success");
+
         if (handleLogin) {
           handleLogin(result.token);
         }
