@@ -77,20 +77,20 @@ header, h1, h2, h3, h4, h5, h6 {
   
   .search-actions {
     display: flex;
-    justify-content: space-between; /* Alinea los botones a la izquierda y los filtros a la derecha */
-    align-items: center; /* Alinea verticalmente los elementos en el centro */
-    gap: 20px; /* Espacio entre los botones y los filtros */
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
   }
   
   .search-buttons {
     display: flex;
     gap: 10px;
-    justify-content: flex-start; /* Los botones se alinean a la izquierda */
+    justify-content: flex-start;
   }
   
   .filters {
     display: flex;
-    gap: 20px; /* Espacio entre los filtros */
+    gap: 20px;
   }
   
   .filtro-puesto, .filtro-apto{
@@ -354,9 +354,21 @@ td {
     font-size: 16px;
     background-color: white;
     color: #333;
-    height: 42px; /* mismo height que los inputs si tienen uno */
+    height: 42px;
     box-sizing: border-box;
-    appearance: none; /* Para quitar el estilo raro en navegadores */
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+  }
+
+
+  .search-header h2{
+    color: #2c3e50;
+  }
+  .filtro-puesto{
+    color: #2c3e50;
+  }
+
+  .filtro-apto{
+    color: #2c3e50;
   }

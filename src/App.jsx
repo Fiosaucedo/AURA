@@ -6,6 +6,7 @@ import ViewPostulante from './Pages/ViewPostulante';
 import Home from './Pages/Home';
 import DetalleCandidato from './Pages/DetalleCandidato';
 import Login from './Pages/Login';
+import CreateOrganization from './Pages/CreateOrganization'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/vista-reclutador" element={<ViewReclutador />} />
           <Route path="/vista-postulante" element={<ViewPostulante />} />
           <Route path="/candidato/:id" element={<DetalleCandidato />} />
+          <Route path="/create-organization" element={<CreateOrganization />} />
         </Routes>
       </Router>
     </AuthProvider>
