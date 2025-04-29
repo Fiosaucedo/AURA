@@ -12,7 +12,7 @@ function CrearOrganizacion() {
     formData.append("logo", logo);
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/organizations", {
+      const response = await fetch("https://aura-back-3h9b.onrender.com/organizations", {
         method: "POST",
         body: formData,
       });

@@ -23,7 +23,7 @@ const ViewReclutador = () => {
     }
 
     const filename = candidato.file_path.split("/").pop();
-    const url = `http://127.0.0.1:5000/${filename}`;
+    const url = `https://aura-back-3h9b.onrender.com/${filename}`;
 
     if (openInNewTab) {
       window.open(url, '_blank');
@@ -56,7 +56,7 @@ const ViewReclutador = () => {
 
     const fetchAdminInfo = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/me", {
+        const response = await fetch("https://aura-back-3h9b.onrender.com/me", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Error al cargar el usuario');
@@ -71,7 +71,7 @@ const ViewReclutador = () => {
 
     const fetchCandidatos = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/candidatos", {
+        const response = await fetch("https://aura-back-3h9b.onrender.com/candidatos", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Error al cargar los candidatos');
@@ -255,7 +255,7 @@ const ViewReclutador = () => {
         try {
           const token = localStorage.getItem('token');
 
-          const response = await fetch('http://127.0.0.1:5000/create-job', {
+          const response = await fetch('https://aura-back-3h9b.onrender.com/create-job', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -349,7 +349,7 @@ const ViewReclutador = () => {
         <nav className="nav-bar">
           <div className="logo-logged">
             {adminUser?.organization_logo && (
-              <img src={`http://127.0.0.1:5000/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
+              <img src={`https://aura-back-3h9b.onrender.com/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
             )}
             ✨Aura✨
           </div>

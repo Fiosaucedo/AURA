@@ -11,7 +11,7 @@ const DetallePostulante = () => {
 
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:5000/candidato/${id}`)
+    fetch(`https://aura-back-3h9b.onrender.com/candidato/${id}`)
       .then(res => res.json())
       .then(data => {
         setCandidato(data);

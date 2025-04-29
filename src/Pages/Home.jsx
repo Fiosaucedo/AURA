@@ -12,7 +12,7 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://127.0.0.1:5000/job-posts')
+    fetch('https://aura-back-3h9b.onrender.com/job-posts')
       .then(response => response.json())
       .then(data => {
         console.log('Jobs cargados:', data);
