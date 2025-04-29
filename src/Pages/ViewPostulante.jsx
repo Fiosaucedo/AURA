@@ -25,7 +25,7 @@ const ViewPostulante = () => {
 
   useEffect(() => {
     if (jobPostId) {
-      fetch(`http://127.0.0.1:5000/job-posts/${jobPostId}`)
+      fetch(`https://aura-back-3h9b.onrender.com/job-posts/${jobPostId}`)
         .then(response => response.json())
         .then(data => setJobData(data))
         .catch(error => console.error('Error al cargar la oferta:', error));
@@ -78,7 +78,7 @@ const ViewPostulante = () => {
     try {
       setIsSubmitting(true);
 
-      const response = await fetch("http://127.0.0.1:5000/postulacion", {
+      const response = await fetch("https://aura-back-3h9b.onrender.com/postulacion", {
         method: "POST",
         body: formDataToSend
       });
