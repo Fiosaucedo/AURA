@@ -9,6 +9,8 @@ const ViewReclutador = () => {
   const [puestosUnicos, setPuestosUnicos] = useState([]);
   const [filtroApto, setFiltroApto] = useState('Todos');
   const skillsList = ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Teamwork', 'Leadership', 'English'];
+  const [adminUser, setAdminUser] = useState(null);
+
 
   const descargarCV = (candidato, { openInNewTab = false } = {}) => {
     if (!candidato.file_path) {
@@ -19,10 +21,10 @@ const ViewReclutador = () => {
       });
       return;
     }
-    
+
     const filename = candidato.file_path.split("/").pop();
     const url = `http://127.0.0.1:5000/${filename}`;
-  
+
     if (openInNewTab) {
       window.open(url, '_blank');
     } else {
@@ -36,40 +38,68 @@ const ViewReclutador = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+
+
+    if (!token) {
+      Swal.fire({
+        title: 'Debes iniciar sesión',
+        text: 'Por favor iniciá sesión para acceder a esta sección.',
+        icon: 'error',
+        confirmButtonText: 'Ir al login'
+      }).then(() => {
+        window.location.href = '/login';
+      });
+      return;
+    }
+
+    const fetchAdminInfo = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Error al cargar el usuario');
+        const data = await response.json();
+        setAdminUser(data);
+      } catch (error) {
+        console.error("Error cargando admin:", error);
+      }
+    };
+
+    fetchAdminInfo();
+
     const fetchCandidatos = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await fetch("http://127.0.0.1:5000/candidatos", {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Error al cargar los candidatos');
         const data = await response.json();
-        const candidatosConApto = data.map(c => ({ ...c, esApto: Math.random() > 0.5 }));
-        setCandidatos(candidatosConApto);
-        const puestos = [...new Set(data.map(c => c.puesto || "Sin puesto"))];
+        setCandidatos(data);
+        const puestos = [...new Set(data.map(c => c.job_title || 'Sin puesto'))];
         setPuestosUnicos(puestos);
       } catch (error) {
         console.error('Error cargando candidatos:', error);
       }
     };
+
     fetchCandidatos();
   }, []);
 
   const viewInfo = (index) => {
     const c = candidatos[index];
+    console.log(c);
     Swal.fire({
-      title: `${c.nombre} ${c.apellido}`,
+      title: `${c.name} ${c.surname}`,
       html: `
-        <p><strong>Edad:</strong> ${c.edad}</p>
-        <p><strong>Años de experiencia:</strong> ${c.experiencia}</p>
-        <p><strong>Nivel educativo:</strong> ${c.nivel_educativo}</p>
-        <p><strong>Inglés:</strong> ${c.ingles}</p>
-        <p><strong>Disponibilidad:</strong> ${c.disponibilidad}</p>
-        <p><strong>Pretensión salarial:</strong> ${c.salario}</p>
-        <p><strong>Último empleo (meses):</strong> ${c.empleo_anterior}</p>
-        <p><strong>Habilidades:</strong> ${c.habilidades}</p>
-        <p><strong>Conocimientos adicionales:</strong> ${c.adicionales}</p>
-        <p><strong>Certificaciones:</strong> ${c.certificaciones}</p>
+        <p><strong>Puesto al que se postuló:</strong> ${c.job_title}</p>
+        <p><strong>Años de experiencia:</strong> ${c.experience_years}</p>
+        <p><strong>Nivel educativo:</strong> ${c.education_level}</p>
+        <p><strong>Habilidades:</strong> ${c.keywords}</p>
+        <p><strong>Teléfono:</strong> ${c.phone}</p>
+
+
       `,
       confirmButtonText: 'Cerrar'
     });
@@ -77,7 +107,7 @@ const ViewReclutador = () => {
 
   const handleAddCandidateSearch = () => {
     let selectedSkills = [];
-  
+
     Swal.fire({
       title: 'Crea una nueva búsqueda',
       html: `
@@ -105,16 +135,11 @@ const ViewReclutador = () => {
           </div>
         </div>
   
-        <div style="display: flex; gap: 10px; justify-content: space-between; margin-top: 20px">
-          <div id="skills-list" class="skills-container">
-            ${skillsList.map(skill => `  
-              <span class="skill-tag" data-skill="${skill}">${skill}</span>
-            `).join('')}
-          </div>
-          <div id="selected-skills" class="selected-skills-container">
-            <p id="no-skills" style="color:#888;">Seleccioná habilidades</p>
-          </div>
-        </div>
+        <div class="skcontainer"style="margin-top: 20px">
+  <label style="display:block; margin-bottom:5px;">Habilidades:</label>
+  <input id="skills-input" class="swal2-input" placeholder="Escribí una habilidad y presioná Enter">
+  <div id="selected-skills" class="selected-skills-container"></div>
+</div>
       `,
       width: '1000px',
       background: '#fff',
@@ -128,41 +153,68 @@ const ViewReclutador = () => {
       confirmButtonText: 'Guardar',
       cancelButtonText: 'Cancelar',
       didOpen: () => {
-        const skillsListContainer = Swal.getPopup().querySelector('#skills-list');
+        const skillsInput = Swal.getPopup().querySelector('#skills-input');
         const selectedSkillsContainer = Swal.getPopup().querySelector('#selected-skills');
+
+        skillsInput.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' && skillsInput.value.trim() !== '') {
+            e.preventDefault();
+            const skill = skillsInput.value.trim();
+            if (!selectedSkills.includes(skill)) {
+              selectedSkills.push(skill);
+
+              const tag = document.createElement('span');
+              tag.className = 'selected-skill-tag fade-in';
+              tag.textContent = skill;
+
+              const removeBtn = document.createElement('span');
+              removeBtn.textContent = ' ✕';
+              removeBtn.style.cursor = 'pointer';
+              removeBtn.style.marginLeft = '5px';
+              removeBtn.onclick = () => {
+                selectedSkills = selectedSkills.filter(s => s !== skill);
+                tag.remove();
+              };
+
+              tag.appendChild(removeBtn);
+              selectedSkillsContainer.appendChild(tag);
+            }
+            skillsInput.value = '';
+          }
+        });
         const noSkillsText = Swal.getPopup().querySelector('#no-skills');
-  
+
         const updateNoSkillsText = () => {
           noSkillsText.style.display = selectedSkills.length === 0 ? 'block' : 'none';
         };
-  
+
         skillsListContainer.addEventListener('click', (e) => {
           if (e.target.classList.contains('skill-tag')) {
             const skill = e.target.dataset.skill;
             selectedSkills.push(skill);
-  
+
             const skillElem = document.createElement('span');
             skillElem.textContent = skill;
             skillElem.className = 'selected-skill-tag fade-in';
             skillElem.dataset.skill = skill;
             selectedSkillsContainer.appendChild(skillElem);
-  
+
             e.target.remove();
             updateNoSkillsText();
           }
         });
-  
+
         selectedSkillsContainer.addEventListener('click', (e) => {
           if (e.target.classList.contains('selected-skill-tag')) {
             const skill = e.target.dataset.skill;
             selectedSkills = selectedSkills.filter(s => s !== skill);
-  
+
             const skillTag = document.createElement('span');
             skillTag.textContent = skill;
             skillTag.className = 'skill-tag fade-in';
             skillTag.dataset.skill = skill;
             skillsListContainer.appendChild(skillTag);
-  
+
             e.target.remove();
             updateNoSkillsText();
           }
@@ -176,12 +228,12 @@ const ViewReclutador = () => {
         const jobDescription = document.getElementById('job-description').value;
         const experienceRequired = parseInt(document.getElementById('job-experience').value) || 0;
         const educationLevel = document.getElementById('job-education').value;
-  
+
         if (!jobTitle || selectedSkills.length === 0) {
           Swal.showValidationMessage('Por favor completá el título del puesto y seleccioná al menos una habilidad.');
           return false;
         }
-  
+
         return {
           jobTitle,
           jobLocation,
@@ -199,10 +251,10 @@ const ViewReclutador = () => {
           jobTitle, jobLocation, jobType, jobSalary,
           jobDescription, experienceRequired, educationLevel, selectedSkills
         } = result.value;
-  
+
         try {
           const token = localStorage.getItem('token');
-  
+
           const response = await fetch('http://127.0.0.1:5000/create-job', {
             method: 'POST',
             headers: {
@@ -220,9 +272,9 @@ const ViewReclutador = () => {
               tags: selectedSkills
             })
           });
-  
+
           const resData = await response.json();
-  
+
           if (response.ok) {
             Swal.fire({
               title: '¡Éxito!',
@@ -245,7 +297,7 @@ const ViewReclutador = () => {
       }
     });
   };
-  
+
 
   const handleLogout = () => {
     Swal.fire({
@@ -256,11 +308,11 @@ const ViewReclutador = () => {
       cancelButtonText: 'No'
     }).then(result => {
       if (result.isConfirmed) {
-        console.log('Sesión cerrada');
+        localStorage.removeItem('token');
+        window.location.href = '/login';
       }
     });
   };
-
   const handleContactarse = (nombre, esApto) => {
     if (esApto) {
       Swal.fire({
@@ -295,9 +347,18 @@ const ViewReclutador = () => {
     <div>
       <header className="header">
         <nav className="nav-bar">
-          <div className="logo-logged">✨Aura✨</div>
-          <button className="logout-button" id="logout-button" onClick={handleLogout} title="Cerrar sesión">
-            Cerrar Sesion
+          <div className="logo-logged">
+            {adminUser?.organization_logo && (
+              <img src={`http://127.0.0.1:5000/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
+            )}
+            ✨Aura✨
+          </div>
+          <div className="admin-info">
+            <span>{adminUser?.organization_name}</span>
+            <span style={{ marginLeft: '10px' }}>{adminUser?.email}</span>
+          </div>
+          <button className="logout-button" onClick={handleLogout} title="Cerrar sesión">
+            Cerrar Sesión
           </button>
         </nav>
       </header>
@@ -389,7 +450,7 @@ const ViewReclutador = () => {
                         <button onClick={() => viewInfo(i)}>Ver Info</button>
                       </td>
                       <td>
-                      <button onClick={() => descargarCV(c, { openInNewTab: true })}>Ver CV</button>
+                        <button onClick={() => descargarCV(c, { openInNewTab: true })}>Ver CV</button>
                       </td>
                     </tr>
                   ))}
@@ -404,50 +465,41 @@ const ViewReclutador = () => {
               <thead>
                 <tr>
                   <th>Nombre</th>
-                  <th>Edad</th>
+                  <th>Apellido</th>
                   <th>Años de experiencia</th>
                   <th>Nivel educativo</th>
-                  <th>Nivel de inglés</th>
-                  <th>Disponibilidad</th>
-                  <th>Pretensión salarial</th>
-                  <th>Último empleo (meses)</th>
                   <th>Habilidades</th>
-                  <th>Conocimientos adicionales</th>
-                  <th>Certificaciones</th>
-                  <th>Contactarse</th>
+                  <th>Puesto al que se postuló</th>
                   <th>¿Es apto?</th>
+                  <th>Contactarse</th>
 
                 </tr>
               </thead>
               <tbody>
                 {candidatos
                   .filter(c => {
-                    const cumplePuesto = !puestoFiltro || c.puesto === puestoFiltro;
-                    const cumpleApto = filtroApto === 'Todos' ||
-                      (filtroApto === 'Apto' && c.esApto === true) ||
-                      (filtroApto === 'No Apto' && c.esApto === false);
+                    const cumplePuesto = !puestoFiltro || c.job_title === puestoFiltro;
+                    const cumpleApto =
+                      filtroApto === 'Todos' ||
+                      (filtroApto === 'Apto' && c.is_apt === true) ||
+                      (filtroApto === 'No Apto' && c.is_apt === false);
                     return cumplePuesto && cumpleApto;
                   })
                   .map((c, i) => (
                     <tr key={i}>
                       <td>{c.name}</td>
-                      <td>{c.edad}</td>
-                      <td>{c.experiencia}</td>
-                      <td>{c.nivel_educativo}</td>
-                      <td>{c.ingles}</td>
-                      <td>{c.disponibilidad}</td>
-                      <td>{c.salario}</td>
-                      <td>{c.empleo_anterior}</td>
-                      <td>{c.habilidades}</td>
-                      <td>{c.adicionales}</td>
-                      <td>{c.certificaciones}</td>
-                      <td>
-                        <button onClick={() => handleContactarse(c.nombre, c.esApto)}>✉️</button>
-                      </td>
-                      <td className={c.esApto ? 'apto' : 'no-apto'}>
-                        {c.esApto ? 'Sí' : 'No'}
-                      </td>
+                      <td>{c.surname}</td>
+                      <td>{c.experience_years}</td>
+                      <td>{c.education_level}</td>
+                      <td>{Array.isArray(c.keywords) ? c.keywords.join(', ') : c.keywords}</td>
 
+                      <td>{c.job_title}</td>
+                      <td className={c.is_apt ? 'apto' : 'no-apto'}>
+                        {c.is_apt ? 'Sí' : 'No'}
+                      </td>
+                      <td>
+                        <button onClick={() => handleContactarse(c.name, c.is_apt)}>✉️</button>
+                      </td>
                     </tr>
                   ))}
               </tbody>
