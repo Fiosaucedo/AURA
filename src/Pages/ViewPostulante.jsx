@@ -208,7 +208,7 @@ const ViewPostulante = () => {
             <>
               {jobData.organization.logo_url && (
                 <img
-                  src={jobData.organization.logo_url}
+                  src={`https://aura-back-3h9b.onrender.com${jobData.organization.logo_url}`}
                   alt="Logo Empresa"
                   className="company-logo"
                 />

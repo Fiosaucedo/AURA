@@ -23,7 +23,7 @@ const ViewReclutador = () => {
     }
 
     const filename = candidato.file_path.split("/").pop();
-    const url = `https://aura-back-3h9b.onrender.com/${filename}`;
+    const url = `https://aura-back-3h9b.onrender.com/${candidato.file_path}`;
 
     if (openInNewTab) {
       window.open(url, '_blank');
