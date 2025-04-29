@@ -84,7 +84,7 @@ function Home() {
           <div key={index} className="job-card" onClick={() => handleCardClick(item)}>
             <div className="job-logo">
               {item.organization.logo_url ? (
-                <img src={`https://aura-back-3h9b.onrender.com/${item.organization.logo_path}`} alt="Logo Empresa" width="50" height="50" />
+                <img src={`https://aura-back-3h9b.onrender.com${item.organization.logo_url}`} alt="Logo Empresa" width="50" height="50" />
               ) : (
                 '[Logo]'
               )}
