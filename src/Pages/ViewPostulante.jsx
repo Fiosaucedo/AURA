@@ -21,6 +21,7 @@ const ViewPostulante = () => {
   const [errores, setErrores] = useState({});
   const [darkMode, setDarkMode] = useState(true);
   const [jobData, setJobData] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (jobPostId) {
@@ -75,11 +76,15 @@ const ViewPostulante = () => {
     formDataToSend.append("job_post_id", formData.jobPostId);
 
     try {
+      setIsSubmitting(true);
+
       const response = await fetch("http://127.0.0.1:5000/postulacion", {
         method: "POST",
         body: formDataToSend
       });
+
       const result = await response.json();
+
       if (response.ok) {
         Swal.fire({
           icon: 'success',
@@ -89,10 +94,22 @@ const ViewPostulante = () => {
         });
         navigate('/home');
       } else {
-        Swal.fire('Error', result.message || 'Error al postular', 'error');
+        if (result.message === 'Ya has aplicado a este empleo anteriormente.') {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Postulación ya enviada',
+            text: 'Ya te has postulado a este empleo anteriormente. ¡Gracias por tu interés!',
+            confirmButtonColor: '#f6c23e'
+          });
+        } else {
+          Swal.fire('Error', result.message || 'Error al postular', 'error');
+        }
       }
     } catch (err) {
       console.error(err);
+      Swal.fire('Error', 'Error de conexión o servidor.', 'error');
+    } finally {
+      setIsSubmitting(false);
     }
 
     setFormData({
@@ -101,6 +118,7 @@ const ViewPostulante = () => {
       email: '',
       phone: '',
       cv: null,
+      jobPostId: jobPostId || '',
     });
     setErrores({});
     e.target.reset();
@@ -130,27 +148,58 @@ const ViewPostulante = () => {
           <h2>Completá tus datos para postularte</h2>
           <form onSubmit={handleSubmit} noValidate>
             <label>Nombre:
-              <input type="text" name="name" value={formData.name} onChange={handleChange} />
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+              />
               {errores.nombre && <span className="error">{errores.nombre}</span>}
             </label>
+
             <label>Apellido:
-              <input type="text" name="surname" value={formData.surname} onChange={handleChange} />
+              <input
+                type="text"
+                name="surname"
+                value={formData.surname}
+                onChange={handleChange}
+              />
               {errores.apellido && <span className="error">{errores.apellido}</span>}
             </label>
+
             <label>Email:
-              <input type="email" name="email" value={formData.email} onChange={handleChange} />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
               {errores.email && <span className="error">{errores.email}</span>}
             </label>
+
             <label>Teléfono:
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
+              <input
+                type="text"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+              />
               {errores.telefono && <span className="error">{errores.telefono}</span>}
             </label>
+
             <label>Cargar CV:
-              <input type="file" name="cv" accept=".pdf,.doc,.docx" onChange={handleChange} />
+              <input
+                type="file"
+                name="cv"
+                accept=".pdf,.doc,.docx"
+                onChange={handleChange}
+              />
               {errores.cv && <span className="error">{errores.cv}</span>}
             </label>
 
-            <button type="submit">Enviar Postulación</button>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Enviando..." : "Enviar Postulación"}
+            </button>
           </form>
         </div>
 
@@ -158,7 +207,11 @@ const ViewPostulante = () => {
           {jobData ? (
             <>
               {jobData.organization.logo_url && (
-                <img src={jobData.organization.logo_url} alt="Logo Empresa" className="company-logo" />
+                <img
+                  src={jobData.organization.logo_url}
+                  alt="Logo Empresa"
+                  className="company-logo"
+                />
               )}
               <h2>{jobData.title}</h2>
               <p><strong>{jobData.organization.name}</strong></p>
