@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import './ViewReclutador.css';
+import { useNavigate } from 'react-router-dom';
 
 const ViewReclutador = () => {
   const [candidatos, setCandidatos] = useState([]);
@@ -10,6 +11,7 @@ const ViewReclutador = () => {
   const [filtroApto, setFiltroApto] = useState('Todos');
   const skillsList = ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Teamwork', 'Leadership', 'English'];
   const [adminUser, setAdminUser] = useState(null);
+  const navigate = useNavigate();
 
 
   const descargarCV = (candidato, { openInNewTab = false } = {}) => {
@@ -134,7 +136,7 @@ const ViewReclutador = () => {
             <textarea id="job-description" class="swal2-textarea" placeholder="Descripción del puesto"></textarea>
           </div>
         </div>
-  
+ 
         <div class="skcontainer"style="margin-top: 20px">
   <label style="display:block; margin-bottom:5px;">Habilidades:</label>
   <input id="skills-input" class="swal2-input" placeholder="Escribí una habilidad y presioná Enter">
@@ -371,8 +373,11 @@ const ViewReclutador = () => {
               <p>Aura te permite evaluar fácil y rápido cuáles son los mejores candidatos.</p>
             </div>
             <div className="hero-button">
-              <button onClick={handleAddCandidateSearch} className="btn-hero">
+              <button onClick={handleAddCandidateSearch} className="btn-hero" style={{marginRight: '10px'}}>
                 Crear nueva búsqueda
+              </button>
+              <button onClick={() => navigate('/reclutador-solicitudes-supervisor')} className="btn-hero">
+                Ver Solicitudes de Supervisor
               </button>
             </div>
           </div>
