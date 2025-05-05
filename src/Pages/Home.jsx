@@ -10,9 +10,10 @@ function Home() {
   const [selectedEmpresa, setSelectedEmpresa] = useState('');
   const [selectedPuesto, setSelectedPuesto] = useState('');
   const navigate = useNavigate();
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch('https://aura-back-3h9b.onrender.com/job-posts')
+    fetch(`${VITE_API_URL}/job-posts`)
       .then(response => response.json())
       .then(data => {
         console.log('Jobs cargados:', data);
@@ -84,7 +85,7 @@ function Home() {
           <div key={index} className="job-card" onClick={() => handleCardClick(item)}>
             <div className="job-logo">
               {item.organization.logo_url ? (
-                <img src={`https://aura-back-3h9b.onrender.com${item.organization.logo_url}`} alt="Logo Empresa" width="50" height="50" />
+                <img src={`${VITE_API_URL}${item.organization.logo_url}`} alt="Logo Empresa" width="50" height="50" />
               ) : (
                 '[Logo]'
               )}

@@ -10,6 +10,7 @@ const ViewReclutador = () => {
   const [filtroApto, setFiltroApto] = useState('Todos');
   const skillsList = ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Teamwork', 'Leadership', 'English'];
   const [adminUser, setAdminUser] = useState(null);
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 
   const descargarCV = (candidato, { openInNewTab = false } = {}) => {
@@ -23,7 +24,7 @@ const ViewReclutador = () => {
     }
 
     const filename = candidato.file_path.split("/").pop();
-    const url = `https://aura-back-3h9b.onrender.com/${candidato.file_path}`;
+    const url = `${VITE_API_URL}/${candidato.file_path}`;
 
     if (openInNewTab) {
       window.open(url, '_blank');
@@ -56,7 +57,7 @@ const ViewReclutador = () => {
 
     const fetchAdminInfo = async () => {
       try {
-        const response = await fetch("https://aura-back-3h9b.onrender.com/me", {
+        const response = await fetch(`${VITE_API_URL}/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Error al cargar el usuario');
@@ -71,7 +72,7 @@ const ViewReclutador = () => {
 
     const fetchCandidatos = async () => {
       try {
-        const response = await fetch("https://aura-back-3h9b.onrender.com/candidatos", {
+        const response = await fetch(`${VITE_API_URL}/candidatos`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Error al cargar los candidatos');
@@ -255,7 +256,7 @@ const ViewReclutador = () => {
         try {
           const token = localStorage.getItem('token');
 
-          const response = await fetch('https://aura-back-3h9b.onrender.com/create-job', {
+          const response = await fetch(`${VITE_API_URL}/create-job`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -349,7 +350,7 @@ const ViewReclutador = () => {
         <nav className="nav-bar">
           <div className="logo-logged">
             {adminUser?.organization_logo && (
-              <img src={`https://aura-back-3h9b.onrender.com/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
+              <img src={`${VITE_API_URL}/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
             )}
             ✨Aura✨
           </div>

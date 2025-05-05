@@ -3,6 +3,7 @@ import { useState } from "react";
 function CrearOrganizacion() {
   const [nombre, setNombre] = useState("");
   const [logo, setLogo] = useState(null);
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,7 +13,7 @@ function CrearOrganizacion() {
     formData.append("logo", logo);
 
     try {
-      const response = await fetch("https://aura-back-3h9b.onrender.com/organizations", {
+      const response = await fetch(`${VITE_API_URL}/organizations`, {
         method: "POST",
         body: formData,
       });

@@ -7,11 +7,11 @@ const DetallePostulante = () => {
   const { id } = useParams();
   const [candidato, setCandidato] = useState(null);
   const [loading, setLoading] = useState(true);
-  const API_URL = "http://localhost:5000";
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 
   useEffect(() => {
-    fetch(`https://aura-back-3h9b.onrender.com/candidato/${id}`)
+    fetch(`${VITE_API_URL}/candidato/${id}`)
       .then(res => res.json())
       .then(data => {
         setCandidato(data);
@@ -32,7 +32,7 @@ const DetallePostulante = () => {
       <p><strong>Nombre:</strong> {candidato.name} {candidato.surname}</p>
       <p><strong>Email:</strong> {candidato.email}</p>
       <p><strong>Teléfono:</strong> {candidato.phone}</p>
-      <p><strong>CV:</strong><a href={`${API_URL}/${candidato.file_path}`} target='new'>Ver CV</a>
+      <p><strong>CV:</strong><a href={`${VITE_API_URL}/${candidato.file_path}`} target='new'>Ver CV</a>
       </p>
 
       <div>
