@@ -1,0 +1,38 @@
+[
+    {
+      "id": 1,
+      "nombre": "Juan Pérez",
+      "puesto": "Mecánico",
+      "email": "juan@empresa.com",
+      "estado": "activo"
+    },
+    {
+      "id": 2,
+      "nombre": "Ana Gómez",
+      "puesto": "Administrativo",
+      "email": "ana@empresa.com",
+      "estado": "inactivo"
+    },
+    {
+        "id": 4,
+        "nombre": "Ana Gómez",
+        "puesto": "Administrativo",
+        "email": "ana@empresa.com",
+        "estado": "inactivo"
+      },
+      {
+        "id": 5,
+        "nombre": "Ana Gómez",
+        "puesto": "Administrativo",
+        "email": "ana@empresa.com",
+        "estado": "inactivo"
+      },
+    {
+      "id": 3,
+      "nombre": "Carlos Ruiz",
+      "puesto": "Supervisor",
+      "email": "carlos@empresa.com",
+      "estado": "activo"
+    }
+  ]
+  
