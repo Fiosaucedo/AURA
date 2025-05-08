@@ -1,0 +1,152 @@
+main{
+    margin: 20px;
+}
+
+h1{
+    color: #2c3e50;
+    margin: 20px;
+}
+
+
+
+.filtros-izquierda>select, .filtros-izquierda>input{
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: white;
+    color: #333;
+    height: 42px;
+    box-sizing: border-box;
+    margin: 5px;
+}
+
+.filtros{
+  padding: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.tarjetas-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+.tarjeta-empleado{
+    flex: 1 1 calc(25% - 20px);
+    max-width: 300px;
+    min-width: 250px;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #2c3e50;
+    font-size: 18px;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.tarjeta-empleado h3{
+    font-size: 30px;
+    margin: 0%;
+}
+
+.tarjeta-empleado:hover{
+    background-color: #34495e;
+    transform: scale(1.05);
+}
+
+
+.campo {
+  margin-bottom: 15px;
+}
+
+.campo label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 3px;
+  color: #555;
+  font-size: 14px;
+}
+
+.campo p {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.swal2-input {
+  margin-top: 5px;
+  width: 100% !important;
+  size: 20px;
+  margin-left:0px;
+  height: 42px !important;
+   margin-right: 0px;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   color: #333;
+}
+
+
+.formContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.column-left {
+  flex: 1;
+  text-align: left;
+}
+
+.column-right {
+  flex: 1;
+  text-align: right;
+}
+
+.mi-swal-popup {
+  width: 600px !important;
+  max-width: 90vw;
+  height: 580px !important;
+}
+
+.swal2-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+  box-shadow: none; 
+  
+}
+
+th{
+  font-size: 20px;
+  padding: 10px;
+}
+
+td{
+  font-size: 18px;
+  padding: 10px;
+}
+
+table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.tabla-empleados tbody tr:hover{
+  background-color: #34495e;
+  color: white;
+ 
+}
