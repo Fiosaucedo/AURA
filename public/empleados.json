@@ -4,35 +4,50 @@
       "nombre": "Juan Pérez",
       "puesto": "Mecánico",
       "email": "juan@empresa.com",
-      "estado": "activo"
+      "estado": "activo",
+      "dni": "12345678A",
+      "telefono": "123456789",
+      "direccion": "Calle Falsa 123"
     },
     {
       "id": 2,
       "nombre": "Ana Gómez",
       "puesto": "Administrativo",
       "email": "ana@empresa.com",
-      "estado": "inactivo"
+      "estado": "inactivo",
+      "dni": "12345678A",
+      "telefono": "123456789",
+      "direccion": "Calle Falsa 123"
     },
     {
         "id": 4,
         "nombre": "Ana Gómez",
         "puesto": "Administrativo",
         "email": "ana@empresa.com",
-        "estado": "inactivo"
+        "estado": "inactivo",
+        "dni": "12345678A",
+      "telefono": "123456789",
+      "direccion": "Calle Falsa 123"
       },
       {
         "id": 5,
         "nombre": "Ana Gómez",
         "puesto": "Administrativo",
         "email": "ana@empresa.com",
-        "estado": "inactivo"
+        "estado": "inactivo",
+        "dni": "12345678A",
+      "telefono": "123456789",
+      "direccion": "Calle Falsa 123"
       },
     {
       "id": 3,
       "nombre": "Carlos Ruiz",
       "puesto": "Supervisor",
       "email": "carlos@empresa.com",
-      "estado": "activo"
+      "estado": "activo",
+      "dni": "12345678A",
+      "telefono": "123456789",
+      "direccion": "Calle Falsa 123"
     }
   ]
   
