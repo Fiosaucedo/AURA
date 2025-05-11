@@ -11,6 +11,9 @@ function Login() {
   const [alertType, setAlertType] = useState("");
   const [resetPasswordMode, setResetPasswordMode] = useState(false);
   const { handleLogin } = useContext(AuthContext);
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
+
+  console.log(VITE_API_URL)
 
   const {
     register,
@@ -24,7 +27,7 @@ function Login() {
     setAlertMessage("");
   
     try {
-      const response = await fetch("https://aura-back-3h9b.onrender.com/login-admin", {
+      const response = await fetch(`${VITE_API_URL}/login-admin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -8,6 +8,7 @@ const ViewPostulante = () => {
   const location = useLocation();
   const jobPostId = location.state?.jobPostId;
   const navigate = useNavigate();
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
 
   const [formData, setFormData] = useState({
     name: '',
@@ -25,7 +26,7 @@ const ViewPostulante = () => {
 
   useEffect(() => {
     if (jobPostId) {
-      fetch(`https://aura-back-3h9b.onrender.com/job-posts/${jobPostId}`)
+      fetch(`${VITE_API_URL}/job-posts/${jobPostId}`)
         .then(response => response.json())
         .then(data => setJobData(data))
         .catch(error => console.error('Error al cargar la oferta:', error));
@@ -78,7 +79,7 @@ const ViewPostulante = () => {
     try {
       setIsSubmitting(true);
 
-      const response = await fetch("https://aura-back-3h9b.onrender.com/postulacion", {
+      const response = await fetch(`${VITE_API_URL}/postulacion`, {
         method: "POST",
         body: formDataToSend
       });
@@ -208,7 +209,7 @@ const ViewPostulante = () => {
             <>
               {jobData.organization.logo_url && (
                 <img
-                  src={`https://aura-back-3h9b.onrender.com${jobData.organization.logo_url}`}
+                  src={`${VITE_API_URL}${jobData.organization.logo_url}`}
                   alt="Logo Empresa"
                   className="company-logo"
                 />
