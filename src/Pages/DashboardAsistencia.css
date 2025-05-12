@@ -1,0 +1,149 @@
+.dashboard-asistencia {
+    padding: 20px;
+}
+
+.metricas-clave {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.widget {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.widget h3, .widget p {
+    font-size: 1.1em;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.grafico-hoy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.grafico-hoy canvas {
+
+    height: auto !important;
+    margin-bottom: 0px;
+}
+
+.leyenda-hoy {
+    margin-top: 5px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    font-size: 0.8em;
+}
+
+.leyenda-hoy p {
+    margin: 3px 0;
+    color: #2c3e50;
+}
+
+.leyenda-hoy span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 3px;
+    border-radius: 50%;
+}
+
+.leyenda-hoy .presente {
+    background-color: rgba(54, 162, 235, 0.8);
+}
+
+.leyenda-hoy .ausente {
+    background-color: rgba(255, 99, 132, 0.8);
+}
+
+.leyenda-hoy .tarde {
+    background-color: rgba(255, 206, 86, 0.8);
+}
+
+.widget ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9em;
+}
+
+.widget ul li {
+    margin-bottom: 5px;
+}
+
+
+.filtros-dashboard {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.filtros-dashboard label {
+    font-size: 0.9em;
+}
+
+.filtros-dashboard select,
+.filtros-dashboard input[type="date"] {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 0.9em;
+}
+
+.popup-ausentes {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    animation: fadeInPopup 0.3s ease-out forwards;
+    opacity: 0;
+    color: #2c3e50;
+}
+
+@keyframes fadeInPopup {
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+
+.pie-chart-container {
+    width: 400px;
+    height: 300px;
+    justify-items: center;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.bar-chart-container {
+    height: 300px;
+}

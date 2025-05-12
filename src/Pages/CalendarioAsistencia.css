@@ -1,0 +1,168 @@
+.calendario-asistencia-contenedor {
+    display: flex;
+    height: 100%;
+    gap: 20px;
+    padding: 20px;
+}
+
+.calendario-lado,
+.detalle-lado {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fff;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendario-lado {
+    flex: 0 0 30%;
+    min-width: 250px;
+    justify-content: center;
+}
+
+.detalle-lado {
+    flex: 1;
+}
+
+.detalle-lado h3,
+.detalle-lado ul {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.tile-ausencia {
+    background-color: #ffcdd2 !important;
+}
+
+.tile-presente {
+    background-color: #c8e6c9 !important;
+}
+
+.react-calendar,
+.react-calendar__tile,
+.react-calendar__navigation__label,
+.react-calendar__navigation__arrow,
+.react-calendar__navigation__next-button {
+    color: rgb(68, 68, 68);
+    box-shadow: none !important;
+}
+
+.react-calendar {
+    border: none !important;
+    width: 100%;
+}
+
+.react-calendar__tile {
+    border: none !important;
+}
+
+.tabla-asistencia {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+.tabla-asistencia th,
+.tabla-asistencia td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.tabla-asistencia th {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 2;
+    border-bottom: 2px solid #ddd;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-asistencia tr.presente td {
+    background-color: #e6f7e6;
+}
+
+.tabla-asistencia tr.ausente td {
+    background-color: #ffe6e6;
+}
+
+.tabla-asistencia tr.tarde td {
+    background-color: #fff6e0;
+}
+
+.tabla-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 1rem 0 0 0;
+}
+
+.tabla-scroll .tabla-asistencia {
+    margin-top: 0;
+}
+
+.filtros-asistencia {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.filtros-asistencia button {
+    font-size: 14px;
+}
+
+.botones-filtro {
+    display: flex;
+    gap: 10px;
+}
+
+.flecha-orden {
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    fill: black;
+}
+
+.filtro-presente,
+.filtro-ausente,
+.filtro-tarde {
+    border-width: 1px;
+    border-style: solid;
+}
+
+.filtro-presente {
+    background-color: #c8e6c9;
+    border-color: #a5d6a7;
+}
+
+.filtro-presente.activo {
+    background-color: #388e3c;
+    border-color: #2e7d32;
+}
+
+.filtro-ausente {
+    background-color: #ffcdd2;
+    border-color: #ef9a9a;
+}
+
+.filtro-ausente.activo {
+    background-color: #d32f2f;
+    border-color: #c62828;
+}
+
+.filtro-tarde {
+    background-color: #fff6e0;
+    border-color: #ffe082;
+}
+
+.filtro-tarde.activo {
+    background-color: #f9a825;
+    border-color: #f57f17;
+}
