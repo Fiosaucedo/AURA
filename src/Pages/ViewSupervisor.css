@@ -1,191 +1,263 @@
 .supervisor-container {
-    font-family: 'Segoe UI', sans-serif;
-    padding: 30px;
-    background: linear-gradient(to right, #f4f6f8, #eaf1f8);
-    min-height: 100vh;
-  }
-  
-  .supervisor-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-  }
-  
-  .supervisor-logo {
-    font-size: 32px;
-    color: #0f1a4b;
-    font-weight: bold;
-    animation: fadeInDown 0.6s ease;
-  }
-  
-  .supervisor-volver {
-    font-size: 14px;
-    color: #555;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .supervisor-volver:hover {
-    color: #042a53;
-    text-decoration: underline;
-  }
-  
-  .supervisor-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-  
-  .supervisor-tabs button {
-    background-color: #4a84c2;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 30px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .supervisor-tabs button:hover {
-    background-color: #336ca6;
-    transform: scale(1.05);
-  }
-  
-  .supervisor-home {
-    text-align: center;
-  }
-  
-  .supervisor-title {
-    font-size: 30px;
-    margin-bottom: 30px;
-    color: #333;
-    animation: fadeIn 1s ease;
-  }
-  
-  .supervisor-card-container {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-  }
-  
-  .supervisor-card {
-    background: linear-gradient(to bottom right, #ffffff, #f2f7fc);
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    width: 320px;
-    text-align: left;
-    animation: fadeInUp 0.8s ease;
-  }
-  
-  .supervisor-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  }
-  
-  .supervisor-card h3 {
-    font-size: 22px;
-    margin-bottom: 10px;
-    color: #0f1a4b;
-  }
-  
-  .supervisor-card p {
-    color: #555;
-  }
-  
-  .supervisor-formulario {
-    max-width: 650px;
-    margin: 0 auto;
-    animation: fadeIn 0.7s ease;
-  }
-  
-  .form-title {
-    text-align: center;
-    font-size: 26px;
-    color: #0f1a4bc2;
-    margin-bottom: 20px;
-  }
-  
-  .formulario {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background-color: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .formulario input,
-  .formulario textarea,
-  .formulario select {
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid #ccd;
-    font-size: 16px;
-    width: 100%;
-    resize: vertical;
-    transition: border 0.3s ease;
-  }
-  
-  .formulario input:focus,
-  .formulario textarea:focus,
-  .formulario select:focus {
-    border-color: #4a84c2;
-    outline: none;
-  }
-  
-  .botones-form {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    gap: 15px;
-  }
-  
-  .formulario button {
-    flex: 1;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .formulario button[type="submit"] {
-    background-color: #4a84c2;
-    color: white;
-  }
-  
-  .formulario button.volver {
-    background-color: #ccc;
-    color: #333;
-  }
-  
-  .formulario button:hover {
-    opacity: 0.95;
-    transform: scale(1.02);
-  }
-  
-  /* Animaciones */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  @keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
+  font-family: 'Segoe UI', sans-serif;
+  padding: 40px;
+  background: linear-gradient(135deg, #f4f6f8, #eaf1f8); /* Un gradiente sutil y moderno */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrar contenido horizontalmente */
+}
+
+.supervisor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  width: 90%; /* Limitar el ancho del header */
+  max-width: 1200px; /* Ancho máximo */
+}
+
+.supervisor-logo {
+  font-size: 36px;
+  color: #0f1a4b;
+  font-weight: bold;
+  animation: fadeInDown 0.6s ease;
+}
+
+.supervisor-volver {
+  font-size: 16px;
+  color: #555;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  padding: 10px 15px;
+}
+
+.supervisor-volver:hover {
+  color: #042a53;
+  text-decoration: none;
+  border-color: #bbb;
+}
+
+.supervisor-tabs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.supervisor-tabs button {
+  background-color: #4a84c2;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.supervisor-tabs button:hover {
+  background-color: #336ca6;
+  transform: translateY(-2px);
+}
+
+.supervisor-home {
+  text-align: center;
+  width: 90%;
+  max-width: 1000px;
+}
+
+.supervisor-title {
+  font-size: 32px;
+  margin-bottom: 35px;
+  color: #333;
+  animation: fadeIn 1s ease;
+}
+
+.supervisor-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Diseño más adaptable */
+  gap: 30px;
+  margin-top: 30px;
+  padding: 20px;
+  width: 100%; /* Ocupar todo el ancho disponible */
+  max-width: 1200px;
+}
+
+.supervisor-card {
+  background: white; /* Fondo blanco para mejor contraste */
+  display: flex;
+  flex-direction: column; /* Cambiar a columna para mejor organización en tarjetas más pequeñas */
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Sombra más pronunciada */
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
+  animation: fadeInUp 0.8s ease;
+}
+
+.supervisor-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.supervisor-card h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #0f1a4b;
+}
+
+.supervisor-card p {
+  color: #555;
+  line-height: 1.6; /* Mejor legibilidad */
+  margin-bottom: 8px;
+}
+
+.supervisor-card strong {
+  font-weight: bold;
+  color: #333;
+}
+
+.supervisor-formulario {
+  max-width: 700px;
+  margin: 30px auto; /* Añadir margen superior e inferior */
+  animation: fadeIn 0.7s ease;
+  padding: 20px; /* Añadir padding alrededor del formulario */
+  width: 90%;
+}
+
+.form-title {
+  text-align: center;
+  font-size: 30px;
+  color: #0f1a4bc2;
+  margin-bottom: 30px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.formulario label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.formulario input,
+.formulario textarea,
+.formulario select {
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccd;
+  font-size: 16px;
+  width: 100%;
+  resize: vertical;
+  transition: border 0.3s ease;
+}
+
+.formulario input:focus,
+.formulario textarea:focus,
+.formulario select:focus {
+  border-color: #4a84c2;
+  outline: none;
+  box-shadow: 0 0 5px rgba(74, 132, 194, 0.5);
+}
+
+.botones-form {
+  display: flex;
+  justify-content: flex-end; /* Alinear botones a la derecha */
+  margin-top: 30px;
+  gap: 15px;
+}
+
+.formulario button {
+  flex-grow: 0; /* Evitar que los botones se expandan demasiado */
+  padding: 14px 22px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.formulario button[type="submit"] {
+  background-color: #4a84c2;
+  color: white;
+}
+
+.formulario button.volver {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.formulario button:hover {
+  opacity: 0.95;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+}
+
+.supervisor-postulaciones {
+  width: 90%;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.supervisor-postulaciones .supervisor-title {
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.supervisor-postulaciones .supervisor-card {
+  margin-bottom: 25px;
+  padding: 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, auto)); /* Diseño de grid más flexible */
+  gap: 15px 20px; /* Ajustar espaciado entre elementos de la tarjeta */
+  align-items: center;
+}
+
+.supervisor-postulaciones .supervisor-card h3 {
+  grid-column: 1 / -1; /* El título ocupa toda la fila */
+}
+
+.supervisor-postulaciones .supervisor-card p {
+  margin-bottom: 5px;
+}
+
+.supervisor-postulaciones .botones-form {
+  grid-column: 1 / -1; /* Los botones ocupan toda la fila */
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.supervisor-postulaciones .botones-form button {
+  padding: 12px 20px;
+  font-size: 15px;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+} 

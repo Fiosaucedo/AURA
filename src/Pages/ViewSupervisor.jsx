@@ -6,13 +6,11 @@ function ViewSupervisor() {
   const [solapaActiva, setSolapaActiva] = useState('home');
   const [formulario, setFormulario] = useState({
     puesto: '',
-    descripcion: '',
     ubicacion: '',
     jornada: '',
     remuneracion: '',
     experiencia: '',
     habilidades: '',
-    comentarios: '',
   });
 
   const [postulacionesReclutador] = useState([
@@ -40,19 +38,17 @@ function ViewSupervisor() {
     },
   ]);
 
-  const [comentarios, setComentarios] = useState({});
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'experiencia' && Number(value) < 0) return;
     setFormulario({ ...formulario, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { puesto, descripcion, ubicacion, jornada, remuneracion, experiencia, habilidades } = formulario;
+    const { puesto, ubicacion, jornada, remuneracion, experiencia, habilidades } = formulario;
 
-    if (!puesto || !descripcion || !ubicacion || !jornada || !habilidades) {
+    if (!puesto || !ubicacion || !jornada || !habilidades) {
       Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Por favor completá todos los campos obligatorios.' });
       return;
     }
@@ -72,16 +68,25 @@ function ViewSupervisor() {
       return;
     }
 
-    Swal.fire({ icon: 'success', title: '¡Solicitud enviada!', text: 'Tu solicitud fue enviada con éxito.' });
-    setFormulario({
-      puesto: '', descripcion: '', ubicacion: '', jornada: '',
-      remuneracion: '', experiencia: '', habilidades: '', comentarios: ''
+    const confirmacion = await Swal.fire({
+      title: '¿Enviar solicitud?',
+      text: '¿Estás seguro de que querés enviar esta solicitud al reclutador?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, enviar',
+      cancelButtonText: 'Cancelar',
     });
-    setSolapaActiva('home');
-  };
 
-  const manejarCambioComentario = (id, texto) => {
-    setComentarios({ ...comentarios, [id]: texto });
+    if (!confirmacion.isConfirmed) return;
+
+    Swal.fire({ icon: 'success', title: '¡Solicitud enviada!', text: 'Tu solicitud fue enviada con éxito.' });
+
+    setFormulario({
+      puesto: '', ubicacion: '', jornada: '',
+      remuneracion: '', experiencia: '', habilidades: ''
+    });
+
+    setSolapaActiva('home');
   };
 
   const aprobarPostulacion = async (id) => {
@@ -98,23 +103,46 @@ function ViewSupervisor() {
   };
 
   const solicitarCambios = async (id) => {
-    const comentario = comentarios[id] || '';
-    if (!comentario.trim()) {
-      Swal.fire({ icon: 'warning', title: 'Comentario requerido', text: 'Debés ingresar un comentario para solicitar cambios.' });
-      return;
+    const { value: comentario, isConfirmed } = await Swal.fire({
+      title: 'Solicitar cambios',
+      input: 'textarea',
+      inputLabel: 'Escribí los cambios que querés solicitar al reclutador',
+      inputPlaceholder: 'Ingresá tu comentario...',
+      inputAttributes: {
+        'aria-label': 'Comentario para solicitar cambios'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Continuar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!isConfirmed) return;
+
+    if (!comentario || comentario.trim() === '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Comentario vacío',
+        text: 'Por favor, ingresa un comentario antes de continuar.',
+      });
+      return; 
     }
 
     const confirmacion = await Swal.fire({
-      title: '¿Solicitar cambios?',
-      icon: 'warning',
-      text: 'Se enviará el comentario al reclutador',
+      title: '¿Confirmar solicitud de cambios?',
+      text: `Comentario a enviar:\n\n"${comentario}"\n\n¿Estás seguro de enviarlo?`,
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Sí, solicitar cambios',
+      confirmButtonText: 'Sí, enviar',
       cancelButtonText: 'Cancelar',
     });
 
     if (confirmacion.isConfirmed) {
-      Swal.fire({ icon: 'info', title: 'Cambios solicitados', text: `Se solicitaron cambios para la postulación con ID ${id}.` });
+      Swal.fire({
+        icon: 'info',
+        title: 'Cambios solicitados',
+        text: `Se solicitaron cambios para la postulación con ID ${id}.`,
+      });
+    
     }
   };
 
@@ -147,7 +175,6 @@ function ViewSupervisor() {
           <h2 className="form-title">Formulario de solicitud</h2>
           <form onSubmit={handleSubmit} className="formulario">
             <input type="text" name="puesto" placeholder="Puesto" value={formulario.puesto} onChange={handleChange} required />
-            <textarea name="descripcion" placeholder="Descripción del puesto" value={formulario.descripcion} onChange={handleChange} required />
             <input type="text" name="ubicacion" placeholder="Ubicación del trabajo" value={formulario.ubicacion} onChange={handleChange} required />
             <select name="jornada" value={formulario.jornada} onChange={handleChange} required>
               <option value="">Tipo de jornada</option>
@@ -159,7 +186,6 @@ function ViewSupervisor() {
             <input type="text" name="remuneracion" placeholder="Remuneración ofrecida (opcional)" value={formulario.remuneracion} onChange={handleChange} />
             <input type="number" name="experiencia" placeholder="Años de experiencia requeridos" value={formulario.experiencia} onChange={handleChange} min="0" />
             <textarea name="habilidades" placeholder="Habilidades requeridas" value={formulario.habilidades} onChange={handleChange} required />
-            <textarea name="comentarios" placeholder="Comentarios adicionales" value={formulario.comentarios} onChange={handleChange} />
             <div className="botones-form">
               <button type="submit">Enviar solicitud</button>
               <button type="button" className="volver" onClick={() => setSolapaActiva('home')}>Volver</button>
@@ -182,11 +208,6 @@ function ViewSupervisor() {
               <p><strong>Nivel educativo requerido:</strong> {post.educacion || 'No especificado'}</p>
               <p><strong>Habilidades:</strong> {post.habilidades || 'No especificadas'}</p>
 
-              <textarea
-                placeholder="Comentario para solicitar cambios"
-                value={comentarios[post.id] || ''}
-                onChange={(e) => manejarCambioComentario(post.id, e.target.value)}
-              />
               <div className="botones-form">
                 <button onClick={() => aprobarPostulacion(post.id)}>Aprobar</button>
                 <button onClick={() => solicitarCambios(post.id)} className="volver">Solicitar cambios</button>
