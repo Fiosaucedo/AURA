@@ -128,6 +128,10 @@ const ViewAdmin = () => {
                 <label>Dirección</label>
                 <p id="direccionTexto">${empleado.address}</p>
               </div>
+              <div class="campo">
+                <label>Rol</label>
+                <p id="rolTexto">${empleado.role}</p>
+              </div>
                </div>
   </div>
   <div style="text-align: center; margin-top: 15px;">
@@ -144,8 +148,9 @@ const ViewAdmin = () => {
           const dniInput = document.getElementById("dniInput");
           const telefonoInput = document.getElementById("telefonoInput");
           const direccionInput = document.getElementById("direccionInput");
+          const rolInput = document.getElementById("rolInput");
     
-          if (!nombreInput || !puestoInput || !emailInput || !estadoInput || !dniInput || !telefonoInput || !direccionInput) {
+          if (!nombreInput || !puestoInput || !emailInput || !estadoInput || !dniInput || !telefonoInput || !direccionInput || !rolInput) {
             Swal.showValidationMessage("Primero tenés que apretar ✏️ para editar.");
             return false;
           }
@@ -157,6 +162,7 @@ const ViewAdmin = () => {
           const dni = dniInput.value;
           const telefono = telefonoInput.value;
           const direccion = direccionInput.value;
+          const rol = rolInput.value;
     
           const cambiosRealizados = (
             empleado.name !== nombre ||
@@ -165,7 +171,8 @@ const ViewAdmin = () => {
             empleado.status !== estado ||
             empleado.dni !== dni ||
             empleado.phone !== telefono ||
-            empleado.address !== direccion
+            empleado.address !== direccion ||
+            empleado.role !== rol
           );
     
           if (!cambiosRealizados) {
@@ -181,7 +188,8 @@ const ViewAdmin = () => {
             status: estado,
             dni: dni,
             phone: telefono,
-            address: direccion
+            address: direccion,
+            role: rol
           };
         },
         didOpen: () => {
@@ -190,7 +198,7 @@ const ViewAdmin = () => {
           const editarBtn = document.getElementById("editarBtn");
           editarBtn.addEventListener("click", () => {
             if (!modoEdicion) {
-              // Convertir todos los campos a inputs
+              
               document.getElementById("nombreTexto").outerHTML = `<input id="nombreInput" class="swal2-input" value="${empleado.name}">`;
               document.getElementById("puestoTexto").outerHTML = `<input id="puestoInput" class="swal2-input" value="${empleado.position}">`;
               document.getElementById("emailTexto").outerHTML = `<input id="emailInput" class="swal2-input" value="${empleado.email}">`;
@@ -203,11 +211,19 @@ const ViewAdmin = () => {
               document.getElementById("dniTexto").outerHTML = `<input id="dniInput" class="swal2-input" value="${empleado.dni}">`;
               document.getElementById("telefonoTexto").outerHTML = `<input id="telefonoInput" class="swal2-input" value="${empleado.phone}">`;
               document.getElementById("direccionTexto").outerHTML = `<input id="direccionInput" class="swal2-input" value="${empleado.address}">`;
+              document.getElementById("estadoTexto").outerHTML = `
+                <select id="rolInput" class="swal2-input">
+                  <option value="empleado" ${empleado.rol === "empleado" ? "selected" : ""}>Empleado</option>
+                  <option value="reclutador" ${empleado.rol === "reclutador" ? "selected" : ""}>Reclutador</option>
+                  <option value="supervisor" ${empleado.rol === "supervisor" ? "selected" : ""}>Supervisor</option>
+                  <option value="administrador" ${empleado.rol === "administrador" ? "selected" : ""}>Administrador</option>
+                </select>
+                `;
     
               editarBtn.textContent = "💾 Guardar cambios";
               modoEdicion = true;
             } else {
-              Swal.clickConfirm(); // dispara preConfirm
+              Swal.clickConfirm();
             }
           });
         }
@@ -276,6 +292,15 @@ const ViewAdmin = () => {
                 <label>Dirección</label>
                 <input id="direccionInput" class="swal2-input" value="">
               </div>
+              <div class="campo">
+                <label>Rol</label>
+                <select id="rolInput" class="swal2-input">
+                  <option value="empleado">Empleado</option>
+                  <option value="reclutador">Reclutador</option>
+                  <option value="supervisor">Supervisor</option>
+                  <option value="administrador">Administrador</option>
+                </select>
+              </div>
             </div>
           </div>
         `,
@@ -289,13 +314,14 @@ const ViewAdmin = () => {
           const dni = document.getElementById("dniInput").value;
           const telefono = document.getElementById("telefonoInput").value;
           const direccion = document.getElementById("direccionInput").value;
+          const rol = document.getElementById("rolInput").value;
     
-          if (!nombre || !puesto || !email || !estado || !dni || !telefono || !direccion) {
+          if (!nombre || !puesto || !email || !estado || !dni || !telefono || !direccion || !rol) {
             Swal.showValidationMessage("Por favor, completa todos los campos.");
             return false;
           }
     
-          return { nombre, puesto, email, estado, dni, telefono, direccion };
+          return { nombre, puesto, email, estado, dni, telefono, direccion, rol };
         }
       }).then(result => {
         if (result.isConfirmed && result.value) {
@@ -307,6 +333,7 @@ const ViewAdmin = () => {
             dni: result.value.dni,
             phone: result.value.telefono,
             address: result.value.direccion,
+            role: result.value.rol,
             organization_id: adminUser?.organization_id
           };
           fetch(`${VITE_API_URL}/employees`, {
