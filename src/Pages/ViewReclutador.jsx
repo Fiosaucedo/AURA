@@ -9,11 +9,89 @@ const ViewReclutador = () => {
   const [puestoFiltro, setPuestoFiltro] = useState('');
   const [puestosUnicos, setPuestosUnicos] = useState([]);
   const [filtroApto, setFiltroApto] = useState('Todos');
-  const skillsList = ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Teamwork', 'Leadership', 'English'];
   const [adminUser, setAdminUser] = useState(null);
   const VITE_API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      Swal.fire({
+        title: 'Debes iniciar sesión',
+        text: 'Por favor iniciá sesión para acceder a esta sección.',
+        icon: 'error',
+        confirmButtonText: 'Ir al login'
+      }).then(() => {
+        window.location.href = '/login';
+      });
+      return;
+    }
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+
+        const rol = data.role;
+
+        if (!['recruiter', 'supervisor', 'admin'].includes(rol)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: 'No tenés permiso para acceder a esta sección.',
+          }).then(() => {
+            navigate("/login");
+          });
+        }
+
+        setAdminUser(data);
+      } catch (err) {
+        console.error(err);
+        navigate("/login");
+      }
+    };
+
+    fetchUser();
+
+    const fetchCandidatos = async () => {
+      try {
+        const response = await fetch(`${VITE_API_URL}/candidatos`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Error al cargar los candidatos');
+        const data = await response.json();
+        setCandidatos(data);
+        const puestos = [...new Set(data.map(c => c.job_title || 'Sin puesto'))];
+        setPuestosUnicos(puestos);
+      } catch (error) {
+        console.error('Error cargando candidatos:', error);
+      }
+    };
+
+    fetchCandidatos();
+  }, []);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then(result => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+    });
+  };
 
   const descargarCV = (candidato, { openInNewTab = false } = {}) => {
     if (!candidato.file_path) {
@@ -40,59 +118,8 @@ const ViewReclutador = () => {
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-
-
-    if (!token) {
-      Swal.fire({
-        title: 'Debes iniciar sesión',
-        text: 'Por favor iniciá sesión para acceder a esta sección.',
-        icon: 'error',
-        confirmButtonText: 'Ir al login'
-      }).then(() => {
-        window.location.href = '/login';
-      });
-      return;
-    }
-
-    const fetchAdminInfo = async () => {
-      try {
-        const response = await fetch(`${VITE_API_URL}/me`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!response.ok) throw new Error('Error al cargar el usuario');
-        const data = await response.json();
-        setAdminUser(data);
-      } catch (error) {
-        console.error("Error cargando admin:", error);
-      }
-    };
-
-    fetchAdminInfo();
-
-    const fetchCandidatos = async () => {
-      try {
-        const response = await fetch(`${VITE_API_URL}/candidatos`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!response.ok) throw new Error('Error al cargar los candidatos');
-        const data = await response.json();
-        setCandidatos(data);
-        const puestos = [...new Set(data.map(c => c.job_title || 'Sin puesto'))];
-        setPuestosUnicos(puestos);
-      } catch (error) {
-        console.error('Error cargando candidatos:', error);
-      }
-    };
-
-    fetchCandidatos();
-  }, []);
-
   const viewInfo = (index) => {
     const c = candidatos[index];
-    console.log(c);
     Swal.fire({
       title: `${c.name} ${c.surname}`,
       html: `
@@ -101,249 +128,28 @@ const ViewReclutador = () => {
         <p><strong>Nivel educativo:</strong> ${c.education_level}</p>
         <p><strong>Habilidades:</strong> ${c.keywords}</p>
         <p><strong>Teléfono:</strong> ${c.phone}</p>
-
-
       `,
       confirmButtonText: 'Cerrar'
     });
   };
 
-  const handleAddCandidateSearch = () => {
-    let selectedSkills = [];
+  const handleContactarse = (nombre, esApto) => {
+    const mensaje = esApto
+      ? `¿Querés contactarte con ${nombre}?`
+      : `¿Seguro que querés contactarte con ${nombre} si no es apto?`;
 
     Swal.fire({
-      title: 'Crea una nueva búsqueda',
-      html: `
-        <div class="popup-grid">
-          <div class="left-column">
-            <input id="job-title" class="swal2-input" placeholder="Título del puesto">
-            <input id="job-location" class="swal2-input" placeholder="Ubicación del trabajo">
-            <select id="job-type" class="swal2-input custom-select">
-              <option value="" disabled selected>Tipo de jornada</option>
-              <option value="Full time">Full time</option>
-              <option value="Part time">Part time</option>
-            </select>
-            <input id="job-salary" class="swal2-input" placeholder="Remuneración ofrecida">
-            <input id="job-experience" class="swal2-input" placeholder="Años de experiencia requeridos" type="number">
-            <select id="job-education" class="swal2-input custom-select">
-              <option value="" disabled selected>Nivel educativo requerido</option>
-              <option value="Secundario">Secundario</option>
-              <option value="Universitario">Universitario</option>
-              <option value="Terciario">Terciario</option>
-              <option value="Doctorado">Doctorado</option>
-            </select>
-          </div>
-          <div class="right-column">
-            <textarea id="job-description" class="swal2-textarea" placeholder="Descripción del puesto"></textarea>
-          </div>
-        </div>
- 
-        <div class="skcontainer"style="margin-top: 20px">
-  <label style="display:block; margin-bottom:5px;">Habilidades:</label>
-  <input id="skills-input" class="swal2-input" placeholder="Escribí una habilidad y presioná Enter">
-  <div id="selected-skills" class="selected-skills-container"></div>
-</div>
-      `,
-      width: '1000px',
-      background: '#fff',
-      customClass: {
-        title: 'custom-title',
-        confirmButton: 'custom-confirm-button',
-        cancelButton: 'custom-cancel-button',
-        popup: 'custom-popup'
-      },
-      showCancelButton: true,
-      confirmButtonText: 'Guardar',
-      cancelButtonText: 'Cancelar',
-      didOpen: () => {
-        const skillsInput = Swal.getPopup().querySelector('#skills-input');
-        const selectedSkillsContainer = Swal.getPopup().querySelector('#selected-skills');
-
-        skillsInput.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter' && skillsInput.value.trim() !== '') {
-            e.preventDefault();
-            const skill = skillsInput.value.trim();
-            if (!selectedSkills.includes(skill)) {
-              selectedSkills.push(skill);
-
-              const tag = document.createElement('span');
-              tag.className = 'selected-skill-tag fade-in';
-              tag.textContent = skill;
-
-              const removeBtn = document.createElement('span');
-              removeBtn.textContent = ' ✕';
-              removeBtn.style.cursor = 'pointer';
-              removeBtn.style.marginLeft = '5px';
-              removeBtn.onclick = () => {
-                selectedSkills = selectedSkills.filter(s => s !== skill);
-                tag.remove();
-              };
-
-              tag.appendChild(removeBtn);
-              selectedSkillsContainer.appendChild(tag);
-            }
-            skillsInput.value = '';
-          }
-        });
-        const noSkillsText = Swal.getPopup().querySelector('#no-skills');
-
-        const updateNoSkillsText = () => {
-          noSkillsText.style.display = selectedSkills.length === 0 ? 'block' : 'none';
-        };
-
-        skillsListContainer.addEventListener('click', (e) => {
-          if (e.target.classList.contains('skill-tag')) {
-            const skill = e.target.dataset.skill;
-            selectedSkills.push(skill);
-
-            const skillElem = document.createElement('span');
-            skillElem.textContent = skill;
-            skillElem.className = 'selected-skill-tag fade-in';
-            skillElem.dataset.skill = skill;
-            selectedSkillsContainer.appendChild(skillElem);
-
-            e.target.remove();
-            updateNoSkillsText();
-          }
-        });
-
-        selectedSkillsContainer.addEventListener('click', (e) => {
-          if (e.target.classList.contains('selected-skill-tag')) {
-            const skill = e.target.dataset.skill;
-            selectedSkills = selectedSkills.filter(s => s !== skill);
-
-            const skillTag = document.createElement('span');
-            skillTag.textContent = skill;
-            skillTag.className = 'skill-tag fade-in';
-            skillTag.dataset.skill = skill;
-            skillsListContainer.appendChild(skillTag);
-
-            e.target.remove();
-            updateNoSkillsText();
-          }
-        });
-      },
-      preConfirm: () => {
-        const jobTitle = document.getElementById('job-title').value;
-        const jobLocation = document.getElementById('job-location').value;
-        const jobType = document.getElementById('job-type').value;
-        const jobSalary = document.getElementById('job-salary').value;
-        const jobDescription = document.getElementById('job-description').value;
-        const experienceRequired = parseInt(document.getElementById('job-experience').value) || 0;
-        const educationLevel = document.getElementById('job-education').value;
-
-        if (!jobTitle || selectedSkills.length === 0) {
-          Swal.showValidationMessage('Por favor completá el título del puesto y seleccioná al menos una habilidad.');
-          return false;
-        }
-
-        return {
-          jobTitle,
-          jobLocation,
-          jobType,
-          jobSalary,
-          jobDescription,
-          experienceRequired,
-          educationLevel,
-          selectedSkills
-        };
-      }
-    }).then(async result => {
-      if (result.isConfirmed) {
-        const {
-          jobTitle, jobLocation, jobType, jobSalary,
-          jobDescription, experienceRequired, educationLevel, selectedSkills
-        } = result.value;
-
-        try {
-          const token = localStorage.getItem('token');
-
-          const response = await fetch(`${VITE_API_URL}/create-job`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              title: jobTitle,
-              description: jobDescription,
-              location: jobLocation,
-              job_type: jobType,
-              salary_offer: jobSalary,
-              required_experience_years: experienceRequired,
-              required_education_level: educationLevel,
-              tags: selectedSkills
-            })
-          });
-
-          const resData = await response.json();
-
-          if (response.ok) {
-            Swal.fire({
-              title: '¡Éxito!',
-              text: 'La búsqueda se creó con éxito.',
-              icon: 'success',
-              confirmButtonText: 'Aceptar'
-            });
-          } else {
-            throw new Error(resData.message || 'Error al crear la búsqueda');
-          }
-        } catch (error) {
-          console.error('Error al crear la búsqueda:', error);
-          Swal.fire({
-            title: 'Error',
-            text: 'Hubo un problema al crear la búsqueda. Intenta de nuevo.',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-          });
-        }
-      }
-    });
-  };
-
-
-  const handleLogout = () => {
-    Swal.fire({
-      title: '¿Cerrar sesión?',
+      title: '¿Enviar mail?',
+      text: mensaje,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí',
       cancelButtonText: 'No'
     }).then(result => {
       if (result.isConfirmed) {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
+        Swal.fire('¡Mail enviado!', `Te has contactado con ${nombre}.`, 'success');
       }
     });
-  };
-  const handleContactarse = (nombre, esApto) => {
-    if (esApto) {
-      Swal.fire({
-        title: `¿Enviar mail?`,
-        text: `¿Querés contactarte con ${nombre}?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No'
-      }).then(result => {
-        if (result.isConfirmed) {
-          Swal.fire('¡Mail enviado!', `Te has contactado con ${nombre}.`, 'success');
-        }
-      });
-    } else {
-      Swal.fire({
-        title: `El candidato no es apto`,
-        text: `¿Seguro que querés contactarlo igual?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'No'
-      }).then(result => {
-        if (result.isConfirmed) {
-          Swal.fire('¡Mail enviado!', `Te has contactado con ${nombre}.`, 'success');
-        }
-      });
-    }
   };
 
   return (
@@ -360,7 +166,7 @@ const ViewReclutador = () => {
             <span>{adminUser?.organization_name}</span>
             <span style={{ marginLeft: '10px' }}>{adminUser?.email}</span>
           </div>
-          <button className="logout-button" onClick={handleLogout} title="Cerrar sesión">
+          <button className="logout-button" onClick={handleLogout}>
             Cerrar Sesión
           </button>
         </nav>
@@ -374,16 +180,12 @@ const ViewReclutador = () => {
               <p>Aura te permite evaluar fácil y rápido cuáles son los mejores candidatos.</p>
             </div>
             <div className="hero-button">
-              <button onClick={handleAddCandidateSearch} className="btn-hero" style={{marginRight: '10px'}}>
-                Crear nueva búsqueda
-              </button>
               <button onClick={() => navigate('/reclutador-solicitudes-supervisor')} className="btn-hero">
                 Ver Solicitudes de Supervisor
               </button>
             </div>
           </div>
         </section>
-
 
         <div className="search-header">
           <h2>Postulaciones Recibidas</h2>
@@ -447,17 +249,13 @@ const ViewReclutador = () => {
               </thead>
               <tbody>
                 {candidatos
-                  .filter(c => !puestoFiltro || c.puesto === puestoFiltro)
+                  .filter(c => !puestoFiltro || c.job_title === puestoFiltro)
                   .map((c, i) => (
                     <tr key={i}>
                       <td>{c.name} {c.surname}</td>
                       <td>{c.email}</td>
-                      <td>
-                        <button onClick={() => viewInfo(i)}>Ver Info</button>
-                      </td>
-                      <td>
-                        <button onClick={() => descargarCV(c, { openInNewTab: true })}>Ver CV</button>
-                      </td>
+                      <td><button onClick={() => viewInfo(i)}>Ver Info</button></td>
+                      <td><button onClick={() => descargarCV(c, { openInNewTab: true })}>Ver CV</button></td>
                     </tr>
                   ))}
               </tbody>
@@ -478,7 +276,6 @@ const ViewReclutador = () => {
                   <th>Puesto al que se postuló</th>
                   <th>¿Es apto?</th>
                   <th>Contactarse</th>
-
                 </tr>
               </thead>
               <tbody>
@@ -498,21 +295,15 @@ const ViewReclutador = () => {
                       <td>{c.experience_years}</td>
                       <td>{c.education_level}</td>
                       <td>{Array.isArray(c.keywords) ? c.keywords.join(', ') : c.keywords}</td>
-
                       <td>{c.job_title}</td>
-                      <td className={c.is_apt ? 'apto' : 'no-apto'}>
-                        {c.is_apt ? 'Sí' : 'No'}
-                      </td>
-                      <td>
-                        <button onClick={() => handleContactarse(c.name, c.is_apt)}>✉️</button>
-                      </td>
+                      <td className={c.is_apt ? 'apto' : 'no-apto'}>{c.is_apt ? 'Sí' : 'No'}</td>
+                      <td><button onClick={() => handleContactarse(c.name, c.is_apt)}>✉️</button></td>
                     </tr>
                   ))}
               </tbody>
             </table>
           </section>
         )}
-
       </main>
     </div>
   );

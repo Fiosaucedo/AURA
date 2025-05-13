@@ -13,8 +13,6 @@ function Login() {
   const { handleLogin } = useContext(AuthContext);
   const VITE_API_URL = import.meta.env.VITE_API_URL;
 
-  console.log(VITE_API_URL)
-
   const {
     register,
     handleSubmit,
@@ -25,7 +23,7 @@ function Login() {
   const onSubmitLogin = async (data) => {
     setLoading(true);
     setAlertMessage("");
-  
+
     try {
       const response = await fetch(`${VITE_API_URL}/login-admin`, {
         method: "POST",
@@ -37,20 +35,51 @@ function Login() {
           password: data.password,
         }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
         localStorage.setItem("token", result.token);
-  
+
 
         if (handleLogin) {
           handleLogin(result.token);
         }
-  
-        setTimeout(() => {
-          navigate("/vista-reclutador");
-        }, 1000);
+
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+            headers: {
+              Authorization: `Bearer ${result.token}`
+            }
+          });
+
+          const data = await res.json();
+          console.log(data);
+          if (data.role === 'supervisor' || data.role === 'admin') {
+            setTimeout(() => {
+              navigate("/vista-supervisor");
+            }, 1000);
+          }
+          else if (data.role === 'receptionist'){
+            setTimeout(() => {
+              navigate("/vista-recepcionista");
+            }, 1000);
+          }
+          else if (data.role === 'recruiter') {
+            setTimeout(() => {
+              navigate("/vista-reclutador");
+            }, 1000);
+          }
+          else {
+             setTimeout(() => {
+              navigate("/");
+            }, 1000);
+          }
+
+        } catch (err) {
+          console.error(err);
+        }
+
       } else {
         setAlertMessage(result.message || "Error al iniciar sesión");
         setAlertType("error");

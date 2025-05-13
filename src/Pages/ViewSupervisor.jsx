@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import './ViewSupervisor.css';
+import { useNavigate } from 'react-router-dom';
 
 function ViewSupervisor() {
+  const navigate = useNavigate();
+
+  const [hasAccess, setHasAccess] = useState(false); // Protección
+  const [puestos, setPuestos] = useState([])
   const [solapaActiva, setSolapaActiva] = useState('home');
   const [formulario, setFormulario] = useState({
     puesto: '',
@@ -10,33 +15,69 @@ function ViewSupervisor() {
     jornada: '',
     remuneracion: '',
     experiencia: '',
-    habilidades: '',
+    educacion: '',
+    habilidades: ''
   });
 
-  const [postulacionesReclutador] = useState([
-    {
-      id: 1,
-      puesto: 'Frontend Developer',
-      descripcion: 'Desarrollo de interfaces con React.',
-      ubicacion: 'Remoto',
-      jornada: 'Full-time',
-      remuneracion: '120000',
-      experiencia: '2',
-      educacion: 'Secundario',
-      habilidades: 'React, CSS, Git',
-    },
-    {
-      id: 2,
-      puesto: 'QA Tester',
-      descripcion: 'Pruebas funcionales y de regresión.',
-      ubicacion: 'Buenos Aires',
-      jornada: 'Part-time',
-      remuneracion: '80000',
-      experiencia: '1',
-      educacion: 'Universitario',
-      habilidades: 'Jest, Cypress, buena comunicación',
-    },
-  ]);
+  const [postulacionesReclutador, setPostulaciones] = useState([]);
+
+  useEffect(() => {
+    const validateUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (data.role !== 'supervisor') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: 'No tenés permiso para acceder a esta sección.',
+          }).then(() => navigate("/login"));
+        } else {
+          setHasAccess(true);
+        }
+      } catch (err) {
+        console.error(err);
+        navigate("/login");
+      }
+    };
+
+    validateUser();
+  }, []);
+
+  useEffect(() => {
+    if (solapaActiva !== 'postulaciones') return;
+
+    fetch(`${import.meta.env.VITE_API_URL}/job-posts/by-status/in_review`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(res => res.json())
+      .then(data => setPostulaciones(data))
+      .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar las postulaciones.' }));
+  }, [solapaActiva]);
+
+  useEffect(() => {
+    if (solapaActiva !== 'puestos') return;
+
+    fetch(`${import.meta.env.VITE_API_URL}/job-posts/by-status/approved`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(res => res.json())
+      .then(data => setPuestos(data))
+      .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los puestos.' }));
+  }, [solapaActiva]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,33 +85,58 @@ function ViewSupervisor() {
     setFormulario({ ...formulario, [name]: value });
   };
 
+  const handleJobActivation = async (id) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Cambiar estado del puesto?',
+      text: 'Esto activará o desactivará el puesto según su estado actual.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, continuar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/job-posts/handle-activation/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) throw new Error("Error al cambiar el estado del puesto");
+
+      Swal.fire({
+        icon: 'success',
+        title: '¡Estado actualizado!',
+        text: 'El puesto fue activado o desactivado correctamente.'
+      });
+
+      setSolapaActiva('');
+      setTimeout(() => setSolapaActiva('puestos'), 50);
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo actualizar el estado del puesto.'
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { puesto, ubicacion, jornada, remuneracion, experiencia, habilidades } = formulario;
+    const { puesto, ubicacion, jornada, remuneracion, experiencia, educacion, habilidades } = formulario;
 
-    if (!puesto || !ubicacion || !jornada || !habilidades) {
-      Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Por favor completá todos los campos obligatorios.' });
-      return;
-    }
-
-    if (experiencia && isNaN(experiencia)) {
-      Swal.fire({ icon: 'error', title: 'Error en experiencia', text: 'El campo "experiencia" debe ser un número válido.' });
-      return;
-    }
-
-    if (Number(experiencia) < 0) {
-      Swal.fire({ icon: 'error', title: 'Valor inválido', text: 'La experiencia no puede ser negativa.' });
-      return;
-    }
-
-    if (remuneracion && !/^\d+(\.\d{1,2})?$/.test(remuneracion)) {
-      Swal.fire({ icon: 'error', title: 'Remuneración inválida', text: 'Ingresá una remuneración válida o dejalo vacío.' });
+    if (!puesto || !ubicacion || !jornada) {
+      Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Completá título, ubicación y jornada.' });
       return;
     }
 
     const confirmacion = await Swal.fire({
       title: '¿Enviar solicitud?',
-      text: '¿Estás seguro de que querés enviar esta solicitud al reclutador?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, enviar',
@@ -79,72 +145,84 @@ function ViewSupervisor() {
 
     if (!confirmacion.isConfirmed) return;
 
-    Swal.fire({ icon: 'success', title: '¡Solicitud enviada!', text: 'Tu solicitud fue enviada con éxito.' });
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/request-job`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          title: puesto,
+          location: ubicacion,
+          job_type: jornada,
+          salary_offer: remuneracion,
+          required_experience_years: experiencia,
+          required_education_level: educacion,
+          skills_required: habilidades
+        })
+      });
 
-    setFormulario({
-      puesto: '', ubicacion: '', jornada: '',
-      remuneracion: '', experiencia: '', habilidades: ''
-    });
+      if (!response.ok) throw new Error('Error en el servidor');
 
-    setSolapaActiva('home');
+      Swal.fire({ icon: 'success', title: '¡Solicitud enviada!' });
+      setFormulario({ puesto: '', ubicacion: '', jornada: '', remuneracion: '', experiencia: '', habilidades: '' });
+      setSolapaActiva('home');
+    } catch (error) {
+      Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+    }
   };
 
   const aprobarPostulacion = async (id) => {
-    const confirmacion = await Swal.fire({
+    const confirm = await Swal.fire({
       title: '¿Aprobar esta postulación?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Sí, aprobar',
       cancelButtonText: 'Cancelar',
     });
-    if (confirmacion.isConfirmed) {
-      Swal.fire({ icon: 'success', title: 'Postulación aprobada', text: `La postulación con ID ${id} fue aprobada.` });
-    }
+    if (!confirm.isConfirmed) return;
+
+    await fetch(`${import.meta.env.VITE_API_URL}/approve-job/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ comment: 'Aprobado por el supervisor.' })
+    });
+
+    Swal.fire({ icon: 'success', title: 'Postulación aprobada' });
+    setPostulaciones(prev => prev.filter(p => p.id !== id));
   };
 
   const solicitarCambios = async (id) => {
-    const { value: comentario, isConfirmed } = await Swal.fire({
+    const { value: comment, isConfirmed } = await Swal.fire({
       title: 'Solicitar cambios',
       input: 'textarea',
-      inputLabel: 'Escribí los cambios que querés solicitar al reclutador',
-      inputPlaceholder: 'Ingresá tu comentario...',
-      inputAttributes: {
-        'aria-label': 'Comentario para solicitar cambios'
+      inputLabel: 'Escribí el comentario para el reclutador',
+      showCancelButton: true
+    });
+
+    if (!isConfirmed || !comment?.trim()) {
+      Swal.fire({ icon: 'error', title: 'Comentario inválido', text: 'Debe ingresar un comentario' });
+      return;
+    }
+
+    await fetch(`${import.meta.env.VITE_API_URL}/request-corrections/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       },
-      showCancelButton: true,
-      confirmButtonText: 'Continuar',
-      cancelButtonText: 'Cancelar',
+      body: JSON.stringify({ comment })
     });
 
-    if (!isConfirmed) return;
-
-    if (!comentario || comentario.trim() === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Comentario vacío',
-        text: 'Por favor, ingresa un comentario antes de continuar.',
-      });
-      return; 
-    }
-
-    const confirmacion = await Swal.fire({
-      title: '¿Confirmar solicitud de cambios?',
-      text: `Comentario a enviar:\n\n"${comentario}"\n\n¿Estás seguro de enviarlo?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, enviar',
-      cancelButtonText: 'Cancelar',
-    });
-
-    if (confirmacion.isConfirmed) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Cambios solicitados',
-        text: `Se solicitaron cambios para la postulación con ID ${id}.`,
-      });
-    
-    }
+    Swal.fire({ icon: 'success', title: 'Cambios solicitados' });
+    setPostulaciones(prev => prev.filter(p => p.id !== id));
   };
+
+  if (!hasAccess) return null; // ⛔ Evita renderizado antes de validación
 
   return (
     <div className="supervisor-container">
@@ -156,6 +234,8 @@ function ViewSupervisor() {
       <div className="supervisor-tabs">
         <button onClick={() => setSolapaActiva('home')}>🏠 Inicio</button>
         <button onClick={() => setSolapaActiva('postulaciones')}>📄 Postulaciones del reclutador</button>
+        <button onClick={() => setSolapaActiva('puestos')}>🚀 Postulaciones abiertas</button>
+
       </div>
 
       {solapaActiva === 'home' && (
@@ -170,6 +250,37 @@ function ViewSupervisor() {
         </div>
       )}
 
+      {solapaActiva === 'puestos' && (
+        <section className="puestos-section">
+          <table className="tabla-puestos" border="1">
+            <thead>
+              <tr>
+                <th>Titulo del puesto</th>
+                <th>Descripción</th>
+                <th>Fecha de creación</th>
+                <th>Cantidad de postulantes</th>
+                <th>Cantidad de aptos</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            {puestos
+              .map((p, i) => (
+                <tr key={i}>
+                  <td>{p.title}</td>
+                  <td>{p.description}</td>
+                  <td>{p.created_at}</td>
+                  <td>{p.candidates}</td>
+                  <td>{p.apt_candidates}</td>
+                  <td className={p.is_active ? 'active' : 'hide'}>{p.is_active ? 'En curso' : 'Deshabilitada'}</td>
+                  <td><button onClick={() => handleJobActivation(p.id)}>{p.is_active ? 'Deshabilitar' : 'Activar'}</button></td>
+                </tr>
+              ))}
+          </table>
+        </section>
+      )}
+
+
       {solapaActiva === 'formulario' && (
         <div className="supervisor-formulario">
           <h2 className="form-title">Formulario de solicitud</h2>
@@ -180,11 +291,15 @@ function ViewSupervisor() {
               <option value="">Tipo de jornada</option>
               <option value="Full-time">Full-time</option>
               <option value="Part-time">Part-time</option>
-              <option value="Remoto">Remoto</option>
-              <option value="Híbrido">Híbrido</option>
             </select>
             <input type="text" name="remuneracion" placeholder="Remuneración ofrecida (opcional)" value={formulario.remuneracion} onChange={handleChange} />
             <input type="number" name="experiencia" placeholder="Años de experiencia requeridos" value={formulario.experiencia} onChange={handleChange} min="0" />
+            <select name="educacion" value={formulario.educacion} onChange={handleChange} required>
+              <option value="">Nivel de estudios</option>
+              <option value="secundario">Secundario</option>
+              <option value="terciario">Terciario</option>
+              <option value="universitario">Universitario</option>
+            </select>
             <textarea name="habilidades" placeholder="Habilidades requeridas" value={formulario.habilidades} onChange={handleChange} required />
             <div className="botones-form">
               <button type="submit">Enviar solicitud</button>
@@ -199,15 +314,12 @@ function ViewSupervisor() {
           <h2 className="supervisor-title">Postulaciones del reclutador</h2>
           {postulacionesReclutador.map((post) => (
             <div key={post.id} className="supervisor-card">
-              <h3>{post.puesto}</h3>
-              <p><strong>Descripción:</strong> {post.descripcion}</p>
-              <p><strong>Ubicación:</strong> {post.ubicacion || 'No especificada'}</p>
-              <p><strong>Tipo de jornada:</strong> {post.jornada || 'No especificada'}</p>
-              <p><strong>Remuneración ofrecida:</strong> {post.remuneracion || 'No especificada'}</p>
-              <p><strong>Años de experiencia requeridos:</strong> {post.experiencia || 'No especificado'}</p>
-              <p><strong>Nivel educativo requerido:</strong> {post.educacion || 'No especificado'}</p>
-              <p><strong>Habilidades:</strong> {post.habilidades || 'No especificadas'}</p>
-
+              <h3>{post.title}</h3>
+              <p><strong>Ubicación:</strong> {post.location || 'No especificada'}</p>
+              <p><strong>Tipo de jornada:</strong> {post.job_type || 'No especificada'}</p>
+              <p><strong>Remuneración ofrecida:</strong> {post.salary_offer || 'No especificada'}</p>
+              <p><strong>Años de experiencia requeridos:</strong> {post.required_experience_years || 'No especificado'}</p>
+              <p><strong>Nivel educativo requerido:</strong> {post.required_education_level || 'No especificado'}</p>
               <div className="botones-form">
                 <button onClick={() => aprobarPostulacion(post.id)}>Aprobar</button>
                 <button onClick={() => solicitarCambios(post.id)} className="volver">Solicitar cambios</button>

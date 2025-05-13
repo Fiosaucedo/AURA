@@ -13,7 +13,7 @@ function Home() {
   const VITE_API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch(`${VITE_API_URL}/job-posts`)
+    fetch(`${VITE_API_URL}/active-job-posts`)
       .then(response => response.json())
       .then(data => {
         console.log('Jobs cargados:', data);
@@ -23,6 +23,7 @@ function Home() {
   }, []);
 
   const handleCardClick = (puesto) => {
+    console.log(puesto)
     Swal.fire({
       title: puesto.title,
       html: `<div style="white-space: pre-line; line-height: 1.6;">${puesto.description}</div>`,
@@ -84,8 +85,8 @@ function Home() {
         {filteredPuestos.map((item, index) => (
           <div key={index} className="job-card" onClick={() => handleCardClick(item)}>
             <div className="job-logo">
-              {item.organization.logo_url ? (
-                <img src={`${VITE_API_URL}${item.organization.logo_url}`} alt="Logo Empresa" width="50" height="50" />
+              {item.organization.logo_path ? (
+                <img src={`${VITE_API_URL}${item.organization.logo_path}`} alt="Logo Empresa" width="50" height="50" />
               ) : (
                 '[Logo]'
               )}

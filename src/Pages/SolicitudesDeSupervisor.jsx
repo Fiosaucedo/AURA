@@ -1,94 +1,174 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './SolicitudesDeSupervisor.css';
 import { FaCheckCircle, FaEdit, FaClock } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
-const solicitudesSupervisor = [
-  {
-    id: 1,
-    puesto: 'Desarrollador Full Stack',
-    ubicacion: 'Buenos Aires',
-    jornada: 'Completa',
-    remuneracion: '$400.000',
-    experiencia: '2 años en desarrollo web',
-    educacion: 'Título en Ingeniería en Sistemas',
-    habilidades: 'React, Node.js, MongoDB',
-    estado: 'aprobado',
-  },
-  {
-    id: 2,
-    puesto: 'QA Tester',
-    ubicacion: 'Remoto',
-    jornada: 'Part-Time',
-    remuneracion: '$250.000',
-    experiencia: '1 año en testing',
-    educacion: 'Analista en Sistemas',
-    habilidades: 'Selenium, JIRA',
-    estado: 'modificaciones',
-  },
-];
-
-const propuestasReclutador = [
-  {
-    id: 101,
-    puesto: 'Analista de Datos',
-    ubicacion: 'Córdoba',
-    jornada: 'Completa',
-    remuneracion: '$380.000',
-    experiencia: '3 años en BI',
-    educacion: 'Licenciatura en Sistemas',
-    habilidades: 'Power BI, SQL',
-    estado: 'pendiente', // Pendiente de revisión del supervisor
-  },
-];
+import Swal from 'sweetalert2';
 
 const SolicitudesDeSupervisor = () => {
   const navigate = useNavigate();
+  const [jobs, setJobs] = useState([]);
 
-  const irAVistaReclutador = () => {
-    navigate('/vista-reclutador');
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const statuses = ['requested', 'in_review', 'corrections_requested'];
+        let allJobs = [];
+
+        for (const status of statuses) {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/job-posts/by-status/${status}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+
+          if (!response.ok) continue;
+
+          const data = await response.json();
+          const withStatus = data.map(job => ({
+            ...job,
+            estado: status,
+            comentarios: job.status?.comment || null
+          }));
+
+          allJobs = allJobs.concat(withStatus);
+        }
+
+        setJobs(allJobs);
+      } catch (error) {
+        console.error("Error loading jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  const showFormularioCompletar = (data) => {
+    let selectedSkills = [];
+
+    Swal.fire({
+      title: 'Completar puesto solicitado',
+      html: `
+        <input id="job-title" class="swal2-input" placeholder="Título del puesto" value="${data.title || ''}" readonly>
+        <input id="job-location" class="swal2-input" placeholder="Ubicación" value="${data.location || ''}" readonly>
+        <input id="job-type" class="swal2-input" placeholder="Tipo de jornada" value="${data.job_type || ''}" readonly>
+        <input id="job-salary" class="swal2-input" placeholder="Remuneración ofrecida" value="${data.salary_offer}">
+        <input id="job-experience" class="swal2-input" placeholder="Años de experiencia" value="${data.required_experience_years}" type="number">
+        <input id="job-education" class="swal2-input" placeholder="Nivel educativo" value="${data.required_education_level}">
+        <input id="skills-input" class="swal2-input" placeholder="Habilidad y enter">
+        <div id="selected-skills" style="margin-top: 10px;"></div>
+        <textarea id="job-description" class="swal2-textarea" placeholder="Descripción del puesto"></textarea>
+      `,
+      width: '1000px',
+      showCancelButton: true,
+      confirmButtonText: 'Enviar',
+      didOpen: () => {
+        const skillsInput = Swal.getPopup().querySelector('#skills-input');
+        const skillsContainer = Swal.getPopup().querySelector('#selected-skills');
+
+        skillsInput.addEventListener('keydown', e => {
+          if (e.key === 'Enter' && skillsInput.value.trim()) {
+            e.preventDefault();
+            const skill = skillsInput.value.trim();
+            selectedSkills.push(skill);
+
+            const span = document.createElement('span');
+            span.textContent = skill;
+            span.className = 'selected-skill-tag';
+            skillsContainer.appendChild(span);
+            skillsInput.value = '';
+          }
+        });
+      },
+      preConfirm: () => {
+        const description = document.getElementById('job-description').value;
+        const salary = document.getElementById('job-salary').value;
+        const experience = document.getElementById('job-experience').value;
+        const education = document.getElementById('job-education').value;
+
+        if (!description || selectedSkills.length === 0) {
+          Swal.showValidationMessage('Faltan campos obligatorios');
+          return false;
+        }
+
+        return {
+          description,
+          salary_offer: salary,
+          required_experience_years: parseInt(experience),
+          required_education_level: education,
+          tags: selectedSkills
+        };
+      }
+    }).then(async result => {
+      if (!result.isConfirmed) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/complete-job/${data.id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ ...result.value, comment: 'Completado por reclutador' })
+        });
+
+        if (!res.ok) throw new Error('Error al completar el puesto');
+
+        Swal.fire('Listo', 'Puesto completado y enviado al supervisor', 'success');
+      } catch (err) {
+        Swal.fire('Error', err.message, 'error');
+      }
+    });
   };
 
-  const renderTarjeta = (solicitud, origen) => (
-    <div key={`${origen}-${solicitud.id}`} className="tarjeta-solicitud">
-      <h3>{solicitud.puesto}</h3>
-      <p><strong>ID:</strong> {solicitud.id}</p>
-      <p><strong>Ubicación:</strong> {solicitud.ubicacion}</p>
-      <p><strong>Jornada:</strong> {solicitud.jornada}</p>
-      <p><strong>Remuneración:</strong> {solicitud.remuneracion}</p>
-      <p><strong>Experiencia requerida:</strong> {solicitud.experiencia}</p>
-      <p><strong>Educación requerida:</strong> {solicitud.educacion}</p>
-      <p><strong>Habilidades:</strong> {solicitud.habilidades}</p>
+  const renderIcon = (estado) => {
+    switch (estado) {
+      case 'approved': return <FaCheckCircle />;
+      case 'corrections_requested': return <FaEdit />;
+      default: return <FaClock />;
+    }
+  };
 
-      <div className={`estado ${solicitud.estado}`}>
-        <span className="icono-estado">
-          {solicitud.estado === 'aprobado' ? <FaCheckCircle /> :
-           solicitud.estado === 'modificaciones' ? <FaEdit /> :
-           <FaClock />}
-        </span>
-        {solicitud.estado === 'aprobado'
-          ? 'Aprobado'
-          : solicitud.estado === 'modificaciones'
-          ? 'Modificaciones solicitadas'
-          : 'Pendiente de revisión'}
-      </div>
-
-      {solicitud.comentarios && (
-        <div className="comentarios">
-          <strong>Comentarios del supervisor:</strong> {solicitud.comentarios}
-        </div>
-      )}
-    </div>
-  );
+  const renderLabel = (estado) => {
+    switch (estado) {
+      case 'approved': return 'Aprobado';
+      case 'corrections_requested': return 'Modificaciones solicitadas';
+      case 'requested': return 'Solicitado por supervisor';
+      case 'in_review': return 'Pendiente de revisión';
+      default: return estado;
+    }
+  };
 
   return (
     <div className="solicitudes-container">
-      <div className="aura-label" onClick={irAVistaReclutador}>✨Aura✨</div>
+      <div className="aura-label" onClick={() => navigate('/vista-reclutador')}>✨Aura✨</div>
       <h2 className="titulo-seccion">Solicitudes del Supervisor</h2>
-
       <div className="solicitudes-lista">
-        {solicitudesSupervisor.map((s) => renderTarjeta(s, 'supervisor'))}
-        {propuestasReclutador.map((s) => renderTarjeta(s, 'reclutador'))}
+        {jobs.map((solicitud) => (
+          <div key={solicitud.id} className="tarjeta-solicitud">
+            <h3>{solicitud.title}</h3>
+            <p><strong>Ubicación:</strong> {solicitud.location}</p>
+            <p><strong>Jornada:</strong> {solicitud.job_type}</p>
+            <p><strong>Remuneración:</strong> {solicitud.salary_offer || '-'}</p>
+            <p><strong>Experiencia requerida:</strong> {solicitud.required_experience_years || '-'}</p>
+            <p><strong>Educación requerida:</strong> {solicitud.required_education_level || '-'}</p>
+            <p><strong>Habilidades:</strong> {solicitud.skills_required || '-'}</p>
+            <div className={`estado ${solicitud.estado}`}>
+              <span className="icono-estado">{renderIcon(solicitud.estado)}</span>
+              {renderLabel(solicitud.estado)}
+            </div>
+            {solicitud.comentarios && (
+              <div className="comentarios">
+                <strong>Comentarios del supervisor:</strong> {solicitud.comentarios}
+              </div>
+            )}
+            {(solicitud.estado === 'requested' || solicitud.estado === 'corrections_requested') && (
+              <button onClick={() => showFormularioCompletar(solicitud)} className="btn-completar">
+                Completar puesto
+              </button>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
