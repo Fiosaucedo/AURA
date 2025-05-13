@@ -9,6 +9,54 @@ const SolicitudesDeSupervisor = () => {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      Swal.fire({
+        title: 'Debes iniciar sesión',
+        text: 'Por favor iniciá sesión para acceder a esta sección.',
+        icon: 'error',
+        confirmButtonText: 'Ir al login'
+      }).then(() => {
+        window.location.href = '/login';
+      });
+      return;
+    }
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = await res.json();
+
+        const rol = data.role;
+
+        if (!['supervisor', 'admin'].includes(rol)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: 'No tenés permiso para acceder a esta sección.',
+          }).then(() => {
+            navigate("/login");
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Acceso denegado',
+          text: 'No tenés permiso para acceder a esta sección.',
+          confirmButtonText: 'Ir al login'
+        }).then(() => {
+          navigate("/login");
+        });
+      }
+    }
+
     const fetchJobs = async () => {
       try {
         const statuses = ['requested', 'in_review', 'corrections_requested'];
@@ -39,6 +87,7 @@ const SolicitudesDeSupervisor = () => {
       }
     };
 
+    fetchUser();
     fetchJobs();
   }, []);
 

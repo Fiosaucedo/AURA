@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './ViewAdmin.css';
 import Swal from "sweetalert2";
-import { LayoutGrid, LayoutList, UserPlus } from 'lucide-react';
+import { LayoutGrid, LayoutList, UserPlus, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 
 const ViewAdmin = () => {
@@ -13,6 +14,7 @@ const ViewAdmin = () => {
   });
   const [vista, setVista] = useState('grilla');
   const [adminUser, setAdminUser] = useState(null);
+  const navigate = useNavigate();
   const VITE_API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -30,10 +32,40 @@ const ViewAdmin = () => {
       return;
     }
 
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+
+        const rol = data.role;
+
+        if (!['admin'].includes(rol)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: 'No tenés permiso para acceder a esta sección.',
+          }).then(() => {
+            navigate("/login");
+          });
+        }
+
+        setAdminUser(data);
+      } catch (err) {
+        console.error(err);
+        navigate("/login");
+      }
+    };
+
     const fetchAdminUser = async () => {
       try {
         const res = await fetch(`${VITE_API_URL}/me`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         const data = await res.json();
         setAdminUser(data);
@@ -45,18 +77,17 @@ const ViewAdmin = () => {
     const fetchEmpleados = async () => {
       try {
         const res = await fetch(`${VITE_API_URL}/employees`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         const data = await res.json();
-        console.log(data)
         setEmpleados(data);
-        console.log(empleados)
       } catch (err) {
         console.error("Error al obtener empleados:", err);
       }
     };
 
     fetchAdminUser();
+    fetchUser();
     fetchEmpleados();
   }, []);
   const puestosUnicos = [...new Set(empleados.map(e => e.position))];
@@ -232,7 +263,10 @@ const ViewAdmin = () => {
       if (result.isConfirmed && result.value) {
         fetch(`${VITE_API_URL}/employees/${result.value.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Authorization": `Bearer ${localStorage.getItem('token')}`,
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify(result.value)
         })
           .then(res => res.json())
@@ -296,10 +330,11 @@ const ViewAdmin = () => {
               <div class="campo">
                 <label>Rol</label>
                 <select id="rolInput" class="swal2-input">
-                  <option value="empleado">Empleado</option>
-                  <option value="reclutador">Reclutador</option>
+                  <option value="employee">Empleado</option>
+                  <option value="receptionist">Recepcionista</option>
+                  <option value="recruiter">Reclutador</option>
                   <option value="supervisor">Supervisor</option>
-                  <option value="administrador">Administrador</option>
+                  <option value="admin">Administrador</option>
                 </select>
               </div>
             </div>
@@ -339,7 +374,10 @@ const ViewAdmin = () => {
         };
         fetch(`${VITE_API_URL}/employees`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('token')}`,
+          },
           body: JSON.stringify(nuevoEmpleado)
         })
           .then(res => res.json())

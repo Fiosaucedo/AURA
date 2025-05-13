@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { FaCamera, FaVideo } from 'react-icons/fa';
 import Webcam from 'react-webcam';
 import './ViewRecepcionista.css';
+import { useNavigate } from 'react-router-dom';
 
 const ViewRecepcionista = () => {
   const webcamRef = useRef(null);
@@ -10,6 +11,54 @@ const ViewRecepcionista = () => {
   const [scanResult, setScanResult] = useState(null);
   const [scanTime, setScanTime] = useState(null);
   const [scanning, setScanning] = useState(false);
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      Swal.fire({
+        title: 'Debes iniciar sesión',
+        text: 'Por favor iniciá sesión para acceder a esta sección.',
+        icon: 'error',
+        confirmButtonText: 'Ir al login'
+      }).then(() => {
+        window.location.href = '/login';
+      });
+      return;
+    }
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        const rol = data.role;
+
+        if (!['admin', 'receptionist'].includes(rol)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: 'No tenés permiso para acceder a esta sección.',
+            confirmButtonText: 'Ir al login'
+          }).then(() => {
+            navigate("/login");
+          });
+        }
+
+      } catch (err) {
+        console.error(err);
+        navigate("/login");
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleActivateCamera = () => {
     setShowCamera(true);
