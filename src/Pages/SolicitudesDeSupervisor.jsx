@@ -35,7 +35,7 @@ const SolicitudesDeSupervisor = () => {
 
         const rol = data.role;
 
-        if (!['supervisor', 'admin'].includes(rol)) {
+        if (!['recruiter', 'admin'].includes(rol)) {
           Swal.fire({
             icon: 'error',
             title: 'Acceso denegado',
