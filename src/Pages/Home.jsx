@@ -48,12 +48,13 @@ function Home() {
 
   const filteredPuestos = puestos.filter((p) => {
     return (
-      (selectedEmpresa === '' || p.empresa === selectedEmpresa) &&
-      (selectedPuesto === '' || p.puesto === selectedPuesto)
+      (selectedEmpresa === '' || p.organization.name === selectedEmpresa) &&
+      (selectedPuesto === '' || p.title === selectedPuesto)
     );
   });
 
-  const puestosUnicos = [...new Set(puestos.map((item) => item.puesto))];
+  const puestosUnicos = [...new Set(puestos.map((item) => item.title))];
+
 
   return (
     <div className="home-container">
@@ -66,11 +67,12 @@ function Home() {
         <h2>¡Encontrá el trabajo de tus sueños!</h2>
 
         <div className="filters">
-          <select value={selectedEmpresa} onChange={(e) => setSelectedEmpresa(e.target.value)}>
-            <option value="">Filtrar por empresa</option>
-            <option value="Accenture">Accenture</option>
-            <option value="Globant">Globant</option>
-          </select>
+        <select value={selectedEmpresa} onChange={(e) => setSelectedEmpresa(e.target.value)}>
+          <option value="">Filtrar por empresa</option>
+          {[...new Set(puestos.map(p => p.organization.name))].map((empresa, index) => (
+            <option key={index} value={empresa}>{empresa}</option>
+          ))}
+        </select>
 
           <select value={selectedPuesto} onChange={(e) => setSelectedPuesto(e.target.value)}>
             <option value="">Filtrar por puesto</option>
