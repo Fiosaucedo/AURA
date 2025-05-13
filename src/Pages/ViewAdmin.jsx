@@ -9,6 +9,7 @@ const ViewAdmin = () => {
   const [empleados, setEmpleados] = useState([]);
   const [filtros, setFiltros] = useState({
     nombre: '',
+    rol: '',
     puesto: '',
     estado: ''
   });
@@ -90,13 +91,15 @@ const ViewAdmin = () => {
     fetchUser();
     fetchEmpleados();
   }, []);
+  const rolesUnicos = [...new Set(empleados.map(e => e.role))];
   const puestosUnicos = [...new Set(empleados.map(e => e.position))];
 
   const empleadosFiltrados = empleados.filter(e => {
     const matchNombre = e.name.toLowerCase().includes(filtros.nombre.toLowerCase());
+    const matchRol = filtros.rol ? e.role === filtros.rol : true;
     const matchPuesto = filtros.puesto ? e.position === filtros.puesto : true;
     const matchEstado = filtros.estado ? e.status === filtros.estado : true;
-    return matchNombre && matchPuesto && matchEstado;
+    return matchNombre && matchPuesto && matchRol && matchEstado;
   });
 
   const handleFiltroChange = e => {
@@ -135,6 +138,10 @@ const ViewAdmin = () => {
                 <p id="nombreTexto">${empleado.name}</p>
               </div>
               <div class="campo">
+                <label>Rol</label>
+                <p id="rolTexto">${empleado.role}</p>
+              </div>
+              <div class="campo">
                 <label>Puesto</label>
                 <p id="puestoTexto">${empleado.position}</p>
               </div>
@@ -160,10 +167,6 @@ const ViewAdmin = () => {
                 <label>Dirección</label>
                 <p id="direccionTexto">${empleado.address}</p>
               </div>
-              <div class="campo">
-                <label>Rol</label>
-                <p id="rolTexto">${empleado.role}</p>
-              </div>
                </div>
   </div>
   <div style="text-align: center; margin-top: 15px;">
@@ -181,12 +184,12 @@ const ViewAdmin = () => {
         const telefonoInput = document.getElementById("telefonoInput");
         const direccionInput = document.getElementById("direccionInput");
         const rolInput = document.getElementById("rolInput");
-
+      
         if (!nombreInput || !puestoInput || !emailInput || !estadoInput || !dniInput || !telefonoInput || !direccionInput || !rolInput) {
           Swal.showValidationMessage("Primero tenés que apretar ✏️ para editar.");
           return false;
         }
-
+      
         const nombre = nombreInput.value;
         const puesto = puestoInput.value;
         const email = emailInput.value;
@@ -195,7 +198,7 @@ const ViewAdmin = () => {
         const telefono = telefonoInput.value;
         const direccion = direccionInput.value;
         const rol = rolInput.value;
-
+      
         const cambiosRealizados = (
           empleado.name !== nombre ||
           empleado.position !== puesto ||
@@ -206,12 +209,12 @@ const ViewAdmin = () => {
           empleado.address !== direccion ||
           empleado.role !== rol
         );
-
+      
         if (!cambiosRealizados) {
           Swal.showValidationMessage("No se hicieron cambios.");
           return false;
         }
-
+      
         return {
           ...empleado,
           name: nombre,
@@ -226,39 +229,39 @@ const ViewAdmin = () => {
       },
       didOpen: () => {
         let modoEdicion = false;
-
+      
         const editarBtn = document.getElementById("editarBtn");
         editarBtn.addEventListener("click", () => {
           if (!modoEdicion) {
-
             document.getElementById("nombreTexto").outerHTML = `<input id="nombreInput" class="swal2-input" value="${empleado.name}">`;
             document.getElementById("puestoTexto").outerHTML = `<input id="puestoInput" class="swal2-input" value="${empleado.position}">`;
+            document.getElementById("rolTexto").outerHTML = `
+              <select id="rolInput" class="swal2-input">
+                <option value="employee" ${empleado.role === "employee" ? "selected" : ""}>Empleado</option>
+                <option value="receptionist" ${empleado.role === "receptionist" ? "selected" : ""}>Recepcionista</option>
+                <option value="recruiter" ${empleado.role === "recruiter" ? "selected" : ""}>Reclutador</option>
+                <option value="supervisor" ${empleado.role === "supervisor" ? "selected" : ""}>Supervisor</option>
+                <option value="admin" ${empleado.role === "admin" ? "selected" : ""}>Administrador</option>
+              </select>
+            `;
             document.getElementById("emailTexto").outerHTML = `<input id="emailInput" class="swal2-input" value="${empleado.email}">`;
             document.getElementById("estadoTexto").outerHTML = `
-                <select id="estadoInput" class="swal2-input">
-                  <option value="activo" ${empleado.estado === "activo" ? "selected" : ""}>Activo</option>
-                  <option value="inactivo" ${empleado.estado === "inactivo" ? "selected" : ""}>Inactivo</option>
-                </select>
-              `;
+              <select id="estadoInput" class="swal2-input">
+                <option value="activo" ${empleado.status === "activo" ? "selected" : ""}>Activo</option>
+                <option value="inactivo" ${empleado.status === "inactivo" ? "selected" : ""}>Inactivo</option>
+              </select>
+            `;
             document.getElementById("dniTexto").outerHTML = `<input id="dniInput" class="swal2-input" value="${empleado.dni}">`;
             document.getElementById("telefonoTexto").outerHTML = `<input id="telefonoInput" class="swal2-input" value="${empleado.phone}">`;
             document.getElementById("direccionTexto").outerHTML = `<input id="direccionInput" class="swal2-input" value="${empleado.address}">`;
-            document.getElementById("estadoTexto").outerHTML = `
-                <select id="rolInput" class="swal2-input">
-                  <option value="empleado" ${empleado.rol === "empleado" ? "selected" : ""}>Empleado</option>
-                  <option value="reclutador" ${empleado.rol === "reclutador" ? "selected" : ""}>Reclutador</option>
-                  <option value="supervisor" ${empleado.rol === "supervisor" ? "selected" : ""}>Supervisor</option>
-                  <option value="administrador" ${empleado.rol === "administrador" ? "selected" : ""}>Administrador</option>
-                </select>
-                `;
-
+      
             editarBtn.textContent = "💾 Guardar cambios";
             modoEdicion = true;
           } else {
             Swal.clickConfirm();
           }
         });
-      }
+      }      
     }).then(result => {
       if (result.isConfirmed && result.value) {
         fetch(`${VITE_API_URL}/employees/${result.value.id}`, {
@@ -437,6 +440,12 @@ const ViewAdmin = () => {
                 <option key={idx} value={p}>{p}</option>
               ))}
             </select>
+            <select name="rol" value={filtros.rol} onChange={handleFiltroChange}>
+              <option value="">Todos los roles</option>
+              {rolesUnicos.map((p, idx) => (
+                <option key={idx} value={p}>{p}</option>
+              ))}
+            </select>
             <select name="estado" value={filtros.estado} onChange={handleFiltroChange}>
               <option value="">Todos</option>
               <option value="activo">Activos</option>
@@ -460,6 +469,7 @@ const ViewAdmin = () => {
               <tr>
                 <th>Nombre</th>
                 <th>Puesto</th>
+                <th>Rol</th>
                 <th>Email</th>
                 <th>Estado</th>
                 <th>Acciones</th>
@@ -470,6 +480,7 @@ const ViewAdmin = () => {
                 <tr key={e.id}>
                   <td>{e.name}</td>
                   <td>{e.position}</td>
+                  <td>{e.role}</td>
                   <td>{e.email}</td>
                   <td>
                     <span className={`estado ${e.status}`}>{e.status}</span>
@@ -487,6 +498,7 @@ const ViewAdmin = () => {
               <div key={e.id} className="tarjeta-empleado" onClick={() => abrirPopup(e)}>
                 <h3>{e.name}</h3>
                 <p><strong>Puesto:</strong> {e.position}</p>
+                <p><strong>Rol:</strong> {e.role}</p>
                 <p><strong>Email:</strong> {e.email}</p>
                 <p><strong>Estado:</strong> <span className={`estado ${e.status}`}>{e.status}</span></p>
               </div>

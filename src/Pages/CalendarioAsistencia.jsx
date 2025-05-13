@@ -12,41 +12,41 @@ const CalendarioAsistencia = () => {
   const [columnaOrdenada, setColumnaOrdenada] = useState(null);
   const [ordenAscendente, setOrdenAscendente] = useState(true);
   const [filtros, setFiltros] = useState({ presente: true, ausente: true, tarde: true });
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch('/asistencias.json')
+    const token = localStorage.getItem("token");
+    fetch(`${API_URL}/attendance`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
       .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
       })
       .then(data => {
-        const datosProcesados = {};
+        const agrupadas = {};
         data.forEach(registro => {
-          datosProcesados[registro.fecha] = registro.empleados;
+          const fecha = registro.date;
+          if (!agrupadas[fecha]) agrupadas[fecha] = [];
+          agrupadas[fecha].push({
+            nombre: registro.employee_name,
+            estado: registro.status,
+            horarioEntrada: registro.check_in,
+            horarioSalida: registro.check_out
+          });
         });
-        setAsistencias(datosProcesados);
+        setAsistencias(agrupadas);
         setCargando(false);
-      })
+      })      
       .catch(err => {
         setError(err);
         setCargando(false);
-        console.error('Error al cargar asistencias:', err);
       });
   }, []);
 
-  const obtenerFechaFormateada = (fecha) => {
-    return fecha.toISOString().split('T')[0];
-  };
-
-  const toggleFiltro = (estado) => {
-    setFiltros((prev) => ({
-      ...prev,
-      [estado]: !prev[estado],
-    }));
-  };
-
+  const obtenerFechaFormateada = (fecha) => fecha.toISOString().split('T')[0];
   const empleadosDelDia = asistencias[obtenerFechaFormateada(fechaSeleccionada)] || [];
 
   const empleadosFiltrados = empleadosDelDia.filter(e => {
@@ -58,61 +58,24 @@ const CalendarioAsistencia = () => {
 
   const ordenarEmpleados = (empleados, columna, ascendente) => {
     if (!columna) return empleados;
-
     return [...empleados].sort((a, b) => {
       let comparison = 0;
-
-      if (columna === 'nombre') {
-        comparison = a.nombre.localeCompare(b.nombre);
-      } else if (columna === 'estado') {
-        comparison = a.estado.localeCompare(b.estado);
-      } else if (columna === 'horario') {
-        const convertirHoraAMinutos = (hora) => {
-          if (!hora || hora === '-') return null;
-          const [horas, minutos] = hora.split(':').map(Number);
-          return (horas * 60) + minutos;
-        };
-
-        const minutosA = convertirHoraAMinutos(a.horario);
-        const minutosB = convertirHoraAMinutos(b.horario);
-
-        if (minutosA === null && minutosB !== null) comparison = 1;
-        else if (minutosA !== null && minutosB === null) comparison = -1;
-        else if (minutosA === null && minutosB === null) comparison = 0;
-        else comparison = minutosA - minutosB;
+      if (columna === 'nombre') comparison = a.nombre.localeCompare(b.nombre);
+      else if (columna === 'estado') comparison = a.estado.localeCompare(b.estado);
+      else if (columna === 'horario') {
+        const toMin = h => h ? parseInt(h.split(':')[0]) * 60 + parseInt(h.split(':')[1]) : null;
+        comparison = (toMin(a.horario) ?? 9999) - (toMin(b.horario) ?? 9999);
       }
-
       return ascendente ? comparison : -comparison;
     });
   };
 
-  const handleOrdenar = (columna) => {
-    if (columnaOrdenada === columna) {
-      setOrdenAscendente(!ordenAscendente);
-    } else {
-      setColumnaOrdenada(columna);
-      setOrdenAscendente(true);
-    }
+  const handleOrdenar = (col) => {
+    setColumnaOrdenada(columnaOrdenada === col ? col : col);
+    setOrdenAscendente(columnaOrdenada === col ? !ordenAscendente : true);
   };
 
-  const mostrarDetalleDia = (date) => {
-    setFechaSeleccionada(date);
-    setColumnaOrdenada(null);
-    setOrdenAscendente(true);
-  };
-
-  const getFlechaOrden = (columna) => {
-    if (columnaOrdenada !== columna) return null;
-    return ordenAscendente ? (
-      <FaChevronUp className="flecha-orden" />
-    ) : (
-      <FaChevronDown className="flecha-orden" />
-    );
-  };
-
-  const empleadosFiltradosOrdenados = useMemo(() => {
-    return ordenarEmpleados(empleadosFiltrados, columnaOrdenada, ordenAscendente);
-  }, [empleadosFiltrados, columnaOrdenada, ordenAscendente]);
+  const empleadosFiltradosOrdenados = useMemo(() => ordenarEmpleados(empleadosFiltrados, columnaOrdenada, ordenAscendente), [empleadosFiltrados, columnaOrdenada, ordenAscendente]);
 
   if (cargando) return <div>Cargando datos de asistencia...</div>;
   if (error) return <div>Error al cargar datos: {error.message}</div>;
@@ -131,47 +94,26 @@ const CalendarioAsistencia = () => {
             }
             return null;
           }}
-          onClickDay={mostrarDetalleDia}
+          onClickDay={setFechaSeleccionada}
         />
       </div>
-
       <div className="detalle-lado">
         <div className="filtros-asistencia">
           <h3>Asistencia del {fechaSeleccionada.toLocaleDateString()}</h3>
           <div className="botones-filtro">
-            <button
-              className={`filtro-presente ${filtros.presente ? 'activo' : ''}`}
-              onClick={() => toggleFiltro('presente')}
-            >
-              Presentes
-            </button>
-            <button
-              className={`filtro-ausente ${filtros.ausente ? 'activo' : ''}`}
-              onClick={() => toggleFiltro('ausente')}
-            >
-              Ausentes
-            </button>
-            <button
-              className={`filtro-tarde ${filtros.tarde ? 'activo' : ''}`}
-              onClick={() => toggleFiltro('tarde')}
-            >
-              Tarde
-            </button>
+            <button className={`filtro-presente ${filtros.presente ? 'activo' : ''}`} onClick={() => setFiltros(prev => ({ ...prev, presente: !prev.presente }))}>Presentes</button>
+            <button className={`filtro-ausente ${filtros.ausente ? 'activo' : ''}`} onClick={() => setFiltros(prev => ({ ...prev, ausente: !prev.ausente }))}>Ausentes</button>
+            <button className={`filtro-tarde ${filtros.tarde ? 'activo' : ''}`} onClick={() => setFiltros(prev => ({ ...prev, tarde: !prev.tarde }))}>Tarde</button>
           </div>
         </div>
         <div className="tabla-scroll">
           <table className="tabla-asistencia">
             <thead>
               <tr>
-                <th onClick={() => handleOrdenar('nombre')} style={{ cursor: 'pointer' }}>
-                  Nombre{getFlechaOrden('nombre')}
-                </th>
-                <th onClick={() => handleOrdenar('estado')} style={{ cursor: 'pointer' }}>
-                  Estado{getFlechaOrden('estado')}
-                </th>
-                <th onClick={() => handleOrdenar('horario')} style={{ cursor: 'pointer' }}>
-                  Hora de llegada{getFlechaOrden('horario')}
-                </th>
+                <th onClick={() => handleOrdenar('nombre')} style={{ cursor: 'pointer' }}>Nombre{columnaOrdenada === 'nombre' && (ordenAscendente ? <FaChevronUp /> : <FaChevronDown />)}</th>
+                <th onClick={() => handleOrdenar('estado')} style={{ cursor: 'pointer' }}>Estado{columnaOrdenada === 'estado' && (ordenAscendente ? <FaChevronUp /> : <FaChevronDown />)}</th>
+                <th onClick={() => handleOrdenar('horarioEntrada')} style={{ cursor: 'pointer' }}>Hora de llegada{columnaOrdenada === 'horarioEntrada' && (ordenAscendente ? <FaChevronUp /> : <FaChevronDown />)}</th>
+                <th onClick={() => handleOrdenar('horarioSalida')} style={{ cursor: 'pointer' }}>Hora de salida{columnaOrdenada === 'horarioSalida' && (ordenAscendente ? <FaChevronUp /> : <FaChevronDown />)}</th>
               </tr>
             </thead>
             <tbody>
@@ -179,7 +121,8 @@ const CalendarioAsistencia = () => {
                 <tr key={index} className={e.estado.toLowerCase()}>
                   <td>{e.nombre}</td>
                   <td><strong>{e.estado}</strong></td>
-                  <td>{e.horario || '-'}</td>
+                  <td>{e.horarioEntrada || '-'}</td>
+                  <td>{e.horarioSalida || '-'}</td>
                 </tr>
               ))}
             </tbody>

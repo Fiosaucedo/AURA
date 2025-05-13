@@ -55,9 +55,14 @@ function Login() {
 
           const data = await res.json();
           console.log(data);
-          if (data.role === 'supervisor' || data.role === 'admin') {
+          if (data.role === 'supervisor') {
             setTimeout(() => {
               navigate("/vista-supervisor");
+            }, 1000);
+          }
+          else if (data.role === 'admin'){
+            setTimeout(() => {
+              navigate("/vista-admin");
             }, 1000);
           }
           else if (data.role === 'receptionist'){

@@ -38,12 +38,16 @@ function ViewSupervisor() {
 
         const data = await res.json();
 
-        if (data.role !== 'supervisor') {
+        const rol = data.role;
+
+        if (!['supervisor', 'admin'].includes(rol)) {
           Swal.fire({
             icon: 'error',
             title: 'Acceso denegado',
             text: 'No tenés permiso para acceder a esta sección.',
-          }).then(() => navigate("/login"));
+          }).then(() => {
+            navigate("/login");
+        });
         } else {
           setHasAccess(true);
         }
