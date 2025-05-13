@@ -1,0 +1,32 @@
+.filtros-dashboard {
+    justify-content: start;
+}
+
+.filtros-dashboard select,
+input {
+    width: 250px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: white;
+    color: #333;
+    height: 42px;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.tabs {
+    display: flex;
+    justify-content: end;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+}

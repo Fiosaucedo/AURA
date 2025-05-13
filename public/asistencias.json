@@ -1,0 +1,75 @@
+[
+  {
+    "fecha": "2025-05-05",
+    "empleados": [
+      { "nombre": "Ana Pérez", "estado": "Presente", "horario": "08:05" },
+      { "nombre": "Carlos López", "estado": "Ausente" },
+      { "nombre": "Beatriz Gómez", "estado": "Tarde", "horario": "09:12" },
+      { "nombre": "Diego Rodríguez", "estado": "Presente", "horario": "07:58" }
+    ]
+  },
+  {
+    "fecha": "2025-05-06",
+    "empleados": [
+      { "nombre": "Carlos López", "estado": "Presente", "horario": "08:02" },
+      { "nombre": "Ana Pérez", "estado": "Presente", "horario": "08:10" },
+      { "nombre": "Diego Rodríguez", "estado": "Ausente" },
+      { "nombre": "Beatriz Gómez", "estado": "Presente", "horario": "08:00" }
+    ]
+  },
+  {
+    "fecha": "2025-05-07",
+    "empleados": [
+      { "nombre": "Beatriz Gómez", "estado": "Ausente" },
+      { "nombre": "Carlos López", "estado": "Tarde", "horario": "09:05" },
+      { "nombre": "Diego Rodríguez", "estado": "Presente", "horario": "08:01" },
+      { "nombre": "Ana Pérez", "estado": "Presente", "horario": "08:08" }
+    ]
+  },
+  {
+    "fecha": "2025-05-08",
+    "empleados": [
+      { "nombre": "Diego Rodríguez", "estado": "Presente", "horario": "07:55" },
+      { "nombre": "Ana Pérez", "estado": "Ausente" },
+      { "nombre": "Carlos López", "estado": "Presente", "horario": "08:15" },
+      { "nombre": "Beatriz Gómez", "estado": "Presente", "horario": "08:03" }
+    ]
+  },
+  {
+    "fecha": "2025-05-09",
+    "empleados": [
+      { "nombre": "Ana Pérez", "estado": "Presente", "horario": "08:01" },
+      { "nombre": "Beatriz Gómez", "estado": "Tarde", "horario": "09:20" },
+      { "nombre": "Carlos López", "estado": "Ausente" },
+      { "nombre": "Diego Rodríguez", "estado": "Presente", "horario": "08:07" },
+        {
+        "nombre": "Juan Pérez",
+        "estado": "Licencia",
+        "motivoLicencia": "Vacaciones",
+        "inicioLicencia": "2025-05-01",
+        "finLicencia": "2025-05-10"
+      }
+    ]
+  },
+  {
+    "fecha": "2025-05-10",
+    "empleados": [
+      { "nombre": "Elena Vargas", "estado": "Presente", "horario": "08:00" },
+      { "nombre": "Fernando Ruiz", "estado": "Presente", "horario": "08:11" },
+       { "nombre": "Ana Pérez", "estado": "Presente", "horario": "08:01" },
+      { "nombre": "Beatriz Gómez", "estado": "Tarde", "horario": "09:20" },
+      { "nombre": "Carlos López", "estado": "Ausente" },
+       { "nombre": "Ana Pérez", "estado": "Presente", "horario": "08:01" },
+      { "nombre": "Beatriz Gómez", "estado": "Tarde", "horario": "09:20" },
+      { "nombre": "Carlos López", "estado": "Ausente" },
+      { "nombre": "Gabriela Soto", "estado": "Ausente" },
+        {
+        "nombre": "Juan Pérez",
+        "estado": "Licencia",
+        "motivoLicencia": "Vacaciones",
+        "inicioLicencia": "2025-05-01",
+        "finLicencia": "2025-05-10"
+      }
+    ]
+  }
+]
