@@ -207,9 +207,9 @@ const ViewPostulante = () => {
         <div className="job-info-section">
           {jobData ? (
             <>
-              {jobData.organization.logo_url && (
+              {jobData.organization.logo_path && (
                 <img
-                  src={`${VITE_API_URL}${jobData.organization.logo_url}`}
+                  src={`${VITE_API_URL}${jobData.organization.logo_path}`}
                   alt="Logo Empresa"
                   className="company-logo"
                 />
