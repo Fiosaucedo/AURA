@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './SolicitudesDeSupervisor.css';
-import { FaCheckCircle, FaEdit, FaClock } from 'react-icons/fa';
+import { FaCheckCircle, FaEdit, FaClock, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
@@ -9,7 +9,6 @@ const SolicitudesDeSupervisor = () => {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -100,11 +99,11 @@ const SolicitudesDeSupervisor = () => {
         <input id="job-title" class="swal2-input" placeholder="Título del puesto" value="${data.title || ''}" readonly>
         <input id="job-location" class="swal2-input" placeholder="Ubicación" value="${data.location || ''}" readonly>
         <input id="job-type" class="swal2-input" placeholder="Tipo de jornada" value="${data.job_type || ''}" readonly>
-        <input id="job-salary" class="swal2-input" placeholder="Remuneración ofrecida" value="${data.salary_offer}">
-        <input id="job-experience" class="swal2-input" placeholder="Años de experiencia" value="${data.required_experience_years}" type="number">
-        <input id="job-education" class="swal2-input" placeholder="Nivel educativo" value="${data.required_education_level}">
+        <input id="job-salary" class="swal2-input" placeholder="Remuneración ofrecida" value="${data.salary_offer || ''}">
+        <input id="job-experience" class="swal2-input" placeholder="Años de experiencia" value="${data.required_experience_years || ''}" type="number" min="0">
+        <input id="job-education" class="swal2-input" placeholder="Nivel educativo" value="${data.required_education_level || ''}">
         <input id="skills-input" class="swal2-input" placeholder="Habilidad y enter">
-        <div id="selected-skills" style="margin-top: 10px;"></div>
+        <div id="selected-skills" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;"></div>
         <textarea id="job-description" class="swal2-textarea" placeholder="Descripción del puesto"></textarea>
       `,
       width: '1000px',
@@ -114,16 +113,50 @@ const SolicitudesDeSupervisor = () => {
         const skillsInput = Swal.getPopup().querySelector('#skills-input');
         const skillsContainer = Swal.getPopup().querySelector('#selected-skills');
 
+        const renderSkillTag = (skill) => {
+          const span = document.createElement('span');
+          span.textContent = skill;
+
+          span.className = 'selected-skill-tag';
+          span.style.display = 'inline-flex';
+          span.style.alignItems = 'center';
+          span.style.padding = '2px 6px';
+          span.style.borderRadius = '12px';
+          span.style.backgroundColor = '#007bff';
+          span.style.color = 'white';
+          span.style.fontSize = '0.9em';
+          span.style.cursor = 'default';
+
+          const btnRemove = document.createElement('button');
+          btnRemove.type = 'button';
+          btnRemove.style.marginLeft = '6px';
+          btnRemove.style.background = 'transparent';
+          btnRemove.style.border = 'none';
+          btnRemove.style.color = 'white';
+          btnRemove.style.cursor = 'pointer';
+          btnRemove.title = 'Eliminar habilidad';
+          btnRemove.innerHTML = '&times;'; // × symbol
+
+          btnRemove.addEventListener('click', () => {
+            skillsContainer.removeChild(span);
+            selectedSkills = selectedSkills.filter(s => s !== skill);
+          });
+
+          span.appendChild(btnRemove);
+          return span;
+        };
+
         skillsInput.addEventListener('keydown', e => {
           if (e.key === 'Enter' && skillsInput.value.trim()) {
             e.preventDefault();
             const skill = skillsInput.value.trim();
-            selectedSkills.push(skill);
 
-            const span = document.createElement('span');
-            span.textContent = skill;
-            span.className = 'selected-skill-tag';
-            skillsContainer.appendChild(span);
+            // Evitar habilidades duplicadas
+            if (!selectedSkills.includes(skill)) {
+              selectedSkills.push(skill);
+              const skillTag = renderSkillTag(skill);
+              skillsContainer.appendChild(skillTag);
+            }
             skillsInput.value = '';
           }
         });
@@ -135,14 +168,14 @@ const SolicitudesDeSupervisor = () => {
         const education = document.getElementById('job-education').value;
 
         if (!description || selectedSkills.length === 0) {
-          Swal.showValidationMessage('Faltan campos obligatorios');
+          Swal.showValidationMessage('Faltan campos obligatorios: descripción y al menos una habilidad');
           return false;
         }
 
         return {
           description,
           salary_offer: salary,
-          required_experience_years: parseInt(experience),
+          required_experience_years: parseInt(experience, 10),
           required_education_level: education,
           tags: selectedSkills
         };
