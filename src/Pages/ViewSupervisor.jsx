@@ -6,8 +6,9 @@ import { useNavigate } from 'react-router-dom';
 function ViewSupervisor() {
   const navigate = useNavigate();
 
-  const [hasAccess, setHasAccess] = useState(false); // Protección
-  const [puestos, setPuestos] = useState([])
+  const [hasAccess, setHasAccess] = useState(false);
+  const [puestos, setPuestos] = useState([]);
+  const [descripcionSeleccionada, setDescripcionSeleccionada] = useState(null);
   const [solapaActiva, setSolapaActiva] = useState('home');
   const [formulario, setFormulario] = useState({
     puesto: '',
@@ -21,6 +22,14 @@ function ViewSupervisor() {
 
   const [postulacionesReclutador, setPostulaciones] = useState([]);
 
+  const abrirModal = (descripcion) => {
+    setDescripcionSeleccionada(descripcion);
+  };
+
+  const cerrarModal = () => {
+    setDescripcionSeleccionada(null);
+  };
+
   useEffect(() => {
     const validateUser = async () => {
       const token = localStorage.getItem("token");
@@ -31,13 +40,10 @@ function ViewSupervisor() {
 
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+          headers: { Authorization: `Bearer ${token}` }
         });
 
         const data = await res.json();
-
         const rol = data.role;
 
         if (!['supervisor', 'admin'].includes(rol)) {
@@ -45,9 +51,7 @@ function ViewSupervisor() {
             icon: 'error',
             title: 'Acceso denegado',
             text: 'No tenés permiso para acceder a esta sección.',
-          }).then(() => {
-            navigate("/login");
-        });
+          }).then(() => navigate("/login"));
         } else {
           setHasAccess(true);
         }
@@ -81,7 +85,6 @@ function ViewSupervisor() {
       .then(data => setPuestos(data))
       .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los puestos.' }));
   }, [solapaActiva]);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -122,11 +125,7 @@ function ViewSupervisor() {
       setTimeout(() => setSolapaActiva('puestos'), 50);
     } catch (err) {
       console.error(err);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No se pudo actualizar el estado del puesto.'
-      });
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar el estado del puesto.' });
     }
   };
 
@@ -170,7 +169,7 @@ function ViewSupervisor() {
       if (!response.ok) throw new Error('Error en el servidor');
 
       Swal.fire({ icon: 'success', title: '¡Solicitud enviada!' });
-      setFormulario({ puesto: '', ubicacion: '', jornada: '', remuneracion: '', experiencia: '', habilidades: '' });
+      setFormulario({ puesto: '', ubicacion: '', jornada: '', remuneracion: '', experiencia: '', educacion: '', habilidades: '' });
       setSolapaActiva('home');
     } catch (error) {
       Swal.fire({ icon: 'error', title: 'Error', text: error.message });
@@ -226,7 +225,7 @@ function ViewSupervisor() {
     setPostulaciones(prev => prev.filter(p => p.id !== id));
   };
 
-  if (!hasAccess) return null; // ⛔ Evita renderizado antes de validación
+  if (!hasAccess) return null;
 
   return (
     <div className="supervisor-container">
@@ -239,7 +238,6 @@ function ViewSupervisor() {
         <button onClick={() => setSolapaActiva('home')}>🏠 Inicio</button>
         <button onClick={() => setSolapaActiva('postulaciones')}>📄 Postulaciones del reclutador</button>
         <button onClick={() => setSolapaActiva('puestos')}>🚀 Postulaciones abiertas</button>
-
       </div>
 
       {solapaActiva === 'home' && (
@@ -259,7 +257,7 @@ function ViewSupervisor() {
           <table className="tabla-puestos" border="1">
             <thead>
               <tr>
-                <th>Titulo del puesto</th>
+                <th>Título del puesto</th>
                 <th>Descripción</th>
                 <th>Fecha de creación</th>
                 <th>Cantidad de postulantes</th>
@@ -268,22 +266,30 @@ function ViewSupervisor() {
                 <th></th>
               </tr>
             </thead>
-            {puestos
-              .map((p, i) => (
+            <tbody>
+              {puestos.map((p, i) => (
                 <tr key={i}>
                   <td>{p.title}</td>
-                  <td>{p.description}</td>
+                  <td className="info-cell">
+                    <button className="info-button" onClick={() => abrirModal(p.description)}>i</button>
+                  </td>
                   <td>{p.created_at}</td>
                   <td>{p.candidates}</td>
                   <td>{p.apt_candidates}</td>
-                  <td className={p.is_active ? 'active' : 'hide'}>{p.is_active ? 'En curso' : 'Deshabilitada'}</td>
-                  <td><button onClick={() => handleJobActivation(p.id)}>{p.is_active ? 'Deshabilitar' : 'Activar'}</button></td>
+                  <td className={p.is_active ? 'active' : 'hide'}>
+                    {p.is_active ? 'En curso' : 'Deshabilitada'}
+                  </td>
+                  <td>
+                    <button onClick={() => handleJobActivation(p.id)}>
+                      {p.is_active ? 'Deshabilitar' : 'Activar'}
+                    </button>
+                  </td>
                 </tr>
               ))}
+            </tbody>
           </table>
         </section>
       )}
-
 
       {solapaActiva === 'formulario' && (
         <div className="supervisor-formulario">
@@ -330,6 +336,17 @@ function ViewSupervisor() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* MODAL de descripción */}
+      {descripcionSeleccionada && (
+        <div className="modal-overlay" onClick={cerrarModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Descripción del puesto</h3>
+            <p>{descripcionSeleccionada}</p>
+            <button onClick={cerrarModal}>Cerrar</button>
+          </div>
         </div>
       )}
     </div>
