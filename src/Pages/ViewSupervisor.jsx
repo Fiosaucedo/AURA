@@ -32,6 +32,14 @@ function ViewSupervisor() {
     setDescripcionSeleccionada(null);
   };
 
+  const abrirModal = (descripcion) => {
+    setDescripcionSeleccionada(descripcion);
+  };
+
+  const cerrarModal = () => {
+    setDescripcionSeleccionada(null);
+  };
+
   useEffect(() => {
     const validateUser = async () => {
       const token = localStorage.getItem("token");
@@ -298,6 +306,8 @@ function ViewSupervisor() {
         <button onClick={() => setSolapaActiva('postulaciones')}>📄 Postulaciones del reclutador</button>
         <button onClick={() => setSolapaActiva('puestos')}>🚀 Postulaciones abiertas</button>
         <button onClick={() => setSolapaActiva('certificados')}>📑 Certificados enviados</button>
+
+
       </div>
 
       {solapaActiva === 'home' && (
@@ -355,6 +365,32 @@ function ViewSupervisor() {
                 <button className="modal-close" onClick={cerrarModal}>×</button>
                 <p>{descripcionSeleccionada}</p>
               </div>
+        </section>
+      )}
+
+      {solapaActiva === 'formulario' && (
+        <div className="supervisor-formulario">
+          <h2 className="form-title">Formulario de solicitud</h2>
+          <form onSubmit={handleSubmit} className="formulario">
+            <input type="text" name="puesto" placeholder="Puesto" value={formulario.puesto} onChange={handleChange} required />
+            <input type="text" name="ubicacion" placeholder="Ubicación del trabajo" value={formulario.ubicacion} onChange={handleChange} required />
+            <select name="jornada" value={formulario.jornada} onChange={handleChange} required>
+              <option value="">Tipo de jornada</option>
+              <option value="Full-time">Full-time</option>
+              <option value="Part-time">Part-time</option>
+            </select>
+            <input type="text" name="remuneracion" placeholder="Remuneración ofrecida (opcional)" value={formulario.remuneracion} onChange={handleChange} />
+            <input type="number" name="experiencia" placeholder="Años de experiencia requeridos" value={formulario.experiencia} onChange={handleChange} min="0" />
+            <select name="educacion" value={formulario.educacion} onChange={handleChange} required>
+              <option value="">Nivel de estudios</option>
+              <option value="secundario">Secundario</option>
+              <option value="terciario">Terciario</option>
+              <option value="universitario">Universitario</option>
+            </select>
+            <textarea name="habilidades" placeholder="Habilidades requeridas" value={formulario.habilidades} onChange={handleChange} required />
+            <div className="botones-form">
+              <button type="submit">Enviar solicitud</button>
+              <button type="button" className="volver" onClick={() => setSolapaActiva('home')}>Volver</button>
             </div>
           )}
         </section>
@@ -531,6 +567,17 @@ function ViewSupervisor() {
             <button type="submit">Enviar solicitud</button>
           </form>
         </section>
+      )}
+
+      {/* MODAL de descripción */}
+      {descripcionSeleccionada && (
+        <div className="modal-overlay" onClick={cerrarModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Descripción del puesto</h3>
+            <p>{descripcionSeleccionada}</p>
+            <button onClick={cerrarModal}>Cerrar</button>
+          </div>
+        </div>
       )}
     </div>
   );
