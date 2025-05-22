@@ -306,6 +306,50 @@
   background-color: #0056b3;
 }
 
+/* Certificados Enviados */
+.supervisor-certificados {
+  width: 90%;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+  animation: fadeIn 0.8s ease;
+}
+
+.supervisor-certificados .supervisor-title {
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.certificado-card {
+  background-color: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.certificado-card p {
+  margin: 6px 0;
+  color: #444;
+  font-size: 15px;
+}
+
+.certificado-card strong {
+  color: #0f1a4b;
+}
+
+.certificado-estado {
+  font-weight: bold;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background-color: #e1f3e8;
+  color: #2e7d32;
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

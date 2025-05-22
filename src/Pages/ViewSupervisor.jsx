@@ -21,6 +21,16 @@ function ViewSupervisor() {
   });
 
   const [postulacionesReclutador, setPostulaciones] = useState([]);
+  const [certificados, setCertificados] = useState([]);
+  const [vistaCertificados, setVistaCertificados] = useState('tarjetas'); // 'tarjetas' o 'lista'
+
+  const abrirModal = (descripcion) => {
+    setDescripcionSeleccionada(descripcion);
+  };
+
+  const cerrarModal = () => {
+    setDescripcionSeleccionada(null);
+  };
 
   const abrirModal = (descripcion) => {
     setDescripcionSeleccionada(descripcion);
@@ -65,25 +75,30 @@ function ViewSupervisor() {
   }, []);
 
   useEffect(() => {
-    if (solapaActiva !== 'postulaciones') return;
-
-    fetch(`${import.meta.env.VITE_API_URL}/job-posts/by-status/in_review`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-      .then(res => res.json())
-      .then(data => setPostulaciones(data))
-      .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar las postulaciones.' }));
-  }, [solapaActiva]);
-
-  useEffect(() => {
-    if (solapaActiva !== 'puestos') return;
-
-    fetch(`${import.meta.env.VITE_API_URL}/job-posts/by-status/approved`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    })
-      .then(res => res.json())
-      .then(data => setPuestos(data))
-      .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los puestos.' }));
+    if (solapaActiva === 'postulaciones') {
+      fetch(`${import.meta.env.VITE_API_URL}/job-posts/by-status/in_review`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+        .then(res => res.json())
+        .then(data => setPostulaciones(data))
+        .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar las postulaciones.' }));
+    }
+    if (solapaActiva === 'puestos') {
+      fetch(`${import.meta.env.VITE_API_URL}/job-posts/by-status/approved`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+        .then(res => res.json())
+        .then(data => setPuestos(data))
+        .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los puestos.' }));
+    }
+    if (solapaActiva === 'certificados') {
+      fetch(`${import.meta.env.VITE_API_URL}/certificates`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+        .then(res => res.json())
+        .then(data => setCertificados(data))
+        .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudieron cargar los certificados.' }));
+    }
   }, [solapaActiva]);
 
   const handleChange = (e) => {
@@ -225,6 +240,58 @@ function ViewSupervisor() {
     setPostulaciones(prev => prev.filter(p => p.id !== id));
   };
 
+  // Nuevas funciones para certificados:
+  const aprobarCertificado = async (id) => {
+    const confirm = await Swal.fire({
+      title: '¿Aprobar este certificado?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, aprobar',
+      cancelButtonText: 'Cancelar',
+    });
+    if (!confirm.isConfirmed) return;
+
+    await fetch(`${import.meta.env.VITE_API_URL}/certificates/approve/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ comment: 'Aprobado por el supervisor.' })
+    });
+
+    Swal.fire({ icon: 'success', title: 'Certificado aprobado' });
+    setCertificados(prev => prev.filter(c => c.id !== id));
+  };
+
+  const rechazarCertificado = async (id) => {
+    const { value: motivo, isConfirmed } = await Swal.fire({
+      title: 'Rechazar certificado',
+      input: 'textarea',
+      inputLabel: 'Ingrese el motivo del rechazo',
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value.trim()) {
+          return 'El motivo es obligatorio';
+        }
+      }
+    });
+
+    if (!isConfirmed) return;
+
+    await fetch(`${import.meta.env.VITE_API_URL}/certificates/reject/${id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ comment: motivo })
+    });
+
+    Swal.fire({ icon: 'success', title: 'Certificado rechazado' });
+    setCertificados(prev => prev.filter(c => c.id !== id));
+  };
+
   if (!hasAccess) return null;
 
   return (
@@ -238,6 +305,9 @@ function ViewSupervisor() {
         <button onClick={() => setSolapaActiva('home')}>🏠 Inicio</button>
         <button onClick={() => setSolapaActiva('postulaciones')}>📄 Postulaciones del reclutador</button>
         <button onClick={() => setSolapaActiva('puestos')}>🚀 Postulaciones abiertas</button>
+        <button onClick={() => setSolapaActiva('certificados')}>📑 Certificados enviados</button>
+
+
       </div>
 
       {solapaActiva === 'home' && (
@@ -288,6 +358,13 @@ function ViewSupervisor() {
               ))}
             </tbody>
           </table>
+
+          {descripcionSeleccionada && (
+            <div className="modal" onClick={cerrarModal}>
+              <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <button className="modal-close" onClick={cerrarModal}>×</button>
+                <p>{descripcionSeleccionada}</p>
+              </div>
         </section>
       )}
 
@@ -315,28 +392,181 @@ function ViewSupervisor() {
               <button type="submit">Enviar solicitud</button>
               <button type="button" className="volver" onClick={() => setSolapaActiva('home')}>Volver</button>
             </div>
-          </form>
-        </div>
+          )}
+        </section>
       )}
 
       {solapaActiva === 'postulaciones' && (
-        <div className="supervisor-postulaciones">
-          <h2 className="supervisor-title">Postulaciones del reclutador</h2>
-          {postulacionesReclutador.map((post) => (
-            <div key={post.id} className="supervisor-card">
+        <section className="postulaciones-section">
+          {postulacionesReclutador.length === 0 && <p>No hay postulaciones para revisar.</p>}
+          {postulacionesReclutador.map((post, index) => (
+            <div key={index} className="postulacion-card">
               <h3>{post.title}</h3>
-              <p><strong>Ubicación:</strong> {post.location || 'No especificada'}</p>
-              <p><strong>Tipo de jornada:</strong> {post.job_type || 'No especificada'}</p>
-              <p><strong>Remuneración ofrecida:</strong> {post.salary_offer || 'No especificada'}</p>
-              <p><strong>Años de experiencia requeridos:</strong> {post.required_experience_years || 'No especificado'}</p>
-              <p><strong>Nivel educativo requerido:</strong> {post.required_education_level || 'No especificado'}</p>
-              <div className="botones-form">
+              <p><strong>Nombre:</strong> {post.applicant_name}</p>
+              <p><strong>Edad:</strong> {post.applicant_age}</p>
+              <p><strong>Email:</strong> {post.applicant_email}</p>
+              <p><strong>Estado:</strong> {post.status}</p>
+              <div className="buttons">
                 <button onClick={() => aprobarPostulacion(post.id)}>Aprobar</button>
-                <button onClick={() => solicitarCambios(post.id)} className="volver">Solicitar cambios</button>
+                <button onClick={() => solicitarCambios(post.id)}>Solicitar cambios</button>
               </div>
             </div>
           ))}
-        </div>
+        </section>
+      )}
+
+      {/* Nueva sección certificados */}
+      {solapaActiva === 'certificados' && (
+        <section className="certificados-section">
+          <div className="vista-toggle">
+            <button
+              className={vistaCertificados === 'tarjetas' ? 'active' : ''}
+              onClick={() => setVistaCertificados('tarjetas')}
+            >
+              Vista Tarjetas
+            </button>
+            <button
+              className={vistaCertificados === 'lista' ? 'active' : ''}
+              onClick={() => setVistaCertificados('lista')}
+            >
+              Vista Lista
+            </button>
+          </div>
+
+          {certificados.length === 0 && <p>No hay certificados para revisar.</p>}
+
+          {vistaCertificados === 'tarjetas' && (
+            <div className="certificados-tarjetas">
+              {certificados.map(c => (
+                <div key={c.id} className="certificado-card">
+                  <h4>{c.employee_name}</h4>
+                  <p><strong>Fecha envío:</strong> {new Date(c.sent_date).toLocaleDateString()}</p>
+                  <p><strong>Tipo:</strong> {c.type}</p>
+                  <p><strong>Estado:</strong> {c.status}</p>
+                  <div className="certificado-buttons">
+                    <button onClick={() => aprobarCertificado(c.id)}>Aprobar</button>
+                    <button onClick={() => rechazarCertificado(c.id)}>Rechazar</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {vistaCertificados === 'lista' && (
+            <table className="tabla-certificados" border="1">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Fecha envío</th>
+                  <th>Tipo</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {certificados.map(c => (
+                  <tr key={c.id}>
+                    <td>{c.employee_name}</td>
+                    <td>{new Date(c.sent_date).toLocaleDateString()}</td>
+                    <td>{c.type}</td>
+                    <td>{c.status}</td>
+                    <td>
+                      <button onClick={() => aprobarCertificado(c.id)}>Aprobar</button>
+                      <button onClick={() => rechazarCertificado(c.id)}>Rechazar</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+      )}
+
+      {solapaActiva === 'formulario' && (
+        <section className="formulario-section">
+          <form onSubmit={handleSubmit}>
+            <h2>Solicitud de creación de puesto</h2>
+
+            <label>
+              Título del puesto:
+              <input
+                type="text"
+                name="puesto"
+                value={formulario.puesto}
+                onChange={handleChange}
+                required
+              />
+            </label>
+
+            <label>
+              Ubicación:
+              <input
+                type="text"
+                name="ubicacion"
+                value={formulario.ubicacion}
+                onChange={handleChange}
+                required
+              />
+            </label>
+
+            <label>
+              Jornada:
+              <select
+                name="jornada"
+                value={formulario.jornada}
+                onChange={handleChange}
+                required
+              >
+                <option value="">-- Seleccione --</option>
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Freelance">Freelance</option>
+              </select>
+            </label>
+
+            <label>
+              Remuneración:
+              <input
+                type="text"
+                name="remuneracion"
+                value={formulario.remuneracion}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Experiencia requerida (años):
+              <input
+                type="number"
+                min="0"
+                name="experiencia"
+                value={formulario.experiencia}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Educación requerida:
+              <input
+                type="text"
+                name="educacion"
+                value={formulario.educacion}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Habilidades requeridas:
+              <textarea
+                name="habilidades"
+                value={formulario.habilidades}
+                onChange={handleChange}
+              />
+            </label>
+
+            <button type="submit">Enviar solicitud</button>
+          </form>
+        </section>
       )}
 
       {/* MODAL de descripción */}
