@@ -197,6 +197,19 @@ const SolicitudesDeSupervisor = () => {
         if (!res.ok) throw new Error('Error al completar el puesto');
 
         Swal.fire('Listo', 'Puesto completado y enviado al supervisor', 'success');
+
+        setJobs(prevJobs => prevJobs.map(job =>
+          job.id === data.id
+            ? {
+              ...job,
+              estado: 'in_review',
+              salary_offer: result.value.salary_offer,
+              required_experience_years: result.value.required_experience_years,
+              required_education_level: result.value.required_education_level,
+              skills_required: result.value.tags.join(', '),
+            }
+            : job
+        ));
       } catch (err) {
         Swal.fire('Error', err.message, 'error');
       }
