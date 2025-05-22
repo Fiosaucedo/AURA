@@ -350,6 +350,64 @@
   font-size: 14px;
 }
 
+.postulaciones-section {
+  padding: 2rem;
+  background-color: #f5f6fa;
+}
+
+.postulacion-card {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-left: 5px solid #007bff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.postulacion-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.postulacion-card h3 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.postulacion-card p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.postulacion-card strong {
+  color: #222;
+}
+
+.postulacion-card .buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.postulacion-card .buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.postulacion-card .buttons button:hover {
+  background-color: #0056b3;
+}
+
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }

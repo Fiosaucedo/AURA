@@ -318,12 +318,19 @@ function ViewSupervisor() {
         <section className="postulaciones-section">
           {postulacionesReclutador.length === 0 && <p>No hay postulaciones para revisar.</p>}
           {postulacionesReclutador.map((post, index) => (
-            <div key={index} className="postulacion-card">
+            <div key={index} className={`postulacion-card estado-${post.status?.status}`}>
               <h3>{post.title}</h3>
-              <p><strong>Nombre:</strong> {post.applicant_name}</p>
-              <p><strong>Edad:</strong> {post.applicant_age}</p>
-              <p><strong>Email:</strong> {post.applicant_email}</p>
-              <p><strong>Estado:</strong> {post.status}</p>
+              <p><strong>Ubicación:</strong> {post.location}</p>
+              <p><strong>Jornada:</strong> {post.job_type}</p>
+              <p><strong>Experiencia requerida:</strong> {post.required_experience_years} años</p>
+              <p><strong>Educación requerida:</strong> {post.required_education_level}</p>
+              <p><strong>Remuneración:</strong> {post.salary_offer}</p>
+              <p><strong>Habilidades requeridas:</strong> {post.skills_required}</p>
+              <p><strong>Descripción:</strong> {post.description}</p>
+              <p><strong>Estado:</strong> {post.status?.label}</p>
+              {post.status?.comment && (
+                <p><strong>Comentario:</strong> {post.status.comment}</p>
+              )}
               <div className="buttons">
                 <button onClick={() => aprobarPostulacion(post.id)}>Aprobar</button>
                 <button onClick={() => solicitarCambios(post.id)}>Solicitar cambios</button>
