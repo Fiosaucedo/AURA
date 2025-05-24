@@ -12,6 +12,8 @@ import SolicitudesDeSupervisor from './Pages/SolicitudesDeSupervisor'
 import ViewRecepcionista from './Pages/ViewRecepcionista'
 import ViewAdmin from './Pages/ViewAdmin';
 import ViewAsistencias from './Pages/ViewAsistencias';
+import ContactUs from './Pages/ContactUs';
+import Services from './Pages/Services';
 
 function App() {
   return (
@@ -30,6 +32,10 @@ function App() {
           <Route path="/vista-recepcionista" element={<ViewRecepcionista />} />
           <Route path="/vista-admin" element={<ViewAdmin />} />
           <Route path="/asistencias" element={<ViewAsistencias />} />
+          <Route path="/contactanos" element={<ContactUs />} />
+          <Route path="/servicios" element={<Services />} />
+        
+          
 
         </Routes>
       </Router>

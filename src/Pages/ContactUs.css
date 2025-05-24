@@ -1,0 +1,117 @@
+
+.contact-us-container {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+  color: #343a40;
+  text-align: center;
+}
+
+.contact-us-container h1 {
+  color: #1a4672;
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.contact-us-container p {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+  text-align: left; 
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1em;
+  box-sizing: border-box; 
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #007bff; 
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none; 
+}
+
+.form-group textarea {
+  resize: vertical; 
+  min-height: 100px;
+}
+
+.input-error {
+  border-color: #dc3545 !important; 
+}
+
+.error-message {
+  color: #dc3545; 
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+
+.submit-button {
+  background-color: #1a4672; 
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background-color: #0d2c4e; 
+  transform: translateY(-2px);
+}
+
+@keyframes slideUpFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.contact-form {
+  animation: slideUpFadeIn 0.5s ease forwards;
+}
+.contact-us-container {
+  animation: slideUpFadeIn 0.5s ease forwards;
+}
