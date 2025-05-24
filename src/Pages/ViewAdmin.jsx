@@ -486,7 +486,7 @@ const ViewAdmin = () => {
                     <span className={`estado ${e.status}`}>{e.status}</span>
                   </td>
                   <td>
-                    <button onClick={() => abrirPopup(e)}><Info size={20} className="icono" /></button>
+                    <button className="info-button"onClick={() => abrirPopup(e)}><Info size={20} className="icono" /></button>
                   </td>
                 </tr>
               ))}

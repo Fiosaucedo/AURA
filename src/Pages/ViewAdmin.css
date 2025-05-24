@@ -2,6 +2,10 @@ main {
   margin: 20px;
 }
 
+body{
+  display: block !important;
+}
+
 h1 {
   color: #2c3e50;
   margin: 20px;
@@ -164,4 +168,9 @@ table {
   background-color: #34495e;
   color: white;
 
+}
+
+.info-button{
+  display: flex
+  
 }
