@@ -13,6 +13,8 @@ import ViewRecepcionista from './Pages/ViewRecepcionista'
 import ViewAdmin from './Pages/ViewAdmin';
 import ViewAsistencias from './Pages/ViewAsistencias';
 import ViewEmpleado from './Pages/ViewEmpleado';
+import ProtectedRouteLayout from './layouts/ProtectedRouteLayout';
+import NotFoundPage from './Pages/NotFoundPage';
 
 function App() {
   return (
@@ -22,8 +24,11 @@ function App() {
           <Route path="/" element={<Home />} /> 
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/vista-reclutador" element={<ViewReclutador />} />
           <Route path="/vista-postulante" element={<ViewPostulante />} />
+
+          <Route element={<ProtectedRouteLayout />}>
+        
+          <Route path="/vista-reclutador" element={<ViewReclutador />} />
           <Route path="/candidato/:id" element={<DetalleCandidato />} />
           <Route path="/create-organization" element={<CreateOrganization />} />
           <Route path="/vista-supervisor" element={<ViewSupervisor />} />
@@ -32,7 +37,9 @@ function App() {
           <Route path="/vista-admin" element={<ViewAdmin />} />
           <Route path="/asistencias" element={<ViewAsistencias />} />
           <Route path="/vista-empleado" element={<ViewEmpleado />} />
+          </Route>
 
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
     </AuthProvider>

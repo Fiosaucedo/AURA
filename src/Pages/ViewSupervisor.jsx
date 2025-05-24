@@ -22,10 +22,12 @@ function ViewSupervisor() {
   const [certificados, setCertificados] = useState([]);
   const [vistaCertificados, setVistaCertificados] = useState('tarjetas');
 
+
   const abrirModal = (descripcion) => setDescripcionSeleccionada(descripcion);
   const cerrarModal = () => setDescripcionSeleccionada(null);
 
-  useEffect(() => {
+
+ useEffect(() => {
     const validateUser = async () => {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/login");
