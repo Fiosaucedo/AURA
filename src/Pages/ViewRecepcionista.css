@@ -1,69 +1,93 @@
 .receptionist-container {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom right, #1e1e2f, #2d2d44);
-    color: white;
-    min-height: 100vh;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-  
-  .aura-label-recep {
-    position: absolute;
-    top: 10px;
-    left: 15px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffd700;
-    cursor: pointer;
-    user-select: none;
-  }
-  
-  .main-message {
-    margin-top: 60px;
-    font-size: 28px;
-    margin-bottom: 20px;
-    color: blanchedalmond;
-  }
-  
-  .webcam-wrapper {
-    border: 4px solid #4e73df;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  
-  .scan-button {
-    background-color: #000000;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s ease all;
-    display: flex;
-    align-items: center;
-  }
-  
-  .scan-button:hover {
-    background-color: #282b31;
-    transition: 2s;
-  }
-  
-  .result-success, .result-failure {
-    margin-top: 20px;
-    padding: 10px 20px;
-    border-radius: 8px;
-  }
-  
-  .result-success {
-    background-color: rgba(0, 128, 0, 0.2);
-  }
-  
-  .result-failure {
-    background-color: rgba(255, 0, 0, 0.2);
-  }
-  
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom right, #1e1e2f, #2d2d44);
+  color: white;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.aura-label-recep {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffd700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.main-message {
+  margin-top: 60px;
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: blanchedalmond;
+}
+
+.webcam-wrapper {
+  border: 4px solid #4e73df;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.scan-button {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s ease all;
+  display: flex;
+  align-items: center;
+}
+
+.scan-button:hover {
+  background-color: #282b31;
+  transition: 2s;
+}
+
+.result-success,
+.result-failure {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+.result-success {
+  background-color: rgba(0, 128, 0, 0.2);
+}
+
+.result-failure {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+
+.status-message {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.status-message.success {
+  color: green;
+}
+
+.status-message.warning {
+  color: orange;
+}
+
+.recognized-banner {
+  margin-top: 1rem;
+  background-color: #e6f9ec;
+  padding: 10px;
+  border: 1px solid #b2dfb4;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1rem;
+}

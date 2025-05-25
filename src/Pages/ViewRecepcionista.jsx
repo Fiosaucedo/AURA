@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { FaCamera, FaVideo, FaSignInAlt, FaSignOutAlt } from 'react-icons/fa';
+import { FaCamera, FaVideo, FaSignInAlt, FaSignOutAlt, FaUserPlus } from 'react-icons/fa';
 import Webcam from 'react-webcam';
 import './ViewRecepcionista.css';
 import { useNavigate } from 'react-router-dom';
@@ -11,8 +11,10 @@ const ViewRecepcionista = () => {
   const [adminUser, setAdminUser] = useState(null);
   const [scanningIn, setScanningIn] = useState(false);
   const [scanningOut, setScanningOut] = useState(false);
-    const [empleados, setEmpleados] = useState([]);
+  const [empleados, setEmpleados] = useState([]);
   const [selectedId, setSelectedId] = useState('');
+  const [hasFace, setHasFace] = useState(false);
+  const [recognizedEmployeeName, setRecognizedEmployeeName] = useState('');
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -71,6 +73,18 @@ const ViewRecepcionista = () => {
     fetchEmpleados();
   }, []);
 
+  useEffect(() => {
+    if (!selectedId) return;
+    const token = localStorage.getItem("token");
+
+    fetch(`${API_URL}/employees/${selectedId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => setHasFace(!!data.face_encoding))
+      .catch(() => setHasFace(false));
+  }, [selectedId]);
+
   const handleActivateCamera = () => {
     setShowCamera(true);
   };
@@ -78,19 +92,19 @@ const ViewRecepcionista = () => {
   const registrarAsistencia = async (tipo) => {
     if (!selectedId) return;
     const token = localStorage.getItem("token");
-  
+
     const now = new Date();
     const isoDate = now.toISOString().split("T")[0];
     const hora = now.toTimeString().slice(0, 8);
-  
+
     const payload = {
       employee_id: selectedId,
       date: isoDate,
     };
-  
+
     let endpoint = '';
-    let setLoading = () => {};
-  
+    let setLoading = () => { };
+
     if (tipo === "entrada") {
       payload.check_in = hora;
       payload.status = "Presente";
@@ -103,7 +117,7 @@ const ViewRecepcionista = () => {
       setLoading = setScanningOut;
       setLoading(true);
     }
-  
+
     try {
       const res = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
@@ -113,10 +127,10 @@ const ViewRecepcionista = () => {
         },
         body: JSON.stringify(payload)
       });
-  
+
       const data = await res.json();
       setLoading(false);
-  
+
       if (res.ok) {
         Swal.fire({
           icon: 'success',
@@ -138,7 +152,105 @@ const ViewRecepcionista = () => {
       });
     }
   };
-  
+
+  const recognizeFace = async () => {
+    const token = localStorage.getItem("token");
+    const imageSrc = webcamRef.current.getScreenshot();
+
+    if (!imageSrc) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Could not capture image.' });
+      return;
+    }
+
+    const blob = await (await fetch(imageSrc)).blob();
+    const formData = new FormData();
+    formData.append("image", blob, "face.jpg");
+
+    try {
+      const res = await fetch(`${API_URL}/attendance/face-check`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setRecognizedEmployeeName(data.employee_name);
+        Swal.fire({
+          icon: 'success',
+          title: 'Face recognized',
+          text: data.message,
+          confirmButtonColor: '#4e73df'
+        });
+      } else {
+        setRecognizedEmployeeName('');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Not recognized',
+          text: data.error || 'Face not found',
+          confirmButtonColor: '#d33'
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Recognition error',
+        text: err.message,
+        confirmButtonColor: '#d33'
+      });
+    }
+  };
+
+  const assignFaceToEmployee = async () => {
+    const token = localStorage.getItem("token");
+    const imageSrc = webcamRef.current.getScreenshot();
+
+    if (!imageSrc || !selectedId) {
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Missing image or employee selection' });
+      return;
+    }
+
+    const blob = await (await fetch(imageSrc)).blob();
+    const formData = new FormData();
+    formData.append("image", blob, "base.jpg");
+
+    try {
+      const res = await fetch(`${API_URL}/employees/${selectedId}/upload-face`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setHasFace(true);
+        Swal.fire({
+          icon: 'success',
+          title: 'Face assigned',
+          text: data.message,
+          confirmButtonColor: '#4e73df'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Assignment failed',
+          text: data.error || 'Something went wrong',
+          confirmButtonColor: '#d33'
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Request error',
+        text: err.message,
+        confirmButtonColor: '#d33'
+      });
+    }
+  };
 
   return (
     <div className="receptionist-container">
@@ -154,6 +266,12 @@ const ViewRecepcionista = () => {
             ))}
           </select>
         </div>
+      )}
+
+      {hasFace ? (
+        <p className="status-message success">✅ Este empleado tiene un rostro asignado</p>
+      ) : (
+        <p className="status-message warning">⚠️ Por favor asigne un rostro para este empleado</p>
       )}
 
       {!showCamera ? (
@@ -173,23 +291,32 @@ const ViewRecepcionista = () => {
               className="webcam"
             />
           </div>
+
+          {recognizedEmployeeName && (
+            <div className="recognized-banner">
+              ✅ Reconocimiento exitoso: <strong>{recognizedEmployeeName}</strong>
+            </div>
+          )}
+
           <div className="button-group">
-            <button
-              className="scan-button entrada"
-              onClick={() => registrarAsistencia("entrada")}
-              disabled={scanningIn}
-            >
+            <button className="scan-button entrada" onClick={() => registrarAsistencia("entrada")} disabled={scanningIn}>
               <FaSignInAlt style={{ marginRight: '8px' }} />
-              {scanningIn ? 'Registrando...' : 'Registrar entrada'}
+              {scanningIn ? 'Registrando...' : 'Registrar entrada manual (empleado seleccionado)'}
             </button>
-            <button
-              className="scan-button salida"
-              onClick={() => registrarAsistencia("salida")}
-              disabled={scanningOut}
-            >
+            <button className="scan-button salida" onClick={() => registrarAsistencia("salida")} disabled={scanningOut}>
               <FaSignOutAlt style={{ marginRight: '8px' }} />
-              {scanningOut ? 'Registrando...' : 'Registrar salida'}
+              {scanningOut ? 'Registrando...' : 'Registrar salida manual (empleado seleccionado)'}
             </button>
+            <button className="scan-button facial" onClick={recognizeFace}>
+              <FaCamera style={{ marginRight: '8px' }} />
+              Registrar asistencia automática (reconocimiento facial)
+            </button>
+            {!hasFace && (
+              <button className="scan-button assign" onClick={assignFaceToEmployee}>
+                <FaUserPlus style={{ marginRight: '8px' }} />
+                Asignar rostro a empleado seleccionado
+              </button>
+            )}
           </div>
         </>
       )}
