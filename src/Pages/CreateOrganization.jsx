@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 import './CreateOrganization.css';
 
 const CrearOrganizacion = () => {
@@ -15,32 +16,73 @@ const CrearOrganizacion = () => {
   });
   const [orgEditando, setOrgEditando] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
-  const [modoVista, setModoVista] = useState('tarjetas'); // 'tarjetas' o 'lista'
+  const [modoVista, setModoVista] = useState('tarjetas');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setOrganizaciones([
-      {
-        id: 1,
-        nombre: 'TechCorp',
-        razonSocial: 'TechCorp S.A.',
-        cuit: '30-12345678-9',
-        direccion: 'Av. Siempre Viva 123',
-        tipoPlan: 'Premium',
-        estado: 'activa',
-        logo: ''
-      },
-      {
-        id: 2,
-        nombre: 'SoftSolutions',
-        razonSocial: 'SoftSolutions SRL',
-        cuit: '30-87654321-0',
-        direccion: 'Calle Falsa 456',
-        tipoPlan: 'Básico',
-        estado: 'inactiva',
-        logo: ''
+    const token = localStorage.getItem("token");
+    if (!token) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Sesión no iniciada',
+        text: 'Debés iniciar sesión como administrador.',
+        confirmButtonText: 'Ir al login'
+      }).then(() => {
+        navigate("/login");
+      });
+      return;
+    }
+  
+    const checkAndFetch = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok || data.role !== 'admin') {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: 'Solo los administradores pueden acceder a esta sección.',
+            confirmButtonText: 'Ir al login'
+          }).then(() => {
+            navigate("/login");
+          });
+          return;
+        }
+  
+        const orgRes = await fetch(`${import.meta.env.VITE_API_URL}/organizations`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const orgData = await orgRes.json();
+        if (orgRes.ok) {
+          const mapped = orgData.map(org => ({
+            id: org.id,
+            nombre: org.name,
+            razonSocial: org.companyName,
+            cuit: org.cuit,
+            direccion: org.address,
+            tipoPlan: org.planType,
+            estado: org.isActive == true ? 'activa' : 'inactiva',
+            logo: org.logo ? `${import.meta.env.VITE_API_URL}/${org.logo}` : ''
+          }));
+          setOrganizaciones(mapped);
+        } else {
+          Swal.fire('Error', orgData.message || 'No se pudieron cargar las organizaciones.', 'error');
+        }
+  
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Error', 'Error de red al validar el usuario.', 'error');
+        navigate("/login");
       }
-    ]);
+    };
+  
+    checkAndFetch();
   }, []);
+  
 
   const toggleFormulario = () => {
     setMostrarFormulario(!mostrarFormulario);
@@ -58,14 +100,14 @@ const CrearOrganizacion = () => {
     const file = e.target.files[0];
     if (file) {
       const logoURL = URL.createObjectURL(file);
-      setNuevaOrg({ ...nuevaOrg, logo: logoURL });
+      setNuevaOrg({ ...nuevaOrg, logo: logoURL, logoFile: file });
       setLogoPreview(logoURL);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const confirmacion = await Swal.fire({
       title: orgEditando ? '¿Guardar cambios?' : '¿Registrar empresa?',
       text: orgEditando
@@ -76,31 +118,75 @@ const CrearOrganizacion = () => {
       confirmButtonText: 'Sí, confirmar',
       cancelButtonText: 'Cancelar'
     });
-
+  
     if (!confirmacion.isConfirmed) return;
-
-    if (orgEditando) {
-      const actualizadas = organizaciones.map((org) =>
-        org.id === orgEditando.id ? { ...orgEditando, ...nuevaOrg } : org
-      );
-      setOrganizaciones(actualizadas);
-      Swal.fire('¡Actualizado!', 'Los datos han sido modificados.', 'success');
-    } else {
-      const nueva = { ...nuevaOrg, id: Date.now(), estado: 'activa' };
-      setOrganizaciones([...organizaciones, nueva]);
-      Swal.fire('¡Registrada!', 'La empresa ha sido creada con éxito.', 'success');
+  
+    const formData = new FormData();
+    formData.append("name", nuevaOrg.nombre);
+    formData.append("companyName", nuevaOrg.razonSocial);
+    formData.append("cuit", nuevaOrg.cuit);
+    formData.append("address", nuevaOrg.direccion);
+    formData.append("planId", nuevaOrg.tipoPlan);
+    if (nuevaOrg.logoFile) {
+      formData.append("logo", nuevaOrg.logoFile);
     }
-
-    setNuevaOrg({ nombre: '', razonSocial: '', cuit: '', direccion: '', tipoPlan: '', logo: '' });
-    setOrgEditando(null);
-    setMostrarFormulario(false);
-    setLogoPreview(null);
-  };
+  
+    try {
+      const url = orgEditando
+        ? `${import.meta.env.VITE_API_URL}/organizations/${orgEditando.id}`
+        : `${import.meta.env.VITE_API_URL}/organizations`;
+  
+      const method = orgEditando ? 'PUT' : 'POST';
+  
+      const res = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+        body: formData
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        if (orgEditando) {
+          setOrganizaciones(prev =>
+            prev.map(org =>
+              org.id === orgEditando.id
+                ? { ...org, ...nuevaOrg, logo: nuevaOrg.logo || org.logo }
+                : org
+            )
+          );
+          Swal.fire('¡Actualizado!', 'Los datos han sido modificados.', 'success');
+        } else {
+          const nuevaEmpresa = {
+            id: data.organizationId,
+            nombre: nuevaOrg.nombre,
+            razonSocial: nuevaOrg.razonSocial,
+            cuit: nuevaOrg.cuit,
+            direccion: nuevaOrg.direccion,
+            tipoPlan: nuevaOrg.tipoPlan,
+            estado: true,
+            logo: `${import.meta.env.VITE_API_URL}/files/img/${nuevaOrg.logoFile.name}`
+          };
+          setOrganizaciones(prev => [...prev, nuevaEmpresa]);
+          Swal.fire('¡Registrada!', 'La empresa ha sido creada con éxito.', 'success');
+        }
+  
+        toggleFormulario();
+      } else {
+        Swal.fire('Error', data.message || 'No se pudo procesar la solicitud.', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error', 'Ocurrió un error inesperado.', 'error');
+    }
+  };  
 
   const cambiarEstado = async (id) => {
     const empresa = organizaciones.find((org) => org.id === id);
     const nuevaAccion = empresa.estado === 'activa' ? 'inactivar' : 'activar';
-
+  
     const confirmacion = await Swal.fire({
       title: `¿Deseas ${nuevaAccion} la empresa?`,
       text: `Empresa: ${empresa.nombre}`,
@@ -109,15 +195,35 @@ const CrearOrganizacion = () => {
       confirmButtonText: `Sí, ${nuevaAccion}`,
       cancelButtonText: 'Cancelar'
     });
-
+  
     if (!confirmacion.isConfirmed) return;
-
-    setOrganizaciones(organizaciones.map(org =>
-      org.id === id ? { ...org, estado: org.estado === 'activa' ? 'inactiva' : 'activa' } : org
-    ));
-
-    Swal.fire('¡Estado actualizado!', `La empresa fue ${nuevaAccion} correctamente.`, 'success');
+  
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/organizations/${id}/toggle-status`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        setOrganizaciones(prev =>
+          prev.map(org =>
+            org.id === id ? { ...org, estado: org.estado === 'activa' ? 'inactiva' : 'activa' } : org
+          )
+        );
+        Swal.fire('¡Estado actualizado!', `La empresa fue ${nuevaAccion} correctamente.`, 'success');
+      } else {
+        Swal.fire('Error', data.message || 'No se pudo actualizar el estado.', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error', 'Error al cambiar estado.', 'error');
+    }
   };
+  
 
   const handleEditar = (org) => {
     setNuevaOrg({
@@ -157,7 +263,7 @@ const CrearOrganizacion = () => {
               <p><strong>CUIT:</strong> {org.cuit}</p>
               <p><strong>Dirección:</strong> {org.direccion}</p>
               <p><strong>Plan:</strong> {org.tipoPlan}</p>
-              <p><strong>Estado:</strong> {org.estado}</p>
+              <p><strong>Estado:</strong> {org.estado == 'activa' ? 'activa' : 'inactiva'}</p>
               {org.logo && <img src={org.logo} alt="Logo" style={{ width: '100px', marginTop: '10px' }} />}
               <div className="botones-org">
                 <button className="boton-editar" onClick={() => handleEditar(org)}>Editar</button>
@@ -254,9 +360,9 @@ const CrearOrganizacion = () => {
               required
             >
               <option value="">Seleccionar plan</option>
-              <option value="Básico">Básico</option>
-              <option value="Estándar">Estándar</option>
-              <option value="Premium">Premium</option>
+              <option value="1">Básico</option>
+              <option value="2">Estándar</option>
+              <option value="3">Premium</option>
             </select>
             <input type="file" accept="image/*" onChange={handleFileChange} />
             {logoPreview && <img src={logoPreview} alt="Vista previa" style={{ width: '120px' }} />}
