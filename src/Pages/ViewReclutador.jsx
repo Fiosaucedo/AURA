@@ -275,6 +275,7 @@ const ViewReclutador = () => {
                   <th>Habilidades</th>
                   <th>Puesto al que se postuló</th>
                   <th>¿Es apto?</th>
+                  <th>Score de aptitud</th>
                   <th>Contactarse</th>
                 </tr>
               </thead>
@@ -297,6 +298,7 @@ const ViewReclutador = () => {
                       <td>{Array.isArray(c.keywords) ? c.keywords.join(', ') : c.keywords}</td>
                       <td>{c.job_title}</td>
                       <td className={c.is_apt ? 'apto' : 'no-apto'}>{c.is_apt ? 'Sí' : 'No'}</td>
+                      <td>{c.apt_score != null ? `${Number(c.apt_score).toFixed(2)}%` : 'N/A'}</td>
                       <td><button onClick={() => handleContactarse(c.name, c.is_apt)}>✉️</button></td>
                     </tr>
                   ))}

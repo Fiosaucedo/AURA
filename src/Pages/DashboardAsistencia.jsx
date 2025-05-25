@@ -48,17 +48,29 @@ const DashboardAsistencia = () => {
   const presentes = porEmpleadoUnico.filter(d => d.status === 'Presente').length;
   const ausentes = porEmpleadoUnico.filter(d => d.status === 'Ausente').length;
   const tardes = porEmpleadoUnico.filter(d => d.status === 'Tarde').length;
+  const sinDatos = presentes === 0 && ausentes === 0 && tardes === 0;
 
-  const pieData = {
-    labels: ['Presentes', 'Ausentes', 'Tarde'],
-    datasets: [
-      {
-        data: [presentes, ausentes, tardes],
-        backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
-        borderWidth: 1
-      }
-    ]
-  };
+  const pieData = sinDatos
+  ? {
+      labels: ['Sin datos'],
+      datasets: [
+        {
+          data: [1],
+          backgroundColor: ['#d3d3d3'],
+          borderWidth: 1
+        }
+      ]
+    }
+  : {
+      labels: ['Presentes', 'Ausentes', 'Tarde'],
+      datasets: [
+        {
+          data: [presentes, ausentes, tardes],
+          backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+          borderWidth: 1
+        }
+      ]
+    };
 
   const pieOptions = {
     plugins: {
@@ -67,12 +79,12 @@ const DashboardAsistencia = () => {
     }
   };
 
-  // Gráfico de barras semanal
+  
   const getWeekDates = () => {
     const base = new Date(fecha);
-    const day = base.getDay(); // 0 = domingo
+    const day = base.getDay(); 
     const monday = new Date(base);
-    monday.setDate(base.getDate() - (day === 0 ? 6 : day - 1)); // lunes anterior
+    monday.setDate(base.getDate() - (day === 0 ? 6 : day - 1)); 
 
     const dates = [];
     for (let i = 0; i < 7; i++) {
@@ -127,7 +139,7 @@ const DashboardAsistencia = () => {
   return (
     <div className="dashboard-asistencia">
       <input type="date" value={fecha} onChange={e => setFecha(e.target.value)} />
-
+      <div className="dashboard-asistencia-graficos">
       <div className="pie-chart-container">
         <Pie data={pieData} options={pieOptions} />
       </div>
@@ -135,6 +147,7 @@ const DashboardAsistencia = () => {
       <div className="bar-chart-container" style={{ marginTop: '40px' }}>
         <Bar data={barData} options={barOptions} />
       </div>
+    </div>
     </div>
   );
 };

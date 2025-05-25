@@ -20,7 +20,7 @@ const Asistencia = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
-        if (!['admin', 'receptionist'].includes(data.role)) {
+        if (!['admin', 'supervisor', 'receptionist'].includes(data.role)) {
           Swal.fire({
             icon: 'error',
             title: 'Acceso denegado',

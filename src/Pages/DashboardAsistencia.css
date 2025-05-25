@@ -181,3 +181,7 @@
     border: 1px solid #ccc;
   }
   
+  .dashboard-asistencia-graficos{
+    display: flex
+    
+  }

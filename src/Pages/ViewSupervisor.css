@@ -1,11 +1,11 @@
 .supervisor-container {
   font-family: 'Segoe UI', sans-serif;
   padding: 40px;
-  background: linear-gradient(135deg, #f4f6f8, #eaf1f8); /* Un gradiente sutil y moderno */
+  background: linear-gradient(135deg, #f4f6f8, #eaf1f8);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centrar contenido horizontalmente */
+  align-items: center;
 }
 
 .supervisor-header {
@@ -13,8 +13,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
-  width: 90%; /* Limitar el ancho del header */
-  max-width: 1200px; /* Ancho máximo */
+  width: 90%;
+  max-width: 1200px;
 }
 
 .supervisor-logo {
@@ -76,21 +76,21 @@
 
 .supervisor-card-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Diseño más adaptable */
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 30px;
   margin-top: 30px;
   padding: 20px;
-  width: 100%; /* Ocupar todo el ancho disponible */
+  width: 100%;
   max-width: 1200px;
 }
 
 .supervisor-card {
-  background: white; /* Fondo blanco para mejor contraste */
+  background: white;
   display: flex;
-  flex-direction: column; /* Cambiar a columna para mejor organización en tarjetas más pequeñas */
+  flex-direction: column;
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Sombra más pronunciada */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-align: left;
@@ -110,7 +110,7 @@
 
 .supervisor-card p {
   color: #555;
-  line-height: 1.6; /* Mejor legibilidad */
+  line-height: 1.6;
   margin-bottom: 8px;
 }
 
@@ -121,9 +121,9 @@
 
 .supervisor-formulario {
   max-width: 700px;
-  margin: 30px auto; /* Añadir margen superior e inferior */
+  margin: 30px auto;
   animation: fadeIn 0.7s ease;
-  padding: 20px; /* Añadir padding alrededor del formulario */
+  padding: 20px;
   width: 90%;
 }
 
@@ -173,13 +173,13 @@
 
 .botones-form {
   display: flex;
-  justify-content: flex-end; /* Alinear botones a la derecha */
+  justify-content: flex-end;
   margin-top: 30px;
   gap: 15px;
 }
 
 .formulario button {
-  flex-grow: 0; /* Evitar que los botones se expandan demasiado */
+  flex-grow: 0;
   padding: 14px 22px;
   border: none;
   border-radius: 10px;
@@ -222,13 +222,13 @@
   margin-bottom: 25px;
   padding: 25px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, auto)); /* Diseño de grid más flexible */
-  gap: 15px 20px; /* Ajustar espaciado entre elementos de la tarjeta */
+  grid-template-columns: repeat(auto-fit, minmax(150px, auto));
+  gap: 15px 20px;
   align-items: center;
 }
 
 .supervisor-postulaciones .supervisor-card h3 {
-  grid-column: 1 / -1; /* El título ocupa toda la fila */
+  grid-column: 1 / -1;
 }
 
 .supervisor-postulaciones .supervisor-card p {
@@ -236,7 +236,7 @@
 }
 
 .supervisor-postulaciones .botones-form {
-  grid-column: 1 / -1; /* Los botones ocupan toda la fila */
+  grid-column: 1 / -1;
   justify-content: flex-end;
   margin-top: 20px;
 }
@@ -246,7 +246,168 @@
   font-size: 15px;
 }
 
-/* Animaciones */
+.info-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  padding: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.info-button:hover {
+  background-color: #0056b3;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #4a84c2;
+  padding: 20px 30px;
+  border-radius: 10px;
+  max-width: 500px;
+  max-height: 80%;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.modal h3 {
+  margin-top: 0;
+}
+
+.modal button {
+  margin-top: 20px;
+  background-color: #0c3b6d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal button:hover {
+  background-color: #0056b3;
+}
+
+/* Certificados Enviados */
+.supervisor-certificados {
+  width: 90%;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+  animation: fadeIn 0.8s ease;
+}
+
+.supervisor-certificados .supervisor-title {
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.certificado-card {
+  background-color: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  animation: fadeInUp 0.5s ease;
+}
+
+.certificado-card p {
+  margin: 6px 0;
+  color: #444;
+  font-size: 15px;
+}
+
+.certificado-card strong {
+  color: #0f1a4b;
+}
+
+.certificado-estado {
+  font-weight: bold;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background-color: #e1f3e8;
+  color: #2e7d32;
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.postulaciones-section {
+  padding: 2rem;
+  background-color: #f5f6fa;
+}
+
+.postulacion-card {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-left: 5px solid #007bff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.postulacion-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.postulacion-card h3 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.postulacion-card p {
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.postulacion-card strong {
+  color: #222;
+}
+
+.postulacion-card .buttons {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.postulacion-card .buttons button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.postulacion-card .buttons button:hover {
+  background-color: #0056b3;
+}
+
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -260,4 +421,4 @@
 @keyframes fadeInDown {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
-} 
+}
