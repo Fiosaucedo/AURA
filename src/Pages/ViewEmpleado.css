@@ -240,3 +240,18 @@
 .swal2-cancel-custom:hover {
   background-color: #545b62 !important;
 }
+
+
+.ver-archivo-boton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.ver-archivo-boton:hover {
+  background-color: #45a049;
+}

@@ -1,72 +1,69 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import './ViewEmpleado.css';
-import Swal from 'sweetalert2'; // Importa SweetAlert2
 
-const solicitudesIniciales = [
-  { id: 1, archivo: 'certificado_medico_juan.pdf', fechaEnvio: '2025-05-15', estado: 'Aprobado' },
-  { id: 2, archivo: 'justificativo_reunion.docx', fechaEnvio: '2025-05-16', estado: 'En proceso' },
-  { id: 3, archivo: 'examen_final.jpg', fechaEnvio: '2025-05-17', estado: 'Rechazado' },
-];
-
-function ViewEmpleado() {
+const ViewEmpleado = () => {
   const [archivoSeleccionado, setArchivoSeleccionado] = useState(null);
-  const [solicitudes, setSolicitudes] = useState(solicitudesIniciales);
-  const [vista, setVista] = useState('tarjetas'); // 'tarjetas' o 'lista'
+  const [fechaCertificado, setFechaCertificado] = useState('');
+  const [certificados, setCertificados] = useState([]);
+  const [vista, setVista] = useState('tarjetas');
+
+  const API_URL = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    fetch(`${API_URL}/certificates`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => setCertificados(data))
+      .catch(err => console.error(err));
+  }, []);
 
   const handleArchivoSeleccionado = (event) => {
     setArchivoSeleccionado(event.target.files[0]);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (archivoSeleccionado) {
-      Swal.fire({
-        title: '¿Estás seguro de enviar este certificado?',
-        text: `Archivo: ${archivoSeleccionado.name}`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, enviar',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-          confirmButton: 'swal2-confirm-custom',
-          cancelButton: 'swal2-cancel-custom',
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const nuevaSolicitud = {
-            id: Date.now(),
-            archivo: archivoSeleccionado.name,
-            fechaEnvio: new Date().toLocaleDateString(),
-            estado: 'En proceso',
-          };
-          setSolicitudes([...solicitudes, nuevaSolicitud]);
-          setArchivoSeleccionado(null);
-          Swal.fire({
-            title: '¡Enviado!',
-            text: `El archivo "${nuevaSolicitud.archivo}" se ha enviado correctamente.`,
-            icon: 'success',
-            confirmButtonText: 'Aceptar',
-            customClass: {
-              confirmButton: 'swal2-confirm-custom',
-            },
-          });
-        }
-      });
-    } else {
-      Swal.fire({
-        title: '¡Ups!',
-        text: 'Por favor, selecciona un archivo.',
-        icon: 'warning',
-        confirmButtonText: 'Aceptar',
-        customClass: {
-          confirmButton: 'swal2-confirm-custom',
-        },
-      });
+    if (!archivoSeleccionado || !fechaCertificado) {
+      Swal.fire('Faltan datos', 'Debés seleccionar un archivo y una fecha.', 'warning');
+      return;
     }
-  };
 
-  const cambiarVista = (nuevaVista) => {
-    setVista(nuevaVista);
+    const formData = new FormData();
+    formData.append('file', archivoSeleccionado);
+    formData.append('certificate_date', fechaCertificado);
+
+    try {
+      const res = await fetch(`${API_URL}/certificates`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        Swal.fire('Éxito', 'Certificado subido correctamente.', 'success');
+        setArchivoSeleccionado(null);
+        setFechaCertificado('');
+        // Actualizar lista
+        const nuevaRespuesta = await fetch(`${API_URL}/certificates`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const nuevosCertificados = await nuevaRespuesta.json();
+        setCertificados(nuevosCertificados);
+      } else {
+        Swal.fire('Error', data.error || 'Hubo un problema al subir el certificado.', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error', 'Error de red al subir el archivo.', 'error');
+    }
   };
 
   return (
@@ -80,61 +77,94 @@ function ViewEmpleado() {
         <h2>Enviar Nuevo Certificado</h2>
         <form onSubmit={handleSubmit}>
           <div className="input-archivo">
-            <label htmlFor="archivo">Seleccionar Archivo:</label>
+            <label>Archivo:</label>
             <input
               type="file"
-              id="archivo"
               onChange={handleArchivoSeleccionado}
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
             />
           </div>
-          <button type="submit" className="boton-enviar">Enviar Certificado</button>
+          <div className="input-fecha">
+            <label>Fecha del Certificado:</label>
+            <input
+              type="date"
+              value={fechaCertificado}
+              onChange={(e) => setFechaCertificado(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="boton-enviar">Enviar</button>
         </form>
       </section>
 
       <section className="ver-solicitudes">
-        <h2>Mis Solicitudes</h2>
+        <h2>Mis Certificados</h2>
         <div className="selector-vista">
-          <button
-            className={`boton-vista ${vista === 'tarjetas' ? 'activo' : ''}`}
-            onClick={() => cambiarVista('tarjetas')}
-          >
+          <button className={vista === 'tarjetas' ? 'activo' : ''} onClick={() => setVista('tarjetas')}>
             Vista en Tarjetas
           </button>
-          <button
-            className={`boton-vista ${vista === 'lista' ? 'activo' : ''}`}
-            onClick={() => cambiarVista('lista')}
-          >
+          <button className={vista === 'lista' ? 'activo' : ''} onClick={() => setVista('lista')}>
             Vista en Lista
           </button>
         </div>
 
         {vista === 'tarjetas' ? (
           <div className="solicitudes-tarjetas">
-            {solicitudes.map((solicitud) => (
-              <div key={solicitud.id} className={`tarjeta-solicitud estado-${solicitud.estado.toLowerCase().replace(' ', '-')}`}>
-                    <p><strong>Archivo:</strong> {solicitud.archivo}</p>
-                    <p><strong>Fecha de Envío:</strong> {solicitud.fechaEnvio}</p>
-                    <p><strong>Estado:</strong> {solicitud.estado}</p>
-              </div>
-            ))}
+            {certificados.map(cert => {
+              const ultimoEstado = {
+                state: cert.last_state,
+                comment: cert.last_comment
+              };
+              return (
+                <div key={cert.id} className={`tarjeta-solicitud estado-${ultimoEstado?.state?.toLowerCase()}`}>
+                  <p>
+                    <strong>Archivo:</strong>{' '}
+                    <button
+                      onClick={() => window.open(`${API_URL}/${cert.file_path}`, '_blank')}
+                      className="ver-archivo-boton"
+                    >
+                      Ver
+                    </button>
+                  </p>                  <p><strong>Fecha Certificado:</strong> {cert.certificate_date}</p>
+                  <p><strong>Último Estado:</strong> {ultimoEstado?.state}</p>
+                  <p><strong>Comentario:</strong> {ultimoEstado?.comment}</p>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <table className="solicitudes-lista">
+            <thead>
+              <tr>
+                <th>Archivo</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Comentario</th>
+              </tr>
+            </thead>
             <tbody>
-              {solicitudes.map((solicitud) => (
-                <tr key={solicitud.id} className={`estado-${solicitud.estado.toLowerCase().replace(' ', '-')}`}>
-                  <td>{solicitud.archivo}</td>
-                  <td>{solicitud.fechaEnvio}</td>
-                  <td>{solicitud.estado}</td>
-                </tr>
-              ))}
+              {certificados.map(cert => {
+                const ultimoEstado = cert.history.at(-1);
+                return (
+                  <tr key={cert.id} className={`estado-${ultimoEstado?.state?.toLowerCase()}`}>
+                    <td>
+                      <button
+                        onClick={() => window.open(`${API_URL}/${cert.file_path}`, '_blank')}
+                        className="ver-archivo-boton"
+                      >
+                        Ver
+                      </button>
+                    </td>                    <td>{cert.certificate_date}</td>
+                    <td>{ultimoEstado?.state}</td>
+                    <td>{ultimoEstado?.comment}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
       </section>
     </div>
   );
-}
+};
 
 export default ViewEmpleado;

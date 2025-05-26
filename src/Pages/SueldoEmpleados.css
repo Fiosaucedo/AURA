@@ -1,0 +1,24 @@
+.sueldo-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.sueldo-table th, .sueldo-table td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.sueldo-table th {
+  background-color: #f5f5f5;
+}
+
+.sueldo-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.sueldos-container{
+    color: black;
+    padding: 20px;
+}

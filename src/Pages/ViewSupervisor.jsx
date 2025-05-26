@@ -23,11 +23,16 @@ function ViewSupervisor() {
   const [vistaCertificados, setVistaCertificados] = useState('tarjetas');
 
 
+
   const abrirModal = (descripcion) => setDescripcionSeleccionada(descripcion);
   const cerrarModal = () => setDescripcionSeleccionada(null);
 
+  const verArchivo = (path) => {
+    const fullUrl = `${import.meta.env.VITE_API_URL}/${path}`;
+    window.open(fullUrl, '_blank');
+  };
 
- useEffect(() => {
+  useEffect(() => {
     const validateUser = async () => {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/login");
@@ -356,12 +361,13 @@ function ViewSupervisor() {
               {certificados.map(c => (
                 <div key={c.id} className="certificado-card">
                   <h4>{c.employee_name}</h4>
-                  <p><strong>Fecha envío:</strong> {new Date(c.sent_date).toLocaleDateString()}</p>
-                  <p><strong>Tipo:</strong> {c.type}</p>
-                  <p><strong>Estado:</strong> {c.status}</p>
+                  <p><strong>Fecha del certificado:</strong> {new Date(c.certificate_date).toLocaleDateString()}</p>
+                  <p><strong>Estado:</strong> {c.last_state}</p>
+                  <p><strong>Comentario:</strong> {c.last_comment}</p>
                   <div className="certificado-buttons">
-                    <button onClick={() => aprobarCertificado(c.id)}>Aprobar</button>
-                    <button onClick={() => rechazarCertificado(c.id)}>Rechazar</button>
+                    <button onClick={() => verArchivo(c.file_path)}>📄 Ver archivo</button>
+                    <button onClick={() => aprobarCertificado(c.id)}>✅ Aprobar</button>
+                    <button onClick={() => rechazarCertificado(c.id)}>❌ Rechazar</button>
                   </div>
                 </div>
               ))}
@@ -373,9 +379,9 @@ function ViewSupervisor() {
               <thead>
                 <tr>
                   <th>Empleado</th>
-                  <th>Fecha envío</th>
-                  <th>Tipo</th>
+                  <p><strong>Fecha del certificado:</strong> </p>
                   <th>Estado</th>
+                  <th>Comentario</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -383,12 +389,13 @@ function ViewSupervisor() {
                 {certificados.map(c => (
                   <tr key={c.id}>
                     <td>{c.employee_name}</td>
-                    <td>{new Date(c.sent_date).toLocaleDateString()}</td>
-                    <td>{c.type}</td>
-                    <td>{c.status}</td>
+                    <td>{new Date(c.certificate_date).toLocaleDateString()}</td>
+                    <p><strong>Estado:</strong> {c.last_state}</p>
+                    <p><strong>Comentario:</strong> {c.last_comment}</p>
                     <td>
-                      <button onClick={() => aprobarCertificado(c.id)}>Aprobar</button>
-                      <button onClick={() => rechazarCertificado(c.id)}>Rechazar</button>
+                      <button onClick={() => verArchivo(c.file_path)}>📄 Ver</button>
+                      <button onClick={() => aprobarCertificado(c.id)}>✅</button>
+                      <button onClick={() => rechazarCertificado(c.id)}>❌</button>
                     </td>
                   </tr>
                 ))}

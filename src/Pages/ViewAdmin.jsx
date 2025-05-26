@@ -131,48 +131,52 @@ const ViewAdmin = () => {
       },
       showCloseButton: true,
       html: `
-          <div class="formContainer">
-            <div class="column-left">
-              <div class="campo">
-                <label>Nombre</label>
-                <p id="nombreTexto">${empleado.name}</p>
-              </div>
-              <div class="campo">
-                <label>Rol</label>
-                <p id="rolTexto">${empleado.role}</p>
-              </div>
-              <div class="campo">
-                <label>Puesto</label>
-                <p id="puestoTexto">${empleado.position}</p>
-              </div>
-              <div class="campo">
-                <label>Email</label>
-                <p id="emailTexto">${empleado.email}</p>
-              </div>
-              <div class="campo">
-                <label>Estado</label>
-                <p id="estadoTexto">${empleado.status}</p>
-              </div>
-            </div>
-            <div class="column-right">
-              <div class="campo">
-                <label>DNI</label>
-                <p id="dniTexto">${empleado.dni}</p>
-              </div>
-              <div class="campo">
-                <label>Teléfono</label>
-                <p id="telefonoTexto">${empleado.phone}</p>
-              </div>
-              <div class="campo">
-                <label>Dirección</label>
-                <p id="direccionTexto">${empleado.address}</p>
-              </div>
-               </div>
-  </div>
-  <div style="text-align: center; margin-top: 15px;">
-    <button id="editarBtn" title="Editar">✏️ Editar</button>
-  </div>
-        `,
+      <div class="formContainer">
+        <div class="column-left">
+          <div class="campo">
+            <label>Nombre</label>
+            <p id="nombreTexto">${empleado.name}</p>
+          </div>
+          <div class="campo">
+            <label>Rol</label>
+            <p id="rolTexto">${empleado.role}</p>
+          </div>
+          <div class="campo">
+            <label>Puesto</label>
+            <p id="puestoTexto">${empleado.position}</p>
+          </div>
+          <div class="campo">
+            <label>Email</label>
+            <p id="emailTexto">${empleado.email}</p>
+          </div>
+          <div class="campo">
+            <label>Estado</label>
+            <p id="estadoTexto">${empleado.status}</p>
+          </div>
+        </div>
+        <div class="column-right">
+          <div class="campo">
+            <label>DNI</label>
+            <p id="dniTexto">${empleado.dni}</p>
+          </div>
+          <div class="campo">
+            <label>Teléfono</label>
+            <p id="telefonoTexto">${empleado.phone}</p>
+          </div>
+          <div class="campo">
+            <label>Dirección</label>
+            <p id="direccionTexto">${empleado.address}</p>
+          </div>
+          <div class="campo">
+            <label>Sueldo mensual ($)</label>
+            <input id="salaryInput" type="number" class="swal2-input" min="0" step="0.01" value="${empleado.salary ?? ''}">
+          </div>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 15px;">
+        <button id="editarBtn" title="Editar">✏️ Editar</button>
+      </div>
+    `,
       showCancelButton: false,
       showConfirmButton: false,
       preConfirm: () => {
@@ -184,12 +188,15 @@ const ViewAdmin = () => {
         const telefonoInput = document.getElementById("telefonoInput");
         const direccionInput = document.getElementById("direccionInput");
         const rolInput = document.getElementById("rolInput");
-      
-        if (!nombreInput || !puestoInput || !emailInput || !estadoInput || !dniInput || !telefonoInput || !direccionInput || !rolInput) {
-          Swal.showValidationMessage("Primero tenés que apretar ✏️ para editar.");
+        const salaryInput = document.getElementById("salaryInput");
+
+        const salary = parseFloat(salaryInput?.value);
+
+        if (!nombreInput || !puestoInput || !emailInput || !estadoInput || !dniInput || !telefonoInput || !direccionInput || !rolInput || isNaN(salary)) {
+          Swal.showValidationMessage("Faltan datos o el sueldo es inválido.");
           return false;
         }
-      
+
         const nombre = nombreInput.value;
         const puesto = puestoInput.value;
         const email = emailInput.value;
@@ -198,7 +205,7 @@ const ViewAdmin = () => {
         const telefono = telefonoInput.value;
         const direccion = direccionInput.value;
         const rol = rolInput.value;
-      
+
         const cambiosRealizados = (
           empleado.name !== nombre ||
           empleado.position !== puesto ||
@@ -207,14 +214,15 @@ const ViewAdmin = () => {
           empleado.dni !== dni ||
           empleado.phone !== telefono ||
           empleado.address !== direccion ||
-          empleado.role !== rol
+          empleado.role !== rol ||
+          parseFloat(empleado.salary) !== salary
         );
-      
+
         if (!cambiosRealizados) {
           Swal.showValidationMessage("No se hicieron cambios.");
           return false;
         }
-      
+
         return {
           ...empleado,
           name: nombre,
@@ -224,49 +232,50 @@ const ViewAdmin = () => {
           dni: dni,
           phone: telefono,
           address: direccion,
-          role: rol
+          role: rol,
+          salary: salary
         };
       },
       didOpen: () => {
         let modoEdicion = false;
-      
+
         const editarBtn = document.getElementById("editarBtn");
         editarBtn.addEventListener("click", () => {
           if (!modoEdicion) {
             document.getElementById("nombreTexto").outerHTML = `<input id="nombreInput" class="swal2-input" value="${empleado.name}">`;
             document.getElementById("puestoTexto").outerHTML = `<input id="puestoInput" class="swal2-input" value="${empleado.position}">`;
             document.getElementById("rolTexto").outerHTML = `
-              <select id="rolInput" class="swal2-input">
-                <option value="employee" ${empleado.role === "employee" ? "selected" : ""}>Empleado</option>
-                <option value="receptionist" ${empleado.role === "receptionist" ? "selected" : ""}>Recepcionista</option>
-                <option value="recruiter" ${empleado.role === "recruiter" ? "selected" : ""}>Reclutador</option>
-                <option value="supervisor" ${empleado.role === "supervisor" ? "selected" : ""}>Supervisor</option>
-                <option value="admin" ${empleado.role === "admin" ? "selected" : ""}>Administrador</option>
-              </select>
-            `;
+            <select id="rolInput" class="swal2-input">
+              <option value="employee" ${empleado.role === "employee" ? "selected" : ""}>Empleado</option>
+              <option value="receptionist" ${empleado.role === "receptionist" ? "selected" : ""}>Recepcionista</option>
+              <option value="recruiter" ${empleado.role === "recruiter" ? "selected" : ""}>Reclutador</option>
+              <option value="supervisor" ${empleado.role === "supervisor" ? "selected" : ""}>Supervisor</option>
+              <option value="admin" ${empleado.role === "admin" ? "selected" : ""}>Administrador</option>
+            </select>
+          `;
             document.getElementById("emailTexto").outerHTML = `<input id="emailInput" class="swal2-input" value="${empleado.email}">`;
             document.getElementById("estadoTexto").outerHTML = `
-              <select id="estadoInput" class="swal2-input">
-                <option value="activo" ${empleado.status === "activo" ? "selected" : ""}>Activo</option>
-                <option value="inactivo" ${empleado.status === "inactivo" ? "selected" : ""}>Inactivo</option>
-              </select>
-            `;
+            <select id="estadoInput" class="swal2-input">
+              <option value="activo" ${empleado.status === "activo" ? "selected" : ""}>Activo</option>
+              <option value="inactivo" ${empleado.status === "inactivo" ? "selected" : ""}>Inactivo</option>
+            </select>
+          `;
             document.getElementById("dniTexto").outerHTML = `<input id="dniInput" class="swal2-input" value="${empleado.dni}">`;
             document.getElementById("telefonoTexto").outerHTML = `<input id="telefonoInput" class="swal2-input" value="${empleado.phone}">`;
             document.getElementById("direccionTexto").outerHTML = `<input id="direccionInput" class="swal2-input" value="${empleado.address}">`;
-      
+
             editarBtn.textContent = "💾 Guardar cambios";
             modoEdicion = true;
           } else {
             Swal.clickConfirm();
           }
         });
-      }      
+      }
     }).then(result => {
       if (result.isConfirmed && result.value) {
         fetch(`${VITE_API_URL}/employees/${result.value.id}`, {
           method: "PUT",
-          headers: { 
+          headers: {
             "Authorization": `Bearer ${localStorage.getItem('token')}`,
             "Content-Type": "application/json"
           },
@@ -286,6 +295,7 @@ const ViewAdmin = () => {
       }
     });
   };
+
 
   const abrirPopupAgregarEmpleado = () => {
     Swal.fire({
@@ -340,6 +350,10 @@ const ViewAdmin = () => {
                   <option value="admin">Administrador</option>
                 </select>
               </div>
+              <div class="campo">
+                <label>Sueldo mensual ($)</label>
+                <input id="salaryInput" type="number" class="swal2-input" min="0" step="0.01" value="">
+              </div>
             </div>
           </div>
         `,
@@ -354,13 +368,22 @@ const ViewAdmin = () => {
         const telefono = document.getElementById("telefonoInput").value;
         const direccion = document.getElementById("direccionInput").value;
         const rol = document.getElementById("rolInput").value;
+        const salary = parseFloat(document.getElementById("salaryInput").value);
 
-        if (!nombre || !puesto || !email || !estado || !dni || !telefono || !direccion || !rol) {
+        if (isNaN(salary) || salary <= 0) {
+          Swal.showValidationMessage("Por favor, ingresá un sueldo válido.");
+          return false;
+        }
+
+
+        if (!nombre || !puesto || !email || !estado || !dni || !telefono || !direccion || !rol || !salary) {
           Swal.showValidationMessage("Por favor, completa todos los campos.");
           return false;
         }
 
-        return { nombre, puesto, email, estado, dni, telefono, direccion, rol };
+
+
+        return { nombre, puesto, email, estado, dni, telefono, direccion, rol, salary };
       }
     }).then(result => {
       if (result.isConfirmed && result.value) {
@@ -373,11 +396,12 @@ const ViewAdmin = () => {
           phone: result.value.telefono,
           address: result.value.direccion,
           role: result.value.rol,
-          organization_id: adminUser?.organization_id
+          organization_id: adminUser?.organization_id,
+          salary: result.value.salary
         };
         fetch(`${VITE_API_URL}/employees`, {
           method: "POST",
-          headers: { 
+          headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${localStorage.getItem('token')}`,
           },
@@ -426,7 +450,7 @@ const ViewAdmin = () => {
         <div className="filtros">
           <div className="filtros-izquierda">
             <button onClick={abrirPopupAgregarEmpleado}> <UserPlus size={20} className="icono" />
-               Agregar empleado</button>
+              Agregar empleado</button>
             <input
               type="text"
               placeholder="Buscar por nombre"
@@ -486,7 +510,7 @@ const ViewAdmin = () => {
                     <span className={`estado ${e.status}`}>{e.status}</span>
                   </td>
                   <td>
-                    <button className="info-button"onClick={() => abrirPopup(e)}><Info size={20} className="icono" /></button>
+                    <button className="info-button" onClick={() => abrirPopup(e)}><Info size={20} className="icono" /></button>
                   </td>
                 </tr>
               ))}

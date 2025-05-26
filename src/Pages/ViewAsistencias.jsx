@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import CalendarioAsistencia from './CalendarioAsistencia';
 import './ViewAsistencias.css';
 import { useNavigate } from 'react-router-dom';
+import SueldoEmpleados from './SueldoEmpleados';
+
 
 
 const Asistencia = () => {
@@ -43,9 +45,9 @@ const Asistencia = () => {
         });
       }
     };
-  
+
     fetchUser();
-  }, []);  
+  }, []);
 
   const handleLogout = () => {
     Swal.fire({
@@ -61,7 +63,7 @@ const Asistencia = () => {
       }
     });
   };
-  
+
 
   return (
     <div className="asistencia-container">
@@ -93,6 +95,9 @@ const Asistencia = () => {
             <button className={activeTab === 'calendario' ? 'active' : ''} onClick={() => setActiveTab('calendario')}>
               Calendario
             </button>
+            <button className={activeTab === 'sueldos' ? 'active' : ''} onClick={() => setActiveTab('sueldos')}>
+              Sueldos
+            </button>
           </div>
         </div>
         {activeTab === 'dashboard' && (
@@ -104,6 +109,7 @@ const Asistencia = () => {
 
       <div className="tab-content">
         {activeTab === 'calendario' && <CalendarioAsistencia />}
+        {activeTab === 'sueldos' && <SueldoEmpleados />}
       </div>
     </div>
   );
