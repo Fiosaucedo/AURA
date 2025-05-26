@@ -15,6 +15,7 @@ import ViewAsistencias from './Pages/ViewAsistencias';
 import ViewEmpleado from './Pages/ViewEmpleado';
 import ProtectedRouteLayout from './layouts/ProtectedRouteLayout';
 import NotFoundPage from './Pages/NotFoundPage';
+import CambiarPassword from './Pages/CambiarPassword';
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
           <Route path="/asistencias" element={<ViewAsistencias />} />
           <Route path="/vista-empleado" element={<ViewEmpleado />} />
           </Route>
-
+          <Route path="/cambiar-password" element={<CambiarPassword />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>

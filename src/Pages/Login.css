@@ -88,6 +88,14 @@
     font-size: 15px;
   }
 
+  .success {
+    color: green;
+  }
+
+  .error {
+    color: red;
+  }
+
   .forgot-password-link {
     margin-top: 10px;
     text-align: center;
