@@ -253,6 +253,7 @@ const ViewAdmin = () => {
               <option value="recruiter" ${empleado.role === "recruiter" ? "selected" : ""}>Reclutador</option>
               <option value="supervisor" ${empleado.role === "supervisor" ? "selected" : ""}>Supervisor</option>
               <option value="admin" ${empleado.role === "admin" ? "selected" : ""}>Administrador</option>
+              <option value="manager" ${empleado.role === "manager" ? "selected" : ""}>Gerente</option>
             </select>
           `;
             document.getElementById("emailTexto").outerHTML = `<input id="emailInput" class="swal2-input" value="${empleado.email}">`;
@@ -350,6 +351,7 @@ const ViewAdmin = () => {
                   <option value="recruiter">Reclutador</option>
                   <option value="supervisor">Supervisor</option>
                   <option value="admin">Administrador</option>
+                  <option value="manager">Gerente</option>
                 </select>
               </div>
               <div class="campo">

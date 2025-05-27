@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import './ViewEmpleado.css';
+import Header from '../components/Header';
+import { useNavigate } from 'react-router-dom';
 
 const ViewEmpleado = () => {
   const [archivoSeleccionado, setArchivoSeleccionado] = useState(null);
   const [fechaCertificado, setFechaCertificado] = useState('');
   const [certificados, setCertificados] = useState([]);
   const [vista, setVista] = useState('tarjetas');
+  const [adminUser, setAdminUser] = useState(null);
+   const [hasAccess, setHasAccess] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${API_URL}/certificates`, {
@@ -22,9 +27,57 @@ const ViewEmpleado = () => {
       .catch(err => console.error(err));
   }, []);
 
+  useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      
+      const res = await fetch(`${API_URL}/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!['employee'].includes(data.role)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Acceso denegado',
+          text: 'No tenés permiso para acceder a esta sección.',
+          confirmButtonText: 'Ir al login'
+        }).then(() => navigate("/login"));
+        return;
+      }
+      setAdminUser(data);
+      setHasAccess(true); 
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error de autenticación. Redirigiendo al login.'
+      }).then(() => navigate("/login"));
+    }
+  };
+
+  fetchUser();
+}, []);
+
+
   const handleArchivoSeleccionado = (event) => {
     setArchivoSeleccionado(event.target.files[0]);
   };
+
+   const handleLogout = () => {
+      Swal.fire({
+        title: '¿Cerrar sesión?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No'
+      }).then(result => {
+        if (result.isConfirmed) {
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+        }
+      });
+    };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -68,10 +121,7 @@ const ViewEmpleado = () => {
 
   return (
     <div className="empleado-container">
-      <header className="empleado-header">
-        <span className="logo-aura">✨Aura✨</span>
-        <h1>Solicitud de Certificados</h1>
-      </header>
+     <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={API_URL}/>
 
       <section className="enviar-certificado">
         <h2>Enviar Nuevo Certificado</h2>

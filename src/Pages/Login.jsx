@@ -64,9 +64,13 @@ function Login() {
             setTimeout(() => {
               navigate("/vista-supervisor");
             }, 500);
-          } else if (data.role === 'admin') {
+          } else if (data.role === 'admin' && data.email != "superadmin@aura.com") {
             setTimeout(() => {
               navigate("/vista-admin");
+            }, 500);
+          } else if (data.role === 'admin' && data.email == "superadmin@aura.com") {
+            setTimeout(() => {
+              navigate("/create-organization");
             }, 500);
           } else if (data.role === 'receptionist') {
             setTimeout(() => {
@@ -76,6 +80,19 @@ function Login() {
             setTimeout(() => {
               navigate("/vista-reclutador");
             }, 500);
+          }else if (data.role === 'superadmin') {
+            setTimeout(() => {
+              navigate("/create-organization");
+            }, 500);
+           } else if (data.role === 'employee') {
+            setTimeout(() => {
+              navigate("/vista-empleado");
+            }, 500);
+            } else if (data.role === 'gerente') {
+            setTimeout(() => {
+              navigate("/vista-asistencias");
+            }, 500);
+          
           } else {
             setTimeout(() => {
               navigate("/");

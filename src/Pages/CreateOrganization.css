@@ -10,9 +10,7 @@
 }
 
 .organizaciones-home {
-  max-width: 1200px;
-  margin: 100px auto;
-  padding: 2rem;
+ 
   font-family: "Segoe UI", sans-serif;
 }
 
@@ -51,6 +49,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
+  padding-left: 30px
 }
 
 .org-card {

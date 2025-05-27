@@ -4,6 +4,7 @@ import { FaCamera, FaVideo, FaSignInAlt, FaSignOutAlt, FaUserPlus } from 'react-
 import Webcam from 'react-webcam';
 import './ViewRecepcionista.css';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 
 const ViewRecepcionista = () => {
   const webcamRef = useRef(null);
@@ -203,6 +204,21 @@ const ViewRecepcionista = () => {
     }
   };
 
+   const handleLogout = () => {
+        Swal.fire({
+          title: '¿Cerrar sesión?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí',
+          cancelButtonText: 'No'
+        }).then(result => {
+          if (result.isConfirmed) {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+          }
+        });
+      };
+
   const assignFaceToEmployee = async () => {
     const token = localStorage.getItem("token");
     const imageSrc = webcamRef.current.getScreenshot();
@@ -254,7 +270,7 @@ const ViewRecepcionista = () => {
 
   return (
     <div className="receptionist-container">
-      <div className="aura-label-recep">✨Aura✨</div>
+      <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={API_URL} />
       <h1 className="main-message">Sonría, lo estamos filmando 😄</h1>
 
       {empleados.length > 0 && (
