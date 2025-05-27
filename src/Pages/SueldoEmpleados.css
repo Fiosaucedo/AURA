@@ -1,24 +1,70 @@
 .sueldo-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 25px; /* Ajusta el margen superior para separar del título o botón */
+  border-radius: 8px; /* Bordes redondeados para la tabla completa */
+  overflow: hidden; /* Asegura que los bordes redondeados se apliquen correctamente */
 }
 
 .sueldo-table th, .sueldo-table td {
-  border: 1px solid #ccc;
-  padding: 8px 12px;
+  border: 1px solid #e0e0e0; /* Un borde más suave para las celdas */
+  padding: 10px 15px; /* Más padding para que el contenido no esté tan apretado */
   text-align: left;
+  font-size: 0.95em; /* Ligeramente más pequeño para una mejor legibilidad */
 }
 
 .sueldo-table th {
-  background-color: #f5f5f5;
+  background-color: #f2f2f2; /* Color de fondo para los encabezados */
+  color: #555; /* Un gris más oscuro para el texto de los encabezados */
+  font-weight: bold;
+
+  letter-spacing: 0.5px; /* Espaciado entre letras para los encabezados */
 }
 
 .sueldo-table tr:nth-child(even) {
-  background-color: #f9f9f9;
+  background-color: #f8f8f8; /* Un gris muy suave para filas pares */
+}
+
+.sueldo-table tr:hover {
+  background-color: #eef; /* Un azul muy claro al pasar el ratón para una mejor interacción */
+  cursor: pointer; /* Indica que la fila es interactiva (aunque no tenga funcionalidad) */
 }
 
 .sueldos-container{
-    color: black;
+color: #2c3e50;
     padding: 20px;
+}
+
+.loading-sueldos {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 30px 0;
+    animation: pulse 1.5s infinite;
+}
+.loading-sueldos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  color: #555;
+  padding: 30px;
+}
+
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #003a77; /* Color azul para el spinner */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite; /* Animación de giro */
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

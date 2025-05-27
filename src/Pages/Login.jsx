@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext.jsx";
 import "./Login.css";
+import Header from "../components/Header.jsx"; 
 
 function Login() {
   const navigate = useNavigate();
@@ -63,9 +64,13 @@ function Login() {
             setTimeout(() => {
               navigate("/vista-supervisor");
             }, 500);
-          } else if (data.role === 'admin') {
+          } else if (data.role === 'admin' && data.email != "superadmin@aura.com") {
             setTimeout(() => {
               navigate("/vista-admin");
+            }, 500);
+          } else if (data.role === 'admin' && data.email == "superadmin@aura.com") {
+            setTimeout(() => {
+              navigate("/create-organization");
             }, 500);
           } else if (data.role === 'receptionist') {
             setTimeout(() => {
@@ -75,6 +80,19 @@ function Login() {
             setTimeout(() => {
               navigate("/vista-reclutador");
             }, 500);
+          }else if (data.role === 'superadmin') {
+            setTimeout(() => {
+              navigate("/create-organization");
+            }, 500);
+           } else if (data.role === 'employee') {
+            setTimeout(() => {
+              navigate("/vista-empleado");
+            }, 500);
+            } else if (data.role === 'gerente') {
+            setTimeout(() => {
+              navigate("/vista-asistencias");
+            }, 500);
+          
           } else {
             setTimeout(() => {
               navigate("/");
@@ -132,12 +150,8 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      {/* Label arriba a la izquierda */}
-      <div className="aura-label" onClick={() => navigate("/home")}>
-        ✨Aura✨
-      </div>
-
+      <div className="login-container">
+        <Header/>
       <div className="login-form">
         <h2>{resetPasswordMode ? "Recuperar contraseña" : "Iniciar sesión"}</h2>
 

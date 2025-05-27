@@ -28,6 +28,8 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/vista-postulante" element={<ViewPostulante />} />
+          <Route path="/contactanos" element={<ContactUs />} />
+          <Route path="/servicios" element={<Services />} />
 
           <Route element={<ProtectedRouteLayout />}>
         
@@ -39,8 +41,7 @@ function App() {
           <Route path="/vista-recepcionista" element={<ViewRecepcionista />} />
           <Route path="/vista-admin" element={<ViewAdmin />} />
           <Route path="/asistencias" element={<ViewAsistencias />} />
-          <Route path="/contactanos" element={<ContactUs />} />
-          <Route path="/servicios" element={<Services />} />
+
           <Route path="/vista-empleado" element={<ViewEmpleado />} />
           </Route>
           <Route path="/cambiar-password" element={<CambiarPassword />} />

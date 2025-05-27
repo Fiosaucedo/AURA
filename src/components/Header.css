@@ -38,10 +38,11 @@ h6 {
 }
 
 .main-logo {
-  font-size: x-large;
+  font-size: xx-large;
   font-weight: bold;
   color: white;
   text-decoration: none;
+  padding: 10px;
 }
 
 .main-logo:hover {
