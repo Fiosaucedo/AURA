@@ -54,31 +54,31 @@ function Login() {
           });
 
           const data = await res.json();
-          console.log(data);
-          if (data.role === 'supervisor') {
+          console.log(data)
+          if (result.must_change_password) {
+            setTimeout(() => {
+              navigate("/cambiar-password");
+            }, 500);
+          } else if (data.role === 'supervisor') {
             setTimeout(() => {
               navigate("/vista-supervisor");
-            }, 1000);
-          }
-          else if (data.role === 'admin'){
+            }, 500);
+          } else if (data.role === 'admin') {
             setTimeout(() => {
               navigate("/vista-admin");
-            }, 1000);
-          }
-          else if (data.role === 'receptionist'){
+            }, 500);
+          } else if (data.role === 'receptionist') {
             setTimeout(() => {
               navigate("/vista-recepcionista");
-            }, 1000);
-          }
-          else if (data.role === 'recruiter') {
+            }, 500);
+          } else if (data.role === 'recruiter') {
             setTimeout(() => {
               navigate("/vista-reclutador");
-            }, 1000);
-          }
-          else {
-             setTimeout(() => {
+            }, 500);
+          } else {
+            setTimeout(() => {
               navigate("/");
-            }, 1000);
+            }, 500);
           }
 
         } catch (err) {
@@ -103,25 +103,23 @@ function Login() {
     setAlertMessage("");
 
     try {
-      const response = await fetch("/api/verificar-email", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/recovery`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: data.email }),
       });
-
-      const result = await response.json();
-
-      if (response.ok && result.exists) {
-        setAlertMessage("Se ha enviado un enlace de recuperación a tu email.");
+      
+      if (response.ok) {
+        setAlertMessage("Si el correo está registrado, se ha enviado un enlace de recuperación.");
         setAlertType("success");
         setTimeout(() => {
           setResetPasswordMode(false);
           reset();
-        }, 1500);
+        }, 3000);
       } else {
-        setAlertMessage("No hay ninguna cuenta registrada con ese email.");
+        setAlertMessage("Ocurrió un error inesperado. Intentelo de nuevo más tarde.");
         setAlertType("error");
       }
     } catch (error) {
