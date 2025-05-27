@@ -81,7 +81,7 @@ h1 {
 
 
 .campo {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .campo label {
@@ -114,7 +114,14 @@ h1 {
 .formContainer {
   display: flex;
   justify-content: space-between;
-  gap: 40px;
+  flex-direction: column;
+}
+
+.datos {
+  display: flex; /* Habilitamos Flexbox */
+  flex-wrap: wrap; /* Permite que las columnas salten de línea en pantallas pequeñas */
+  gap: 30px; /* Espacio entre las columnas */
+  justify-content: space-around; /* Distribuye el espacio entre y alrededor de las columnas */
 }
 
 .column-left {
@@ -130,7 +137,8 @@ h1 {
 .mi-swal-popup {
   width: 600px !important;
   max-width: 90vw;
-  height: 580px !important;
+  height: 650px !important;
+
 }
 
 .swal2-close {
@@ -171,6 +179,8 @@ table {
 }
 
 .info-button{
-  display: flex
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+   background-color: #2c3e50;
 }

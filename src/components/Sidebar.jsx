@@ -53,7 +53,7 @@ const Sidebar = () => {
     ],
     supervisor: [
       { path: '/vista-supervisor', label: 'Home', icon: <FaHome size={20} />  },
-      { path: '/reclutador-solicitudes-supervisor', label: 'Solicitudes', icon: <FaClipboardList size={20}/> },
+    /*  { path: '/reclutador-solicitudes-supervisor', label: 'Solicitudes', icon: <FaClipboardList size={20}/> },*/
       { path: '/asistencias', label: 'Asistencias', icon: <FaClock size={20}/> },
     ],
     

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext.jsx";
 import "./Login.css";
+import Header from "../components/Header.jsx"; 
 
 function Login() {
   const navigate = useNavigate();
@@ -132,12 +133,8 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      {/* Label arriba a la izquierda */}
-      <div className="aura-label" onClick={() => navigate("/home")}>
-        ✨Aura✨
-      </div>
-
+      <div className="login-container">
+        <Header/>
       <div className="login-form">
         <h2>{resetPasswordMode ? "Recuperar contraseña" : "Iniciar sesión"}</h2>
 

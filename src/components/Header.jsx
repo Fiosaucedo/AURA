@@ -17,16 +17,12 @@ const Header = ({ adminUser, VITE_API_URL, onLogout }) => {
       <nav className="nav-bar">
      
         <div className="logo-section">
-          {adminUser?.organization_logo && (
-            <img
-              src={`${VITE_API_URL}/${adminUser.organization_logo}`}
-              alt="Logo Organización"
-              className="organization-logo"
-            />
-          )}
           <Link to="/" className="main-logo">
             ✨Aura✨
           </Link>
+          {adminUser?.organization_logo && (
+            <img src={`https://aura-back-3h9b.onrender.com/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
+          )}
         </div>
 
         
