@@ -4,11 +4,13 @@ import globantLogo from '../../img/logo-globant.png';
 import accentureLogo from '../../img/logo-accenture.png';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 
 function Home() {
   const [puestos, setPuestos] = useState([]);
   const [selectedEmpresa, setSelectedEmpresa] = useState('');
   const [selectedPuesto, setSelectedPuesto] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
   const navigate = useNavigate();
   const VITE_API_URL = import.meta.env.VITE_API_URL;
 
@@ -49,7 +51,8 @@ function Home() {
   const filteredPuestos = puestos.filter((p) => {
     return (
       (selectedEmpresa === '' || p.organization.name === selectedEmpresa) &&
-      (selectedPuesto === '' || p.title === selectedPuesto)
+      (selectedPuesto === '' || p.title === selectedPuesto)&&
+      (selectedLocation === '' || p.location === selectedLocation)
     );
   });
 
@@ -59,8 +62,7 @@ function Home() {
   return (
     <div className="home-container">
       <header className="home-header">
-        <h1 className="logo">✨Aura✨</h1>
-        <a href="/login" className="mi-aura">mi Aura</a>
+        <Header />
       </header>
 
       <div className="home-banner">
@@ -80,6 +82,13 @@ function Home() {
               <option key={index} value={puesto}>{puesto}</option>
             ))}
           </select>
+            <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)}>
+            <option value="">Filtrar por Ubicacion</option>
+            {[...new Set(puestos.map(p => p.location))].map((location, index) => (
+            <option key={index} value={location}>{location}</option>
+            ))}
+          </select>
+
         </div>
       </div>
 
