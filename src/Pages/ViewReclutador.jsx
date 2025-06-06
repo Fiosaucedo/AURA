@@ -8,6 +8,7 @@ const ViewReclutador = () => {
   const [vistaActual, setVistaActual] = useState('candidatos');
   const [puestoFiltro, setPuestoFiltro] = useState('');
   const [puestosUnicos, setPuestosUnicos] = useState([]);
+  const [puestos, setPuestos] = useState([]);
   const [filtroApto, setFiltroApto] = useState('Todos');
   const [adminUser, setAdminUser] = useState(null);
   const VITE_API_URL = import.meta.env.VITE_API_URL;
@@ -203,6 +204,12 @@ const ViewReclutador = () => {
               >
                 Ver evaluación
               </button>
+              <button
+                onClick={() => setVistaActual('postulaciones')}
+                className={`vista-btn ${vistaActual === 'postulaciones' ? 'active' : ''}`}
+              >
+                Postulaciones abiertas
+              </button>
             </div>
 
             <div className="filters">
@@ -305,6 +312,44 @@ const ViewReclutador = () => {
               </tbody>
             </table>
           </section>
+        )}
+        {vistaActual === 'postulaciones' && (
+          <section className="puestos-section">
+          <table className="tabla-puestos" border="1">
+            <thead>
+              <tr>
+                <th>Título del puesto</th>
+                <th>Descripción</th>
+                <th>Fecha de creación</th>
+                <th>Cantidad de postulantes</th>
+                <th>Cantidad de aptos</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {puestos.map((p, i) => (
+                <tr key={i}>
+                  <td>{p.title}</td>
+                  <td className="info-cell">
+                    <button className="info-button" onClick={() => abrirModal(p.description)}>i</button>
+                  </td>
+                  <td>{p.created_at}</td>
+                  <td>{p.candidates}</td>
+                  <td>{p.apt_candidates}</td>
+                  <td className={p.is_active ? 'active' : 'hide'}>
+                    {p.is_active ? 'En curso' : 'Deshabilitada'}
+                  </td>
+                  <td>
+                    <button onClick={() => handleJobActivation(p.id)}>
+                      {p.is_active ? 'Deshabilitar' : 'Activar'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
         )}
       </main>
     </div>
