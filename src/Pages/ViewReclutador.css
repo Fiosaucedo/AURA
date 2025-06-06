@@ -11,7 +11,6 @@ main>section {
   margin-bottom: 10px;
 }
 
-header,
 h1,
 h2,
 h3,
@@ -19,6 +18,8 @@ h4,
 h5,
 h6 {
   font-family: 'Poppins', sans-serif;
+  margin: 0 !important;
+  font-size: 2.2rem;
 }
 
 .header {
@@ -26,7 +27,37 @@ h6 {
   padding: 5px 24px;
 }
 
+p.mensaje-vacio{
+  color: #2c3e50;
+  height: 80px;
+    align-items: center;
+    font-size: 24px;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+      opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInFromBottom 0.6s ease-out forwards; 
+}
 
+@keyframes fadeInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px); 
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+button.icon-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto; 
+}
 .nav-bar {
   display: flex;
   justify-content: space-between;
@@ -93,6 +124,7 @@ h6 {
 }
 
 .filters {
+  margin: 0% !important;
   display: flex;
   gap: 20px;
 }
@@ -120,7 +152,7 @@ h6 {
 .candidatos-section,
 .evaluacion-section {
   padding: 20px;
-  justify-items: end;
+
 }
 
 button,
@@ -170,6 +202,7 @@ table {
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
+  
 }
 
 th,
@@ -403,4 +436,60 @@ td {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.tabla-candidatos {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  overflow: hidden;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-candidatos th,
+.tabla-candidatos td {
+  padding: 12px;
+  text-align: center;
+  vertical-align: middle;
+  border: none;
+}
+
+.tabla-candidatos thead tr:first-child th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.tabla-candidatos thead tr:first-child th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.tabla-candidatos tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.tabla-candidatos tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+.loading-spinner{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #003a77; 
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite; 
+  margin-bottom: 15px;
+ 
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
