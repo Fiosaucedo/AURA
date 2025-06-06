@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
-import { FaHome, FaUsers, FaClipboardList, FaClock, FaSignOutAlt,FaSearch, } from 'react-icons/fa';
+import { FaHome, FaUsers, FaClipboardList, FaClock, FaSignOutAlt,FaSearch, FaBuilding, } from 'react-icons/fa';
 import { FilePlus } from 'lucide-react';
 
 
@@ -50,6 +50,7 @@ const Sidebar = () => {
   const menuItems = {
     admin: [
       { path: '/vista-admin', label: 'Empleados', icon: <FaUsers size={20} /> },
+      { path: '/create-organization', label: 'Crear Empresa', icon: <FaBuilding size={20} /> },
     ],
     supervisor: [
       { path: '/vista-supervisor', label: 'Home', icon: <FaHome size={20} />  },
