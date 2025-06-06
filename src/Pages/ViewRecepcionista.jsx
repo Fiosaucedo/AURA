@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { FaCamera, FaVideo, FaSignInAlt, FaSignOutAlt, FaUserPlus } from 'react-icons/fa';
+import { FaCamera, FaVideo, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaDownload,FaUpload } from 'react-icons/fa';
 import Webcam from 'react-webcam';
 import './ViewRecepcionista.css';
 import { useNavigate } from 'react-router-dom';
@@ -248,6 +248,71 @@ const ViewRecepcionista = () => {
         });
       };
 
+  const descargarTemplate = async () => {
+  try {
+    const response = await fetch(`${API_URL}/template-asistencia`, {
+      method: 'GET',
+    });
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'template_asistencia.xlsx';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al descargar el template',
+      text: err.message,
+      confirmButtonColor: '#d33'
+    });
+  }
+};
+
+const cargarAsistenciasManual = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch(`${API_URL}/subir-asistencias`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Asistencias cargadas',
+        text: data.message,
+        confirmButtonColor: '#4e73df'
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en la carga',
+        text: data.error || 'Ocurrió un problema',
+        confirmButtonColor: '#d33'
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error en la solicitud',
+      text: err.message,
+      confirmButtonColor: '#d33'
+    });
+  }
+};
+
+
   const assignFaceToEmployee = async () => {
     const token = localStorage.getItem("token");
     const imageSrc = webcamRef.current.getScreenshot();
@@ -332,14 +397,14 @@ const ViewRecepcionista = () => {
     <div className="controls-section">
       <label>Seleccionar empleado:</label>
       <Select
-  options={opciones}
-  value={opciones.find(op => op.value === selectedId) || null}
-  onChange={op => setSelectedId(op?.value || '')}
-  placeholder="Selecciona un Empleado"
-  isClearable
-  className="react-select"
-  classNamePrefix="react-select"
-/>
+        options={opciones}
+        value={opciones.find(op => op.value === selectedId) || null}
+        onChange={op => setSelectedId(op?.value || '')}
+        placeholder="Selecciona un Empleado"
+        isClearable
+        className="react-select"
+        classNamePrefix="react-select"
+      />
 
       <p className={`status-message ${hasFace ? 'success' : 'warning'}`}>
         {hasFace
@@ -382,6 +447,26 @@ const ViewRecepcionista = () => {
             Asignar rostro al empleado
           </button>
         )}
+        <button className="scan-button template" onClick={descargarTemplate}>
+        <FaDownload style={{ marginRight: '8px' }} />
+        Descargar template asistencia manual
+      </button>
+
+      <button
+        className="scan-button template"
+        onClick={() => document.getElementById('upload-template')?.click()}
+      >
+        <FaUpload style={{ marginRight: '8px' }} />
+        Ingresar asistencias manuales
+      </button>
+      <input
+        type="file"
+        id="upload-template"
+        accept=".xlsx"
+        style={{ display: 'none' }}
+        onChange={cargarAsistenciasManual}
+      />
+
       </div>
     </div>
   </div>
