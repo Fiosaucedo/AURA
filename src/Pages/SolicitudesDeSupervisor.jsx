@@ -3,8 +3,13 @@ import './SolicitudesDeSupervisor.css';
 import { FaCheckCircle, FaEdit, FaClock, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import Header from '../components/Header';
+
+
+  const API_URL = import.meta.env.VITE_API_URL;
 
 const SolicitudesDeSupervisor = () => {
+  const [adminUser, setAdminUser] = useState(null);
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
 
@@ -24,37 +29,28 @@ const SolicitudesDeSupervisor = () => {
     }
 
     const fetchUser = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        const data = await res.json();
-
-        const rol = data.role;
-
-        if (!['recruiter', 'admin'].includes(rol)) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Acceso denegado',
-            text: 'No tenés permiso para acceder a esta sección.',
-          }).then(() => {
+          try {
+            const res = await fetch(`${API_URL}/me`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (!['recruiter'].includes(data.role)) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Acceso denegado',
+                text: 'No tenés permiso para acceder a esta sección.',
+                confirmButtonText: 'Ir al login'
+              }).then(() => {
+                navigate("/login");
+              });
+              return;
+            }
+            setAdminUser(data);
+          } catch (err) {
+            console.error(err);
             navigate("/login");
-          });
-        }
-      } catch (err) {
-        console.error(err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Acceso denegado',
-          text: 'No tenés permiso para acceder a esta sección.',
-          confirmButtonText: 'Ir al login'
-        }).then(() => {
-          navigate("/login");
-        });
-      }
-    }
+          }
+        };
 
     const fetchJobs = async () => {
       try {
@@ -89,6 +85,21 @@ const SolicitudesDeSupervisor = () => {
     fetchUser();
     fetchJobs();
   }, []);
+
+   const handleLogout = () => {
+          Swal.fire({
+            title: '¿Cerrar sesión?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí',
+            cancelButtonText: 'No'
+          }).then(result => {
+            if (result.isConfirmed) {
+              localStorage.removeItem('token');
+              window.location.href = '/login';
+            }
+          });
+        };
 
   const showFormularioCompletar = (data) => {
     let selectedSkills = [];
@@ -234,37 +245,41 @@ const SolicitudesDeSupervisor = () => {
     }
   };
 
-  return (
+return (
     <div className="solicitudes-container">
-      <div className="aura-label" onClick={() => navigate('/vista-reclutador')}>✨Aura✨</div>
-      <h2 className="titulo-seccion">Solicitudes del Supervisor</h2>
-      <div className="solicitudes-lista">
-        {jobs.map((solicitud) => (
-          <div key={solicitud.id} className="tarjeta-solicitud">
-            <h3>{solicitud.title}</h3>
-            <p><strong>Ubicación:</strong> {solicitud.location}</p>
-            <p><strong>Jornada:</strong> {solicitud.job_type}</p>
-            <p><strong>Remuneración:</strong> {solicitud.salary_offer || '-'}</p>
-            <p><strong>Experiencia requerida:</strong> {solicitud.required_experience_years || '-'}</p>
-            <p><strong>Educación requerida:</strong> {solicitud.required_education_level || '-'}</p>
-            <p><strong>Habilidades:</strong> {solicitud.skills_required || '-'}</p>
-            <div className={`estado ${solicitud.estado}`}>
-              <span className="icono-estado">{renderIcon(solicitud.estado)}</span>
-              {renderLabel(solicitud.estado)}
-            </div>
-            {solicitud.comentarios && (
-              <div className="comentarios">
-                <strong>Comentarios del supervisor:</strong> {solicitud.comentarios}
+      <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={API_URL} />
+      <h2 className="titulo-seccion">Solicitudes de Busqueda</h2>
+      {jobs.length === 0 ? (
+        <p className="no-solicitudes">¡No tenés solicitudes pendientes!</p>
+      ) : (
+        <div className="solicitudes-lista"> 
+          {jobs.map((solicitud) => (
+            <div key={solicitud.id} className="tarjeta-solicitud">
+              <h3>{solicitud.title}</h3>
+              <p><strong>Ubicación:</strong> {solicitud.location}</p>
+              <p><strong>Jornada:</strong> {solicitud.job_type}</p>
+              <p><strong>Remuneración:</strong> {solicitud.salary_offer || '-'}</p>
+              <p><strong>Experiencia requerida:</strong> {solicitud.required_experience_years || '-'}</p>
+              <p><strong>Educación requerida:</strong> {solicitud.required_education_level || '-'}</p>
+              <p><strong>Habilidades:</strong> {solicitud.skills_required || '-'}</p>
+              <div className={`estado ${solicitud.estado}`}>
+                <span className="icono-estado">{renderIcon(solicitud.estado)}</span>
+                {renderLabel(solicitud.estado)}
               </div>
-            )}
-            {(solicitud.estado === 'requested' || solicitud.estado === 'corrections_requested') && (
-              <button onClick={() => showFormularioCompletar(solicitud)} className="btn-completar">
-                Completar puesto
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+              {solicitud.comentarios && (
+                <div className="comentarios">
+                  <strong>Comentarios del supervisor:</strong> {solicitud.comentarios}
+                </div>
+              )}
+              {(solicitud.estado === 'requested' || solicitud.estado === 'corrections_requested') && (
+                <button onClick={() => showFormularioCompletar(solicitud)} className="btn-completar">
+                  Completar puesto
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import './ViewReclutador.css';
 import { useNavigate } from 'react-router-dom';
+import { FileText, Download } from 'lucide-react';
+import Header from '../components/Header'; 
 
 const ViewReclutador = () => {
   const [candidatos, setCandidatos] = useState([]);
@@ -12,6 +14,7 @@ const ViewReclutador = () => {
   const [adminUser, setAdminUser] = useState(null);
   const VITE_API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -72,7 +75,9 @@ const ViewReclutador = () => {
         setPuestosUnicos(puestos);
       } catch (error) {
         console.error('Error cargando candidatos:', error);
-      }
+      } finally {
+    setLoading(false); 
+  }
     };
 
     fetchCandidatos();
@@ -121,16 +126,21 @@ const ViewReclutador = () => {
   const viewInfo = (index) => {
     const c = candidatos[index];
     Swal.fire({
-      title: `${c.name} ${c.surname}`,
-      html: `
-        <p><strong>Puesto al que se postuló:</strong> ${c.job_title}</p>
-        <p><strong>Años de experiencia:</strong> ${c.experience_years}</p>
-        <p><strong>Nivel educativo:</strong> ${c.education_level}</p>
-        <p><strong>Habilidades:</strong> ${c.keywords}</p>
-        <p><strong>Teléfono:</strong> ${c.phone}</p>
-      `,
-      confirmButtonText: 'Cerrar'
-    });
+  title: `${c.name} ${c.surname}`,
+  html: `
+    <div class="info-candidato">
+      <p><strong>Puesto al que se postuló:</strong> ${c.job_title}</p>
+      <p><strong>Años de experiencia:</strong> ${c.experience_years}</p>
+      <p><strong>Nivel educativo:</strong> ${c.education_level}</p>
+      <p><strong>Habilidades:</strong> ${c.keywords}</p>
+      <p><strong>Teléfono:</strong> ${c.phone}</p>
+    </div>
+  `,
+  confirmButtonText: 'Cerrar',
+  customClass: {
+    htmlContainer: 'popup-info-container'
+  }
+});
   };
 
   const handleContactarse = (nombre, esApto) => {
@@ -154,39 +164,9 @@ const ViewReclutador = () => {
 
   return (
     <div>
-      <header className="header">
-        <nav className="nav-bar">
-          <div className="logo-logged">
-            {adminUser?.organization_logo && (
-              <img src={`${VITE_API_URL}/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
-            )}
-            ✨Aura✨
-          </div>
-          <div className="admin-info">
-            <span>{adminUser?.organization_name}</span>
-            <span style={{ marginLeft: '10px' }}>{adminUser?.email}</span>
-          </div>
-          <button className="logout-button" onClick={handleLogout}>
-            Cerrar Sesión
-          </button>
-        </nav>
-      </header>
+     <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={VITE_API_URL} />
 
       <main>
-        <section id="hero">
-          <div className="hero-content">
-            <div className="hero-text">
-              <h1>Encontrá los perfiles más aptos en segundos.</h1>
-              <p>Aura te permite evaluar fácil y rápido cuáles son los mejores candidatos.</p>
-            </div>
-            <div className="hero-button">
-              <button onClick={() => navigate('/reclutador-solicitudes-supervisor')} className="btn-hero">
-                Ver Solicitudes de Supervisor
-              </button>
-            </div>
-          </div>
-        </section>
-
         <div className="search-header">
           <h2>Postulaciones Recibidas</h2>
           <div className="search-actions">
@@ -237,75 +217,120 @@ const ViewReclutador = () => {
         </div>
 
         {vistaActual === 'candidatos' && (
-          <section className="candidatos-section">
-            <table className="tabla-candidatos" border="1">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Mail</th>
-                  <th>Info</th>
-                  <th>CV</th>
-                </tr>
-              </thead>
-              <tbody>
-                {candidatos
-                  .filter(c => !puestoFiltro || c.job_title === puestoFiltro)
-                  .map((c, i) => (
-                    <tr key={i}>
-                      <td>{c.name} {c.surname}</td>
-                      <td>{c.email}</td>
-                      <td><button onClick={() => viewInfo(i)}>Ver Info</button></td>
-                      <td><button onClick={() => descargarCV(c, { openInNewTab: true })}>Ver CV</button></td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </section>
+  <section className="candidatos-section">
+    {loading ? (
+      <div className="loading-spinner">
+        <span className="loader"></span>
+      </div>
+    ) : candidatos.length === 0 ? (
+      <p className="mensaje-vacio">aún no recibiste postulaciones :(</p>
+    ) : (
+      <>
+        {candidatos.filter(c => !puestoFiltro || c.job_title === puestoFiltro).length === 0 ? (
+          <p className="mensaje-vacio">ningún candidato coincide con tu búsqueda</p>
+        ) : (
+          <table className="tabla-candidatos">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Mail</th>
+                <th>Info</th>
+                <th>CV</th>
+              </tr>
+            </thead>
+            <tbody>
+              {candidatos
+                .filter(c => !puestoFiltro || c.job_title === puestoFiltro)
+                .map((c, i) => (
+                  <tr key={i}>
+                    <td>{c.name} {c.surname}</td>
+                    <td>{c.email}</td>
+                    <td>
+                      <button onClick={() => viewInfo(i)} className="icon-button" title="Ver Información">
+                        <FileText size={20} />
+                      </button>
+                    </td>
+                    <td>
+                      <button onClick={() => descargarCV(c, { openInNewTab: true })} className="icon-button" title="Ver CV">
+                        <Download size={20} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         )}
+      </>
+    )}
+  </section>
+)}
 
         {vistaActual === 'evaluacion' && (
-          <section className="evaluacion-section">
-            <table className="tabla-candidatos" border="1">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Apellido</th>
-                  <th>Años de experiencia</th>
-                  <th>Nivel educativo</th>
-                  <th>Habilidades</th>
-                  <th>Puesto al que se postuló</th>
-                  <th>¿Es apto?</th>
-                  <th>Score de aptitud</th>
-                  <th>Contactarse</th>
-                </tr>
-              </thead>
-              <tbody>
-                {candidatos
-                  .filter(c => {
-                    const cumplePuesto = !puestoFiltro || c.job_title === puestoFiltro;
-                    const cumpleApto =
-                      filtroApto === 'Todos' ||
-                      (filtroApto === 'Apto' && c.is_apt === true) ||
-                      (filtroApto === 'No Apto' && c.is_apt === false);
-                    return cumplePuesto && cumpleApto;
-                  })
-                  .map((c, i) => (
-                    <tr key={i}>
-                      <td>{c.name}</td>
-                      <td>{c.surname}</td>
-                      <td>{c.experience_years}</td>
-                      <td>{c.education_level}</td>
-                      <td>{Array.isArray(c.keywords) ? c.keywords.join(', ') : c.keywords}</td>
-                      <td>{c.job_title}</td>
-                      <td className={c.is_apt ? 'apto' : 'no-apto'}>{c.is_apt ? 'Sí' : 'No'}</td>
-                      <td>{c.apt_score != null ? `${Number(c.apt_score).toFixed(2)}%` : 'N/A'}</td>
-                      <td><button onClick={() => handleContactarse(c.name, c.is_apt)}>✉️</button></td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </section>
+  <section className="evaluacion-section">
+    {loading ? (
+      <div className="loading-spinner">
+        <span className="loader"></span>
+      </div>
+    ) : candidatos.length === 0 ? (
+      <p className="mensaje-vacio">Aún no recibiste postulaciones :(</p>
+    ) : (
+      <>
+        {candidatos.filter(c => {
+          const cumplePuesto = !puestoFiltro || c.job_title === puestoFiltro;
+          const cumpleApto =
+            filtroApto === 'Todos' ||
+            (filtroApto === 'Apto' && c.is_apt === true) ||
+            (filtroApto === 'No Apto' && c.is_apt === false);
+          return cumplePuesto && cumpleApto;
+        }).length === 0 ? (
+          <p className="mensaje-vacio">Ningún candidato coincide con tu búsqueda :(</p>
+        ) : (
+          <table className="tabla-candidatos" border="1">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Años de experiencia</th>
+                <th>Nivel educativo</th>
+                <th>Habilidades</th>
+                <th>Puesto al que se postuló</th>
+                <th>¿Es apto?</th>
+                <th>Score de aptitud</th>
+                <th>Contactarse</th>
+              </tr>
+            </thead>
+            <tbody>
+              {candidatos
+                .filter(c => {
+                  const cumplePuesto = !puestoFiltro || c.job_title === puestoFiltro;
+                  const cumpleApto =
+                    filtroApto === 'Todos' ||
+                    (filtroApto === 'Apto' && c.is_apt === true) ||
+                    (filtroApto === 'No Apto' && c.is_apt === false);
+                  return cumplePuesto && cumpleApto;
+                })
+                .map((c, i) => (
+                  <tr key={i}>
+                    <td>{c.name}</td>
+                    <td>{c.surname}</td>
+                    <td>{c.experience_years}</td>
+                    <td>{c.education_level}</td>
+                    <td>{Array.isArray(c.keywords) ? c.keywords.join(', ') : c.keywords}</td>
+                    <td>{c.job_title}</td>
+                    <td className={c.is_apt ? 'apto' : 'no-apto'}>{c.is_apt ? 'Sí' : 'No'}</td>
+                    <td>{c.apt_score != null ? `${Number(c.apt_score).toFixed(2)}%` : 'N/A'}</td>
+                    <td>
+                      <button onClick={() => handleContactarse(c.name, c.is_apt)}>✉️</button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         )}
+      </>
+    )}
+  </section>
+)}
       </main>
     </div>
   );
