@@ -177,3 +177,14 @@
   background-color: #545b62 !important;
 }
 
+@media (max-width: 1080px) {
+  .swal2-popup {
+    width: 90% !important;  /* Por defecto es 32em (~512px) */
+    max-width: none !important;
+  }
+
+  .swal2-html-container {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
