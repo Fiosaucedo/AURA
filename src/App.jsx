@@ -16,6 +16,7 @@ import ViewEmpleado from './Pages/ViewEmpleado';
 import ProtectedRouteLayout from './layouts/ProtectedRouteLayout';
 import NotFoundPage from './Pages/NotFoundPage';
 import CambiarPassword from './Pages/CambiarPassword';
+import RecuperarPassword from './Pages/RecuperarPassword';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Route path="/vista-empleado" element={<ViewEmpleado />} />
           </Route>
           <Route path="/cambiar-password" element={<CambiarPassword />} />
+          <Route path="/recuperar-password" element={<RecuperarPassword />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
