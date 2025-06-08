@@ -132,6 +132,7 @@ const ViewAdmin = () => {
       showCloseButton: true,
       html: `
       <div class="formContainer">
+      <div class="datos">
         <div class="column-left">
           <div class="campo">
             <label>Nombre</label>
@@ -169,11 +170,11 @@ const ViewAdmin = () => {
           </div>
           <div class="campo">
             <label>Sueldo mensual ($)</label>
-            <input id="salaryInput" type="number" class="swal2-input" min="0" step="0.01" value="${empleado.salary ?? ''}">
-          </div>
+            <p id="salarytexto">${empleado.salary}</p>
+            </div>
         </div>
       </div>
-      <div style="text-align: center; margin-top: 15px;">
+      <div style="text-align: center;">
         <button id="editarBtn" title="Editar">✏️ Editar</button>
       </div>
     `,
@@ -205,6 +206,7 @@ const ViewAdmin = () => {
         const telefono = telefonoInput.value;
         const direccion = direccionInput.value;
         const rol = rolInput.value;
+       
 
         const cambiosRealizados = (
           empleado.name !== nombre ||
@@ -251,6 +253,7 @@ const ViewAdmin = () => {
               <option value="recruiter" ${empleado.role === "recruiter" ? "selected" : ""}>Reclutador</option>
               <option value="supervisor" ${empleado.role === "supervisor" ? "selected" : ""}>Supervisor</option>
               <option value="admin" ${empleado.role === "admin" ? "selected" : ""}>Administrador</option>
+              <option value="manager" ${empleado.role === "manager" ? "selected" : ""}>Gerente</option>
             </select>
           `;
             document.getElementById("emailTexto").outerHTML = `<input id="emailInput" class="swal2-input" value="${empleado.email}">`;
@@ -263,7 +266,7 @@ const ViewAdmin = () => {
             document.getElementById("dniTexto").outerHTML = `<input id="dniInput" class="swal2-input" value="${empleado.dni}">`;
             document.getElementById("telefonoTexto").outerHTML = `<input id="telefonoInput" class="swal2-input" value="${empleado.phone}">`;
             document.getElementById("direccionTexto").outerHTML = `<input id="direccionInput" class="swal2-input" value="${empleado.address}">`;
-
+            document.getElementById("salarytexto").outerHTML = `<input id="salaryInput" type="number" class="swal2-input" min="0" step="0.01" value="${empleado.salary}">`;
             editarBtn.textContent = "💾 Guardar cambios";
             modoEdicion = true;
           } else {
@@ -348,6 +351,7 @@ const ViewAdmin = () => {
                   <option value="recruiter">Reclutador</option>
                   <option value="supervisor">Supervisor</option>
                   <option value="admin">Administrador</option>
+                  <option value="manager">Gerente</option>
                 </select>
               </div>
               <div class="campo">
@@ -506,8 +510,7 @@ const ViewAdmin = () => {
                   <td>{e.position}</td>
                   <td>{e.role}</td>
                   <td>{e.email}</td>
-                  <td>
-                    <span className={`estado ${e.status}`}>{e.status}</span>
+                  <td>{e.status}
                   </td>
                   <td>
                     <button className="info-button" onClick={() => abrirPopup(e)}><Info size={20} className="icono" /></button>
@@ -524,7 +527,7 @@ const ViewAdmin = () => {
                 <p><strong>Puesto:</strong> {e.position}</p>
                 <p><strong>Rol:</strong> {e.role}</p>
                 <p><strong>Email:</strong> {e.email}</p>
-                <p><strong>Estado:</strong> <span className={`estado ${e.status}`}>{e.status}</span></p>
+                <p><strong>Estado:</strong> {e.status}</p>
               </div>
             ))}
           </div>

@@ -1,9 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Nunito:wght@300;400;600&display=swap');
 .receptionist-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Nunito Sans', sans-serif;
   background: linear-gradient(to bottom right, #1e1e2f, #2d2d44);
   color: white;
   min-height: 100vh;
-  padding: 2rem;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,8 +25,9 @@
 .main-message {
   margin-top: 60px;
   font-size: 28px;
-  margin-bottom: 20px;
   color: blanchedalmond;
+  text-align: center;
+  margin: 20px 0;
 }
 
 .webcam-wrapper {
@@ -33,24 +35,6 @@
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 20px;
-}
-
-.scan-button {
-  background-color: #000000;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.3s ease all;
-  display: flex;
-  align-items: center;
-}
-
-.scan-button:hover {
-  background-color: #282b31;
-  transition: 2s;
 }
 
 .result-success,
@@ -90,4 +74,139 @@
   border-radius: 4px;
   text-align: center;
   font-size: 1rem;
+}
+
+
+
+.main-content {
+  display: flex;
+  gap: 40px;
+  margin-top: 30px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+ 
+}
+
+.camera-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.camera-placeholder {
+  width: 480px;
+  height: 360px;
+  background-color: #ccc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  font-weight: bold;
+  padding: 10px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.webcam {
+  width: 480px;
+  height: 360px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 380px; /* o el valor que te convenga */
+}
+
+
+/* Contenedor del selector */
+.react-select__control {
+  background-color: #2d2d44;
+  border: 1px solid #4e73df;
+  border-radius: 8px;
+  color: white;
+  min-height: 38px;
+  font-size: 14px;
+  box-shadow: none;
+}
+
+/* Texto dentro */
+.react-select__single-value {
+  color: rgb(0, 0, 0)!important;
+}
+
+.react-select__option {
+  color: rgb(0, 0, 0)!important;
+}
+
+/* Placeholder */
+.react-select__placeholder {
+  color: #ccc;
+}
+
+/* Menú desplegable */
+.react-select__menu {
+  background-color: #2d2d44;
+  color: white;
+  border: 1px solid #15348f;
+  border-radius: 8px;
+}
+
+/* Opción seleccionada o al pasar el mouse */
+.react-select__option--is-focused {
+  background-color: #15348f;
+}
+
+.react-select__option--is-selected {
+  background-color: #15348f;
+  color: white;
+}
+
+.status-message {
+  margin: 0;
+  font-weight: bold;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scan-button {
+  padding: 10px;
+  background-color: #15348f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.scan-button:hover {
+  background-color: #2e59d9;
+  transform: scale(1.03);
+}
+
+.webcam-icon {
+  width: 48px;
+  height: 48px;
+
+}
+
+.scan-button:disabled {
+  background-color: #999;
+  color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none !important; /* Evita efectos al pasar el mouse */
+  box-shadow: none;
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import './CreateOrganization.css';
+import Header from '../components/Header'; // Asegúrate de que la ruta sea correcta
 
 const CrearOrganizacion = () => {
   const [organizaciones, setOrganizaciones] = useState([]);
@@ -18,6 +19,10 @@ const CrearOrganizacion = () => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [modoVista, setModoVista] = useState('tarjetas');
   const navigate = useNavigate();
+  const [adminUser, setAdminUser] = useState(null); // Estado para guardar la información del usuario administrador
+  // const [hasAccess, setHasAccess] = useState(false); // Esta variable no se usa para nada, puedes eliminarla
+
+  const API_URL = import.meta.env.VITE_API_URL; // Define API_URL aquí para poder pasarlo al Header
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -32,10 +37,10 @@ const CrearOrganizacion = () => {
       });
       return;
     }
-  
+
     const checkAndFetch = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+        const res = await fetch(`${API_URL}/me`, { // Usar API_URL aquí
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -50,8 +55,9 @@ const CrearOrganizacion = () => {
           });
           return;
         }
-  
-        const orgRes = await fetch(`${import.meta.env.VITE_API_URL}/organizations`, {
+        setAdminUser(data); // <--- Guarda la información del usuario aquí
+
+        const orgRes = await fetch(`${API_URL}/organizations`, { // Usar API_URL aquí
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -65,24 +71,24 @@ const CrearOrganizacion = () => {
             cuit: org.cuit,
             direccion: org.address,
             tipoPlan: org.planType,
-            estado: org.isActive == true ? 'activa' : 'inactiva',
-            logo: org.logo ? `${import.meta.env.VITE_API_URL}/${org.logo}` : ''
+            estado: org.isActive === true ? 'activa' : 'inactiva',
+            logo: org.logo ? `${API_URL}/${org.logo}` : '' // Usar API_URL aquí
           }));
           setOrganizaciones(mapped);
         } else {
           Swal.fire('Error', orgData.message || 'No se pudieron cargar las organizaciones.', 'error');
         }
-  
+
       } catch (err) {
         console.error(err);
         Swal.fire('Error', 'Error de red al validar el usuario.', 'error');
         navigate("/login");
       }
     };
-  
+
     checkAndFetch();
   }, []);
-  
+
 
   const toggleFormulario = () => {
     setMostrarFormulario(!mostrarFormulario);
@@ -107,7 +113,7 @@ const CrearOrganizacion = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const confirmacion = await Swal.fire({
       title: orgEditando ? '¿Guardar cambios?' : '¿Registrar empresa?',
       text: orgEditando
@@ -118,9 +124,9 @@ const CrearOrganizacion = () => {
       confirmButtonText: 'Sí, confirmar',
       cancelButtonText: 'Cancelar'
     });
-  
+
     if (!confirmacion.isConfirmed) return;
-  
+
     const formData = new FormData();
     formData.append("name", nuevaOrg.nombre);
     formData.append("companyName", nuevaOrg.razonSocial);
@@ -130,14 +136,14 @@ const CrearOrganizacion = () => {
     if (nuevaOrg.logoFile) {
       formData.append("logo", nuevaOrg.logoFile);
     }
-  
+
     try {
       const url = orgEditando
-        ? `${import.meta.env.VITE_API_URL}/organizations/${orgEditando.id}`
-        : `${import.meta.env.VITE_API_URL}/organizations`;
-  
+        ? `${API_URL}/organizations/${orgEditando.id}` // Usar API_URL aquí
+        : `${API_URL}/organizations`; // Usar API_URL aquí
+
       const method = orgEditando ? 'PUT' : 'POST';
-  
+
       const res = await fetch(url, {
         method,
         headers: {
@@ -145,9 +151,9 @@ const CrearOrganizacion = () => {
         },
         body: formData
       });
-  
+
       const data = await res.json();
-  
+
       if (res.ok) {
         if (orgEditando) {
           setOrganizaciones(prev =>
@@ -167,12 +173,12 @@ const CrearOrganizacion = () => {
             direccion: nuevaOrg.direccion,
             tipoPlan: nuevaOrg.tipoPlan,
             estado: true,
-            logo: `${import.meta.env.VITE_API_URL}/files/img/${nuevaOrg.logoFile.name}`
+            logo: nuevaOrg.logoFile ? `${API_URL}/files/img/${nuevaOrg.logoFile.name}` : '' // Usar API_URL aquí
           };
           setOrganizaciones(prev => [...prev, nuevaEmpresa]);
           Swal.fire('¡Registrada!', 'La empresa ha sido creada con éxito.', 'success');
         }
-  
+
         toggleFormulario();
       } else {
         Swal.fire('Error', data.message || 'No se pudo procesar la solicitud.', 'error');
@@ -181,12 +187,12 @@ const CrearOrganizacion = () => {
       console.error(err);
       Swal.fire('Error', 'Ocurrió un error inesperado.', 'error');
     }
-  };  
+  };
 
   const cambiarEstado = async (id) => {
     const empresa = organizaciones.find((org) => org.id === id);
     const nuevaAccion = empresa.estado === 'activa' ? 'inactivar' : 'activar';
-  
+
     const confirmacion = await Swal.fire({
       title: `¿Deseas ${nuevaAccion} la empresa?`,
       text: `Empresa: ${empresa.nombre}`,
@@ -195,19 +201,19 @@ const CrearOrganizacion = () => {
       confirmButtonText: `Sí, ${nuevaAccion}`,
       cancelButtonText: 'Cancelar'
     });
-  
+
     if (!confirmacion.isConfirmed) return;
-  
+
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/organizations/${id}/toggle-status`, {
+      const res = await fetch(`${API_URL}/organizations/${id}/toggle-status`, { // Usar API_URL aquí
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
       });
-  
+
       const data = await res.json();
-  
+
       if (res.ok) {
         setOrganizaciones(prev =>
           prev.map(org =>
@@ -223,7 +229,21 @@ const CrearOrganizacion = () => {
       Swal.fire('Error', 'Error al cambiar estado.', 'error');
     }
   };
-  
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then(result => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+    });
+  };
 
   const handleEditar = (org) => {
     setNuevaOrg({
@@ -241,18 +261,19 @@ const CrearOrganizacion = () => {
 
   return (
     <div className="organizaciones-home">
-      <div className="aura-label">✨Aura✨</div>
+      {/* Pasa adminUser y API_URL al Header */}
+      <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={API_URL} />
       <h2 className="titulo">Empresas registradas</h2>
       <div className="botones-superiores">
-         <button className="boton-crear" onClick={toggleFormulario}>
+        <button className="boton-crear" onClick={toggleFormulario}>
           {mostrarFormulario ? 'Cancelar' : '➕ Crear nueva empresa'}
-         </button>
-          {!mostrarFormulario && (<button
+        </button>
+        {!mostrarFormulario && (<button
           className="boton-vista" onClick={() => setModoVista(modoVista === 'tarjetas' ? 'lista' : 'tarjetas')}>
           🔄️
-      </button>
-    )}
-  </div>
+        </button>
+        )}
+      </div>
 
       {!mostrarFormulario && modoVista === 'tarjetas' && (
         <div className="lista-organizaciones">
@@ -263,7 +284,7 @@ const CrearOrganizacion = () => {
               <p><strong>CUIT:</strong> {org.cuit}</p>
               <p><strong>Dirección:</strong> {org.direccion}</p>
               <p><strong>Plan:</strong> {org.tipoPlan}</p>
-              <p><strong>Estado:</strong> {org.estado == 'activa' ? 'activa' : 'inactiva'}</p>
+              <p><strong>Estado:</strong> {org.estado === 'activa' ? 'activa' : 'inactiva'}</p>
               {org.logo && <img src={org.logo} alt="Logo" style={{ width: '100px', marginTop: '10px' }} />}
               <div className="botones-org">
                 <button className="boton-editar" onClick={() => handleEditar(org)}>Editar</button>
@@ -308,7 +329,7 @@ const CrearOrganizacion = () => {
                     <button className={`boton-cambiar-estado-lista ${org.estado === 'activa' ? 'inactivar' : 'activar'}`}
                       onClick={() => cambiarEstado(org.id)}
                     >
-                     {org.estado === 'activa' ? 'Inactivar' : 'Activar'}
+                      {org.estado === 'activa' ? 'Inactivar' : 'Activar'}
                     </button>
                   </td>
                 </tr>
