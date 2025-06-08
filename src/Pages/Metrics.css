@@ -1,0 +1,70 @@
+.metricas-content {
+  padding: 2rem;
+}
+
+
+
+.filtros-metricas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  align-items: baseline;
+}
+
+.tabla-metricas {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-metricas th,
+.tabla-metricas td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.botones-vista button,
+.botones-exportar button {
+  margin-right: 0.5rem;
+}
+
+select{
+ 
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: white;
+  color: #333;
+  height: 42px;
+  box-sizing: border-box;
+}
+
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px; 
+    width: 100%;
+}
+
+.loading-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #003a77; 
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite; 
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
