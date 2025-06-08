@@ -8,9 +8,10 @@ const ViewReclutador = () => {
   const [vistaActual, setVistaActual] = useState('candidatos');
   const [puestoFiltro, setPuestoFiltro] = useState('');
   const [puestosUnicos, setPuestosUnicos] = useState([]);
-  const [puestos, setPuestos] = useState([]);
   const [filtroApto, setFiltroApto] = useState('Todos');
   const [adminUser, setAdminUser] = useState(null);
+  const [contactados, setContactados] = useState({});
+
   const VITE_API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
@@ -38,7 +39,6 @@ const ViewReclutador = () => {
         });
 
         const data = await res.json();
-
 
         const rol = data.role;
 
@@ -134,7 +134,7 @@ const ViewReclutador = () => {
     });
   };
 
-  const handleContactarse = (nombre, esApto) => {
+  const handleEnviarMail = (index, nombre, esApto) => {
     const mensaje = esApto
       ? `¿Querés contactarte con ${nombre}?`
       : `¿Seguro que querés contactarte con ${nombre} si no es apto?`;
@@ -149,6 +149,29 @@ const ViewReclutador = () => {
     }).then(result => {
       if (result.isConfirmed) {
         Swal.fire('¡Mail enviado!', `Te has contactado con ${nombre}.`, 'success');
+        // Guardar que ya se contactó, pero no contratado todavía
+        setContactados(prev => ({
+          ...prev,
+          [index]: { contactado: true, contratado: null, fijo: false }
+        }));
+      }
+    });
+  };
+
+  const marcarContratado = (index) => {
+    Swal.fire({
+      title: '¿Marcar este postulante como contratado?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then(result => {
+      if (result.isConfirmed) {
+        setContactados(prev => ({
+          ...prev,
+          [index]: { ...prev[index], contratado: true, fijo: true }
+        }));
+        Swal.fire('¡Postulante marcado como contratado!', '', 'success');
       }
     });
   };
@@ -243,6 +266,63 @@ const ViewReclutador = () => {
           </div>
         </div>
 
+        {vistaActual === 'evaluacion' && (
+          <section className="evaluacion-section">
+            <table className="tabla-candidatos" border="1">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Años de experiencia</th>
+                  <th>Nivel educativo</th>
+                  <th>Habilidades</th>
+                  <th>Puesto al que se postuló</th>
+                  <th>¿Es apto?</th>
+                  <th>Score de aptitud</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {candidatos
+                  .filter(c => {
+                    const cumplePuesto = !puestoFiltro || c.job_title === puestoFiltro;
+                    const cumpleApto =
+                      filtroApto === 'Todos' ||
+                      (filtroApto === 'Apto' && c.is_apt === true) ||
+                      (filtroApto === 'No Apto' && c.is_apt === false);
+                    return cumplePuesto && cumpleApto;
+                  })
+                  .map((c, i) => {
+                    const estado = contactados[i];
+                    return (
+                      <tr key={i}>
+                        <td>{c.name}</td>
+                        <td>{c.surname}</td>
+                        <td>{c.experience_years}</td>
+                        <td>{c.education_level}</td>
+                        <td>{Array.isArray(c.keywords) ? c.keywords.join(', ') : c.keywords}</td>
+                        <td>{c.job_title}</td>
+                        <td className={c.is_apt ? 'apto' : 'no-apto'}>{c.is_apt ? 'Sí' : 'No'}</td>
+                        <td>{c.apt_score != null ? `${Number(c.apt_score).toFixed(2)}%` : 'N/A'}</td>
+                        <td>
+                          {!estado?.contactado ? (
+                            <button className='contactarse-button' onClick={() => handleEnviarMail(i, c.name, c.is_apt)}>✉️ Contactarse</button>
+                          ) : estado.contratado ? (
+                            <span style={{ color: 'green', fontWeight: 'bold' }}>Contratado</span>
+                          ) : (
+                            <>
+                              <button className='marcar-contratado-button' onClick={() => marcarContratado(i)}>Marcar contratado</button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </section>
+        )}
+
         {vistaActual === 'candidatos' && (
           <section className="candidatos-section">
             <table className="tabla-candidatos" border="1">
@@ -270,86 +350,14 @@ const ViewReclutador = () => {
           </section>
         )}
 
-        {vistaActual === 'evaluacion' && (
-          <section className="evaluacion-section">
-            <table className="tabla-candidatos" border="1">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Apellido</th>
-                  <th>Años de experiencia</th>
-                  <th>Nivel educativo</th>
-                  <th>Habilidades</th>
-                  <th>Puesto al que se postuló</th>
-                  <th>¿Es apto?</th>
-                  <th>Score de aptitud</th>
-                  <th>Contactarse</th>
-                </tr>
-              </thead>
-              <tbody>
-                {candidatos
-                  .filter(c => {
-                    const cumplePuesto = !puestoFiltro || c.job_title === puestoFiltro;
-                    const cumpleApto =
-                      filtroApto === 'Todos' ||
-                      (filtroApto === 'Apto' && c.is_apt === true) ||
-                      (filtroApto === 'No Apto' && c.is_apt === false);
-                    return cumplePuesto && cumpleApto;
-                  })
-                  .map((c, i) => (
-                    <tr key={i}>
-                      <td>{c.name}</td>
-                      <td>{c.surname}</td>
-                      <td>{c.experience_years}</td>
-                      <td>{c.education_level}</td>
-                      <td>{Array.isArray(c.keywords) ? c.keywords.join(', ') : c.keywords}</td>
-                      <td>{c.job_title}</td>
-                      <td className={c.is_apt ? 'apto' : 'no-apto'}>{c.is_apt ? 'Sí' : 'No'}</td>
-                      <td>{c.apt_score != null ? `${Number(c.apt_score).toFixed(2)}%` : 'N/A'}</td>
-                      <td><button onClick={() => handleContactarse(c.name, c.is_apt)}>✉️</button></td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </section>
-        )}
         {vistaActual === 'postulaciones' && (
-          <section className="puestos-section">
-          <table className="tabla-puestos" border="1">
-            <thead>
-              <tr>
-                <th>Título del puesto</th>
-                <th>Descripción</th>
-                <th>Fecha de creación</th>
-                <th>Cantidad de postulantes</th>
-                <th>Cantidad de aptos</th>
-                <th>Estado</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {puestos.map((p, i) => (
-                <tr key={i}>
-                  <td>{p.title}</td>
-                  <td className="info-cell">
-                    <button className="info-button" onClick={() => abrirModal(p.description)}>i</button>
-                  </td>
-                  <td>{p.created_at}</td>
-                  <td>{p.candidates}</td>
-                  <td>{p.apt_candidates}</td>
-                  <td className={p.is_active ? 'active' : 'hide'}>
-                    {p.is_active ? 'En curso' : 'Deshabilitada'}
-                  </td>
-                  <td>
-                    <button onClick={() => handleJobActivation(p.id)}>
-                      {p.is_active ? 'Deshabilitar' : 'Activar'}
-                    </button>
-                  </td>
-                </tr>
+          <section className="postulaciones-section">
+            <ul>
+              {puestosUnicos.map((p, i) => (
+                <li key={i}>{p}</li>
               ))}
-            </tbody>
-          </table>
-        </section>
+            </ul>
+          </section>
         )}
       </main>
     </div>

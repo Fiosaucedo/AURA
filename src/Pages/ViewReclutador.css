@@ -404,3 +404,11 @@ td {
   align-items: center;
   justify-content: center;
 }
+
+.marcar-contratado-button{
+  font-size: 12px;
+}
+
+.contactarse-button{
+  font-size: 12px;
+}
