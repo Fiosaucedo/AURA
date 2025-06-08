@@ -210,3 +210,33 @@
   transform: none !important; /* Evita efectos al pasar el mouse */
   box-shadow: none;
 }
+
+/* Nuevos estilos para botones template */
+.scan-button.template {
+  background-color: #15348f;
+  color: white;
+  margin-top: 10px;
+}
+
+.scan-button.template:hover {
+  background-color: #2e59d9;
+}
+.manual-entry-button {
+  background-color: #15348f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 10px;
+}
+
+.manual-entry-button:hover {
+  background-color: #2e59d9;
+  transform: scale(1.03);
+}
