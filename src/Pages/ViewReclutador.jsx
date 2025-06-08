@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import './ViewReclutador.css';
 import { useNavigate } from 'react-router-dom';
+import { FileText, Download } from 'lucide-react';
+import Header from '../components/Header'; 
 
 const ViewReclutador = () => {
   const [candidatos, setCandidatos] = useState([]);
@@ -14,6 +16,7 @@ const ViewReclutador = () => {
 
   const VITE_API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -73,7 +76,9 @@ const ViewReclutador = () => {
         setPuestosUnicos(puestos);
       } catch (error) {
         console.error('Error cargando candidatos:', error);
-      }
+      } finally {
+    setLoading(false); 
+  }
     };
 
     fetchCandidatos();
@@ -122,16 +127,21 @@ const ViewReclutador = () => {
   const viewInfo = (index) => {
     const c = candidatos[index];
     Swal.fire({
-      title: `${c.name} ${c.surname}`,
-      html: `
-        <p><strong>Puesto al que se postuló:</strong> ${c.job_title}</p>
-        <p><strong>Años de experiencia:</strong> ${c.experience_years}</p>
-        <p><strong>Nivel educativo:</strong> ${c.education_level}</p>
-        <p><strong>Habilidades:</strong> ${c.keywords}</p>
-        <p><strong>Teléfono:</strong> ${c.phone}</p>
-      `,
-      confirmButtonText: 'Cerrar'
-    });
+  title: `${c.name} ${c.surname}`,
+  html: `
+    <div class="info-candidato">
+      <p><strong>Puesto al que se postuló:</strong> ${c.job_title}</p>
+      <p><strong>Años de experiencia:</strong> ${c.experience_years}</p>
+      <p><strong>Nivel educativo:</strong> ${c.education_level}</p>
+      <p><strong>Habilidades:</strong> ${c.keywords}</p>
+      <p><strong>Teléfono:</strong> ${c.phone}</p>
+    </div>
+  `,
+  confirmButtonText: 'Cerrar',
+  customClass: {
+    htmlContainer: 'popup-info-container'
+  }
+});
   };
 
   const handleEnviarMail = (index, nombre, esApto) => {
@@ -178,39 +188,9 @@ const ViewReclutador = () => {
 
   return (
     <div>
-      <header className="header">
-        <nav className="nav-bar">
-          <div className="logo-logged">
-            {adminUser?.organization_logo && (
-              <img src={`${VITE_API_URL}/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
-            )}
-            ✨Aura✨
-          </div>
-          <div className="admin-info">
-            <span>{adminUser?.organization_name}</span>
-            <span style={{ marginLeft: '10px' }}>{adminUser?.email}</span>
-          </div>
-          <button className="logout-button" onClick={handleLogout}>
-            Cerrar Sesión
-          </button>
-        </nav>
-      </header>
+     <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={VITE_API_URL} />
 
       <main>
-        <section id="hero">
-          <div className="hero-content">
-            <div className="hero-text">
-              <h1>Encontrá los perfiles más aptos en segundos.</h1>
-              <p>Aura te permite evaluar fácil y rápido cuáles son los mejores candidatos.</p>
-            </div>
-            <div className="hero-button">
-              <button onClick={() => navigate('/reclutador-solicitudes-supervisor')} className="btn-hero">
-                Ver Solicitudes de Supervisor
-              </button>
-            </div>
-          </div>
-        </section>
-
         <div className="search-header">
           <h2>Postulaciones Recibidas</h2>
           <div className="search-actions">
@@ -265,7 +245,6 @@ const ViewReclutador = () => {
             </div>
           </div>
         </div>
-
         {vistaActual === 'evaluacion' && (
           <section className="evaluacion-section">
             <table className="tabla-candidatos" border="1">

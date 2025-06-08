@@ -5,6 +5,8 @@ import Webcam from 'react-webcam';
 import './ViewRecepcionista.css';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
+import { VideoOff } from 'lucide-react';
+import Select from 'react-select';
 
 const ViewRecepcionista = () => {
   const webcamRef = useRef(null);
@@ -154,6 +156,11 @@ const ViewRecepcionista = () => {
     }
   };
 
+  const opciones = empleados.map(emp => ({
+  value: emp.id,
+  label: emp.name,
+}));
+
   const recognizeFace = async () => {
     const token = localStorage.getItem("token");
     const imageSrc = webcamRef.current.getScreenshot();
@@ -177,13 +184,35 @@ const ViewRecepcionista = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setRecognizedEmployeeName(data.employee_name);
-        Swal.fire({
-          icon: 'success',
-          title: 'Face recognized',
-          text: data.message,
-          confirmButtonColor: '#4e73df'
+        const employeeName = data.employee_name;
+        const employeeId = data.employee_id;
+         Swal.fire({
+          title: `Pudimos reconocer a ${employeeName}`,
+          text: "Registramos la asistencia?.",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#28a745', 
+          cancelButtonColor: '#dc3545', 
+          confirmButtonText: 'Sí, registrar ingreso',
+          cancelButtonText: 'No, cancelar'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+    
+            await registrarAsistencia("entrada", employeeId); 
+            setRecognizedEmployeeName(employeeName); 
+          } else {
+
+            Swal.fire({
+              icon: 'info',
+              title: 'Registro cancelado',
+              text: 'El ingreso no fue registrado.',
+              confirmButtonColor: '#4e73df'
+            });
+            setRecognizedEmployeeName(''); 
+          }
         });
+       
+
       } else {
         setRecognizedEmployeeName('');
         Swal.fire({
@@ -269,75 +298,94 @@ const ViewRecepcionista = () => {
   };
 
   return (
-    <div className="receptionist-container">
-      <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={API_URL} />
-      <h1 className="main-message">Sonría, lo estamos filmando 😄</h1>
+   <div className="receptionist-container">
+  <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={API_URL} />
+  <h1 className="main-message">Sonría, lo estamos filmando 😄</h1>
 
-      {empleados.length > 0 && (
-        <div className="selector-empleado">
-          <label>Seleccionar empleado:</label>
-          <select value={selectedId} onChange={e => setSelectedId(e.target.value)}>
-            {empleados.map(emp => (
-              <option key={emp.id} value={emp.id}>{emp.name}</option>
-            ))}
-          </select>
+  <div className="main-content">
+    <div className="camera-section">
+      {showCamera ? (
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          className="webcam"
+        />
+      ) : (
+        <div className="camera-placeholder">
+          <VideoOff className="webcam-icon" />
+          <p>La cámara está desactivada</p>
+          <button className="scan-button" onClick={handleActivateCamera}>
+            <FaVideo style={{ marginRight: '8px' }} />
+            Activar cámara
+          </button>
         </div>
       )}
 
-      {hasFace ? (
-        <p className="status-message success">✅ Este empleado tiene un rostro asignado</p>
-      ) : (
-        <p className="status-message warning">⚠️ Por favor asigne un rostro para este empleado</p>
-      )}
-
-      {!showCamera ? (
-        <button className="scan-button" onClick={handleActivateCamera}>
-          <FaVideo style={{ marginRight: '8px' }} />
-          Activar cámara
-        </button>
-      ) : (
-        <>
-          <div className="webcam-wrapper">
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              width={320}
-              height={240}
-              className="webcam"
-            />
-          </div>
-
-          {recognizedEmployeeName && (
-            <div className="recognized-banner">
-              ✅ Reconocimiento exitoso: <strong>{recognizedEmployeeName}</strong>
-            </div>
-          )}
-
-          <div className="button-group">
-            <button className="scan-button entrada" onClick={() => registrarAsistencia("entrada")} disabled={scanningIn}>
-              <FaSignInAlt style={{ marginRight: '8px' }} />
-              {scanningIn ? 'Registrando...' : 'Registrar entrada manual (empleado seleccionado)'}
-            </button>
-            <button className="scan-button salida" onClick={() => registrarAsistencia("salida")} disabled={scanningOut}>
-              <FaSignOutAlt style={{ marginRight: '8px' }} />
-              {scanningOut ? 'Registrando...' : 'Registrar salida manual (empleado seleccionado)'}
-            </button>
-            <button className="scan-button facial" onClick={recognizeFace}>
-              <FaCamera style={{ marginRight: '8px' }} />
-              Registrar asistencia automática (reconocimiento facial)
-            </button>
-            {!hasFace && (
-              <button className="scan-button assign" onClick={assignFaceToEmployee}>
-                <FaUserPlus style={{ marginRight: '8px' }} />
-                Asignar rostro a empleado seleccionado
-              </button>
-            )}
-          </div>
-        </>
+      {recognizedEmployeeName && (
+        <div className="recognized-banner">
+          ✅ Reconocimiento exitoso: <strong>{recognizedEmployeeName}</strong>
+        </div>
       )}
     </div>
-  );
-};
 
+    <div className="controls-section">
+      <label>Seleccionar empleado:</label>
+      <Select
+  options={opciones}
+  value={opciones.find(op => op.value === selectedId) || null}
+  onChange={op => setSelectedId(op?.value || '')}
+  placeholder="Selecciona un Empleado"
+  isClearable
+  className="react-select"
+  classNamePrefix="react-select"
+/>
+
+      <p className={`status-message ${hasFace ? 'success' : 'warning'}`}>
+        {hasFace
+          ? '✅ Este empleado tiene un rostro asignado'
+          : '⚠️ Por favor asigne un rostro para este empleado'}
+      </p>
+
+      <div className="button-group">
+        <button
+          className="scan-button entrada"
+          onClick={() => registrarAsistencia("entrada")}
+          disabled={!selectedId || scanningIn}
+        >
+          <FaSignInAlt style={{ marginRight: '8px' }} />
+          {scanningIn ? 'Registrando...' : 'Registrar entrada Manual'}
+        </button>
+        <button
+          className="scan-button salida"
+          onClick={() => registrarAsistencia("salida")}
+          disabled={!selectedId || scanningOut}
+        >
+          <FaSignOutAlt style={{ marginRight: '8px' }} />
+          {scanningOut ? 'Registrando...' : 'Registrar salida Manual'}
+        </button>
+        <button
+          className="scan-button facial"
+          onClick={recognizeFace}
+          disabled={!selectedId}
+        >
+          <FaCamera style={{ marginRight: '8px' }} />
+          Registrar Entrada con FaceID
+        </button>
+        {!hasFace && (
+          <button
+            className="scan-button facial"
+            onClick={assignFaceToEmployee}
+            disabled={!selectedId}
+          >
+            <FaUserPlus style={{ marginRight: '8px' }} />
+            Asignar rostro al empleado
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+  );
+}
 export default ViewRecepcionista;

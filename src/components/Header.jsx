@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
+import { LogOut } from 'lucide-react';
 
 const Header = ({ adminUser, VITE_API_URL, onLogout }) => {
   const navigate = useNavigate();
@@ -41,9 +42,9 @@ const Header = ({ adminUser, VITE_API_URL, onLogout }) => {
               <span>{adminUser.organization_name}</span>
               <span className="admin-email">{adminUser.email}</span>
             </div>
-            <button className="logout-button" onClick={handleLogout}>
-              Cerrar Sesión
-            </button>
+            <button className="logout-button" onClick={handleLogout} title="Cerrar Sesión"> 
+            <LogOut size={20} /> 
+          </button>
           </div>
         ) : (
           <Link to="/login" className="mi-aura-button">

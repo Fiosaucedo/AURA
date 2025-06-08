@@ -54,13 +54,13 @@ const Sidebar = () => {
     ],
     supervisor: [
       { path: '/vista-supervisor', label: 'Home', icon: <FaHome size={20} />  },
-    /*  { path: '/reclutador-solicitudes-supervisor', label: 'Solicitudes', icon: <FaClipboardList size={20}/> },*/
       { path: '/asistencias', label: 'Asistencias', icon: <FaClock size={20}/> },
     ],
     
-    reclutador: [
+    recruiter: [
       { path: '/vista-reclutador', label: 'Candidatos', icon: <FaSearch size={20}/> },
       { path: '/reclutador-solicitudes-supervisor', label: 'Solicitudes de Busqueda', icon: <FilePlus size={20}/> },
+    
     ],
     recepcionista: [
       { path: '/vista-recepcionista', label: 'Recepcionista', icon: '📠' },
@@ -74,7 +74,7 @@ const Sidebar = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="sidebar-title">
-        {isHovered && `Bienvenido, ${user.nombre || 'Usuario'}`}
+        {isHovered && `Rol: ${user.role}`}
       </div>
       <ul className="sidebar-list">
         {(menuItems[user.role] || []).map((item, index) => (

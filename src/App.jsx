@@ -18,6 +18,7 @@ import ViewEmpleado from './Pages/ViewEmpleado';
 import ProtectedRouteLayout from './layouts/ProtectedRouteLayout';
 import NotFoundPage from './Pages/NotFoundPage';
 import CambiarPassword from './Pages/CambiarPassword';
+import Welcome from './Pages/Welcome';
 
 function App() {
   return (
@@ -32,7 +33,7 @@ function App() {
           <Route path="/servicios" element={<Services />} />
 
           <Route element={<ProtectedRouteLayout />}>
-        
+          <Route path="/bienvenida" element={<Welcome />} />
           <Route path="/vista-reclutador" element={<ViewReclutador />} />
           <Route path="/candidato/:id" element={<DetalleCandidato />} />
           <Route path="/create-organization" element={<CreateOrganization />} />
