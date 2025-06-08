@@ -20,6 +20,7 @@ import NotFoundPage from './Pages/NotFoundPage';
 import CambiarPassword from './Pages/CambiarPassword';
 import RecuperarPassword from './Pages/RecuperarPassword';
 import Welcome from './Pages/Welcome';
+import MensajeriaSuperadmin from './Pages/MensajeriaSuperadmin';
 
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
           <Route path="/vista-recepcionista" element={<ViewRecepcionista />} />
           <Route path="/vista-admin" element={<ViewAdmin />} />
           <Route path="/asistencias" element={<ViewAsistencias />} />
+          <Route path="/mensajeria-superadmin" element={<MensajeriaSuperadmin />} />          
 
           <Route path="/vista-empleado" element={<ViewEmpleado />} />
           </Route>
