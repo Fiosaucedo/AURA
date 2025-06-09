@@ -158,7 +158,7 @@ const ViewRecepcionista = () => {
 
   const opciones = empleados.map(emp => ({
   value: emp.id,
-  label: emp.name,
+  label: emp.dni + ' - ' + emp.name,
 }));
 
   const recognizeFace = async () => {
@@ -250,8 +250,12 @@ const ViewRecepcionista = () => {
 
   const descargarTemplate = async () => {
   try {
-    const response = await fetch(`${API_URL}/template-asistencia`, {
+    const response = await fetch(`${API_URL}/attendance/download-template`, {
       method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
     });
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
@@ -279,8 +283,11 @@ const cargarAsistenciasManual = async (event) => {
   formData.append('file', file);
 
   try {
-    const res = await fetch(`${API_URL}/subir-asistencias`, {
+    const res = await fetch(`${API_URL}/attendance/upload-attendance-file`, {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
       body: formData,
     });
 
