@@ -18,7 +18,10 @@ import ViewEmpleado from './Pages/ViewEmpleado';
 import ProtectedRouteLayout from './layouts/ProtectedRouteLayout';
 import NotFoundPage from './Pages/NotFoundPage';
 import CambiarPassword from './Pages/CambiarPassword';
+import RecuperarPassword from './Pages/RecuperarPassword';
 import Welcome from './Pages/Welcome';
+import MensajeriaSuperadmin from './Pages/MensajeriaSuperadmin';
+
 import Metrics from './Pages/Metrics';
 
 function App() {
@@ -43,10 +46,12 @@ function App() {
           <Route path="/vista-recepcionista" element={<ViewRecepcionista />} />
           <Route path="/vista-admin" element={<ViewAdmin />} />
           <Route path="/asistencias" element={<ViewAsistencias />} />
+          <Route path="/mensajeria-superadmin" element={<MensajeriaSuperadmin />} />          
           <Route path="/metricas" element={<Metrics />} />
           <Route path="/vista-empleado" element={<ViewEmpleado />} />
           </Route>
           <Route path="/cambiar-password" element={<CambiarPassword />} />
+          <Route path="/recuperar-password" element={<RecuperarPassword />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>

@@ -210,3 +210,95 @@
   transform: none !important; /* Evita efectos al pasar el mouse */
   box-shadow: none;
 }
+
+/* Nuevos estilos para botones template */
+.scan-button.template {
+  background-color: #15348f;
+  color: white;
+  margin-top: 10px;
+}
+
+.scan-button.template:hover {
+  background-color: #2e59d9;
+}
+.manual-entry-button {
+  background-color: #15348f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 10px;
+}
+
+.manual-entry-button:hover {
+  background-color: #2e59d9;
+  transform: scale(1.03);
+}
+
+@media (max-width: 1080px) {
+  .receptionist-container {
+    padding: 20px;
+  }
+
+  .main-message {
+    font-size: 22px;
+    margin-top: 80px;
+  }
+
+  .main-content {
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .camera-placeholder,
+  .webcam {
+    width: 100%;
+    max-width: 90vw;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .controls-section {
+    width: 100%;
+    max-width: 90vw;
+    padding: 0 10px;
+  }
+
+  .scan-button,
+  .manual-entry-button {
+    width: 100%;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .button-group {
+    width: 100%;
+  }
+
+  .aura-label-recep {
+    font-size: 20px;
+    top: 15px;
+    left: 15px;
+  }
+
+  .react-select__control {
+    font-size: 16px;
+  }
+
+  .status-message {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .recognized-banner {
+    font-size: 0.95rem;
+    padding: 8px;
+  }
+}
