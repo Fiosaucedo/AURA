@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 
 const ViewEmpleado = () => {
   const [archivoSeleccionado, setArchivoSeleccionado] = useState(null);
-  const [fechaCertificado, setFechaCertificado] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [certificados, setCertificados] = useState([]);
   const [vista, setVista] = useState('tarjetas');
   const [adminUser, setAdminUser] = useState(null);
@@ -22,10 +23,20 @@ const ViewEmpleado = () => {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then(res => res.json())
-      .then(data => setCertificados(data))
-      .catch(err => console.error(err));
-  }, []);
+      .then(async res => {
+        const data = await res.json();
+        if (res.ok && Array.isArray(data)) {
+          setCertificados(data);
+        } else {
+          console.warn("Respuesta inesperada:", data);
+          setCertificados([]); // evitar crash
+        }
+      })
+      .catch(err => {
+        console.error("Error al cargar certificados:", err);
+        setCertificados([]);
+      });
+  }, []);  
 
   useEffect(() => {
   const fetchUser = async () => {
@@ -79,45 +90,58 @@ const ViewEmpleado = () => {
       });
     };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!archivoSeleccionado || !fechaCertificado) {
-      Swal.fire('Faltan datos', 'Debés seleccionar un archivo y una fecha.', 'warning');
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', archivoSeleccionado);
-    formData.append('certificate_date', fechaCertificado);
-
-    try {
-      const res = await fetch(`${API_URL}/certificates`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: formData,
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        Swal.fire('Éxito', 'Certificado subido correctamente.', 'success');
-        setArchivoSeleccionado(null);
-        setFechaCertificado('');
-        // Actualizar lista
-        const nuevaRespuesta = await fetch(`${API_URL}/certificates`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const nuevosCertificados = await nuevaRespuesta.json();
-        setCertificados(nuevosCertificados);
-      } else {
-        Swal.fire('Error', data.error || 'Hubo un problema al subir el certificado.', 'error');
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      if (!archivoSeleccionado || !startDate || !endDate) {
+        Swal.fire('Faltan datos', 'Debés seleccionar un archivo y una fecha.', 'warning');
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      Swal.fire('Error', 'Error de red al subir el archivo.', 'error');
-    }
-  };
+    
+      const hoy = new Date();
+      const desde = new Date(startDate);
+      const hasta = new Date(endDate);
+      if (
+        (desde.getMonth() < hoy.getMonth() || hasta.getMonth() < hoy.getMonth()) &&
+        hoy.getDate() > 5
+      ) {
+        Swal.fire('Error', 'No podés subir certificados del mes anterior porque el período está cerrado.', 'error');
+        return;
+      }
+    
+      const formData = new FormData();
+      formData.append('file', archivoSeleccionado);
+      formData.append('start_date', startDate);
+      formData.append('end_date', endDate);
+    
+      try {
+        const res = await fetch(`${API_URL}/certificates`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData,
+        });
+        const data = await res.json();
+    
+        if (res.ok) {
+          Swal.fire('Éxito', 'Certificado subido correctamente.', 'success');
+          setArchivoSeleccionado(null);
+          setStartDate('');
+          setEndDate('');
+          const nuevaRespuesta = await fetch(`${API_URL}/certificates`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          const nuevosCertificados = await nuevaRespuesta.json();
+          setCertificados(nuevosCertificados);
+        } else {
+          Swal.fire('Error', data.error || 'Hubo un problema al subir el certificado.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Error', 'Error de red al subir el archivo.', 'error');
+      }
+    };
+    
 
   return (
     <div className="empleado-container">
@@ -135,11 +159,19 @@ const ViewEmpleado = () => {
             />
           </div>
           <div className="input-fecha">
-            <label>Fecha del Certificado:</label>
+            <label>Desde:</label>
             <input
               type="date"
-              value={fechaCertificado}
-              onChange={(e) => setFechaCertificado(e.target.value)}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          <div className="input-fecha">
+            <label>Hasta:</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
           <button type="submit" className="boton-enviar">Enviar</button>
@@ -159,7 +191,7 @@ const ViewEmpleado = () => {
 
         {vista === 'tarjetas' ? (
           <div className="solicitudes-tarjetas">
-            {certificados.map(cert => {
+            {Array.isArray(certificados) && certificados.map(cert => {
               const ultimoEstado = {
                 state: cert.last_state,
                 comment: cert.last_comment
@@ -174,7 +206,9 @@ const ViewEmpleado = () => {
                     >
                       Ver
                     </button>
-                  </p>                  <p><strong>Fecha Certificado:</strong> {cert.certificate_date}</p>
+                  </p>
+                  <p><strong>Fecha Inicio:</strong> {cert.start_date}</p>
+                  <p><strong>Fecha Fin:</strong> {cert.end_date}</p>
                   <p><strong>Último Estado:</strong> {ultimoEstado?.state}</p>
                   <p><strong>Comentario:</strong> {ultimoEstado?.comment}</p>
                 </div>
@@ -182,35 +216,37 @@ const ViewEmpleado = () => {
             })}
           </div>
         ) : (
-          <table className="solicitudes-lista">
-            <thead>
-              <tr>
-                <th>Archivo</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Comentario</th>
-              </tr>
-            </thead>
-            <tbody>
-              {certificados.map(cert => {
-                const ultimoEstado = cert.history.at(-1);
-                return (
-                  <tr key={cert.id} className={`estado-${ultimoEstado?.state?.toLowerCase()}`}>
+          <div className="tabla-wrapper">
+            <table className="tabla-certificados">
+              <thead>
+                <tr>
+                  <th>Archivo</th>
+                  <th>Desde</th>
+                  <th>Hasta</th>
+                  <th>Estado</th>
+                  <th>Comentario</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.isArray(certificados) && certificados.map(cert => (
+                  <tr key={cert.id} className={`fila-estado-${(cert.last_state || '').toLowerCase()}`}>
                     <td>
                       <button
                         onClick={() => window.open(`${API_URL}/${cert.file_path}`, '_blank')}
-                        className="ver-archivo-boton"
+                        className="ver-boton"
                       >
                         Ver
                       </button>
-                    </td>                    <td>{cert.certificate_date}</td>
-                    <td>{ultimoEstado?.state}</td>
-                    <td>{ultimoEstado?.comment}</td>
+                    </td>
+                    <td>{cert.start_date}</td>
+                    <td>{cert.end_date}</td>
+                    <td>{cert.last_state}</td>
+                    <td>{cert.last_comment}</td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
     </div>
