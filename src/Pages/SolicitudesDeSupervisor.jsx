@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import Header from '../components/Header';
 
 
-  const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 const SolicitudesDeSupervisor = () => {
   const [adminUser, setAdminUser] = useState(null);
@@ -29,28 +29,28 @@ const SolicitudesDeSupervisor = () => {
     }
 
     const fetchUser = async () => {
-          try {
-            const res = await fetch(`${API_URL}/me`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (!['recruiter'].includes(data.role)) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Acceso denegado',
-                text: 'No tenés permiso para acceder a esta sección.',
-                confirmButtonText: 'Ir al login'
-              }).then(() => {
-                navigate("/login");
-              });
-              return;
-            }
-            setAdminUser(data);
-          } catch (err) {
-            console.error(err);
+      try {
+        const res = await fetch(`${API_URL}/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!['recruiter'].includes(data.role)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: 'No tenés permiso para acceder a esta sección.',
+            confirmButtonText: 'Ir al login'
+          }).then(() => {
             navigate("/login");
-          }
-        };
+          });
+          return;
+        }
+        setAdminUser(data);
+      } catch (err) {
+        console.error(err);
+        navigate("/login");
+      }
+    };
 
     const fetchJobs = async () => {
       try {
@@ -86,20 +86,20 @@ const SolicitudesDeSupervisor = () => {
     fetchJobs();
   }, []);
 
-   const handleLogout = () => {
-          Swal.fire({
-            title: '¿Cerrar sesión?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí',
-            cancelButtonText: 'No'
-          }).then(result => {
-            if (result.isConfirmed) {
-              localStorage.removeItem('token');
-              window.location.href = '/login';
-            }
-          });
-        };
+  const handleLogout = () => {
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then(result => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+    });
+  };
 
   const showFormularioCompletar = (data) => {
     let selectedSkills = [];
@@ -116,6 +116,9 @@ const SolicitudesDeSupervisor = () => {
         <input id="skills-input" class="swal2-input" placeholder="Habilidad y enter">
         <div id="selected-skills" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;"></div>
         <textarea id="job-description" class="swal2-textarea" placeholder="Descripción del puesto"></textarea>
+        <label style="margin-top:10px;">Umbral de aptitud (%): <span id="aptThresholdVal">70</span>%</label>
+        <input type="range" min="20" max="100" value="70" id="aptThresholdSlider" class="swal2-range">
+
       `,
       width: '1000px',
       showCancelButton: true,
@@ -123,6 +126,10 @@ const SolicitudesDeSupervisor = () => {
       didOpen: () => {
         const skillsInput = Swal.getPopup().querySelector('#skills-input');
         const skillsContainer = Swal.getPopup().querySelector('#selected-skills');
+        const thresholdSlider = Swal.getPopup().querySelector('#aptThresholdSlider');
+        thresholdSlider.addEventListener('input', () => {
+          Swal.getPopup().querySelector('#aptThresholdVal').textContent = thresholdSlider.value;
+        });
 
         const renderSkillTag = (skill) => {
           const span = document.createElement('span');
@@ -146,7 +153,7 @@ const SolicitudesDeSupervisor = () => {
           btnRemove.style.color = 'white';
           btnRemove.style.cursor = 'pointer';
           btnRemove.title = 'Eliminar habilidad';
-          btnRemove.innerHTML = '&times;'; // × symbol
+          btnRemove.innerHTML = '&times;';
 
           btnRemove.addEventListener('click', () => {
             skillsContainer.removeChild(span);
@@ -162,7 +169,6 @@ const SolicitudesDeSupervisor = () => {
             e.preventDefault();
             const skill = skillsInput.value.trim();
 
-            // Evitar habilidades duplicadas
             if (!selectedSkills.includes(skill)) {
               selectedSkills.push(skill);
               const skillTag = renderSkillTag(skill);
@@ -177,6 +183,8 @@ const SolicitudesDeSupervisor = () => {
         const salary = document.getElementById('job-salary').value;
         const experience = document.getElementById('job-experience').value;
         const education = document.getElementById('job-education').value;
+        const thresholdSlider = document.getElementById('aptThresholdSlider');
+        const threshold = parseInt(thresholdSlider.value, 10) / 100;
 
         if (!description || selectedSkills.length === 0) {
           Swal.showValidationMessage('Faltan campos obligatorios: descripción y al menos una habilidad');
@@ -188,7 +196,8 @@ const SolicitudesDeSupervisor = () => {
           salary_offer: salary,
           required_experience_years: parseInt(experience, 10),
           required_education_level: education,
-          tags: selectedSkills
+          tags: selectedSkills,
+          apt_score_threshold: threshold
         };
       }
     }).then(async result => {
@@ -245,14 +254,14 @@ const SolicitudesDeSupervisor = () => {
     }
   };
 
-return (
+  return (
     <div className="solicitudes-container">
       <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={API_URL} />
       <h2 className="titulo-seccion">Solicitudes de Busqueda</h2>
       {jobs.length === 0 ? (
         <p className="no-solicitudes">¡No tenés solicitudes pendientes!</p>
       ) : (
-        <div className="solicitudes-lista"> 
+        <div className="solicitudes-lista">
           {jobs.map((solicitud) => (
             <div key={solicitud.id} className="tarjeta-solicitud">
               <h3>{solicitud.title}</h3>
