@@ -2,6 +2,37 @@
   padding: 2rem;
 }
 
+h1{
+  color: #2c3e50;
+  text-align: left;
+}
+
+.no-data-message {
+ 
+    color: #2c3e50; 
+ 
+    padding: 20px;
+    margin: 40px auto; 
+    text-align: center; 
+    font-size: 1.1em; 
+    max-width: 600px; 
+ 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; 
+}
+
+.no-data-message p:first-child {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.no-data-message p:last-child {
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
 
 
 .filtros-metricas {

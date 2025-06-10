@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import './CreateOrganization.css';
-import Header from '../components/Header'; // Asegúrate de que la ruta sea correcta
+import Header from '../components/Header'; 
 
 const CrearOrganizacion = () => {
   const [organizaciones, setOrganizaciones] = useState([]);
@@ -19,10 +19,10 @@ const CrearOrganizacion = () => {
   const [logoPreview, setLogoPreview] = useState(null);
   const [modoVista, setModoVista] = useState('tarjetas');
   const navigate = useNavigate();
-  const [adminUser, setAdminUser] = useState(null); // Estado para guardar la información del usuario administrador
-  // const [hasAccess, setHasAccess] = useState(false); // Esta variable no se usa para nada, puedes eliminarla
+  const [adminUser, setAdminUser] = useState(null); 
+  
 
-  const API_URL = import.meta.env.VITE_API_URL; // Define API_URL aquí para poder pasarlo al Header
+  const API_URL = import.meta.env.VITE_API_URL; 
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,7 +40,7 @@ const CrearOrganizacion = () => {
 
     const checkAndFetch = async () => {
       try {
-        const res = await fetch(`${API_URL}/me`, { // Usar API_URL aquí
+        const res = await fetch(`${API_URL}/me`, { 
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -55,9 +55,9 @@ const CrearOrganizacion = () => {
           });
           return;
         }
-        setAdminUser(data); // <--- Guarda la información del usuario aquí
+        setAdminUser(data); 
 
-        const orgRes = await fetch(`${API_URL}/organizations`, { // Usar API_URL aquí
+        const orgRes = await fetch(`${API_URL}/organizations`, { 
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -72,7 +72,7 @@ const CrearOrganizacion = () => {
             direccion: org.address,
             tipoPlan: org.planType,
             estado: org.isActive === true ? 'activa' : 'inactiva',
-            logo: org.logo ? `${API_URL}/${org.logo}` : '' // Usar API_URL aquí
+            logo: org.logo ? `${API_URL}/${org.logo}` : ''
           }));
           setOrganizaciones(mapped);
         } else {
@@ -261,7 +261,7 @@ const CrearOrganizacion = () => {
 
   return (
     <div className="organizaciones-home">
-      {/* Pasa adminUser y API_URL al Header */}
+    
       <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={API_URL} />
       <h2 className="titulo">Empresas registradas</h2>
       <div className="botones-superiores">

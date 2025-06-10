@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import Header from '../components/Header';
+import Header from '../components/Header'; // Ruta ajustada
 import { Link } from 'react-router-dom';
 import './Services.css';
+import PlanComparisonTable from './PlanComparisonTable'; // Ruta ajustada
+import './PlanComparisonTable.css'; // Ruta ajustada
 
 const Services = () => {
   const introRef = useRef(null);
@@ -44,6 +46,9 @@ const Services = () => {
             ¡Hablemos de tus necesidades!
           </Link>
         </section>
+
+        {/* Aquí se inserta el componente de la tabla comparativa de planes */}
+        <PlanComparisonTable />
 
         <section className="services-section">
           <div

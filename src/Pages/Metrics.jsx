@@ -1,4 +1,3 @@
-// Metrics.jsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
@@ -13,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const Metrics = () => {
-   
+
     const API_URL = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
 
@@ -25,9 +24,11 @@ const Metrics = () => {
     const [filtroRol, setFiltroRol] = useState('Todos');
     const [fechaBase, setFechaBase] = useState(new Date().toISOString().split('T')[0]);
     const [adminUser, setAdminUser] = useState(null);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
 
-   
+    const [rolesEmpleados, setRolesEmpleados] = useState(['Todos']);
+    const [reclutadores, setReclutadores] = useState(['Todos']);
+
     const handleLogout = () => {
         Swal.fire({
             title: '¿Cerrar sesión?',
@@ -43,7 +44,6 @@ const Metrics = () => {
         });
     };
 
-    //funciones auxiliares de fechas
     const getWeekDates = (baseDateStr) => {
         const base = new Date(baseDateStr + 'T12:00:00');
         const day = base.getDay();
@@ -60,23 +60,25 @@ const Metrics = () => {
         return dates;
     };
 
-    const getUniqueAttendanceByDate = (allAttendanceRecords, dateStr) => {
-        const recordsForDate = allAttendanceRecords.filter(d => d.date === dateStr);
-        const uniqueByEmployee = {};
-        for (const record of recordsForDate) {
-            if (!uniqueByEmployee[record.employee_id] || new Date(record.timestamp) > new Date(uniqueByEmployee[record.employee_id].timestamp)) {
-                uniqueByEmployee[record.employee_id] = record;
-            }
-        }
-        return Object.values(uniqueByEmployee);
-    };
-
     const calculateAttendanceMetrics = (records) => {
+        const uniqueByDateAndEmployee = {};
+
+        records.forEach(record => {
+            const dateKey = record.date;
+            const employeeId = record.employee_id;
+            const uniqueKey = `${dateKey}-${employeeId}`;
+            if (!uniqueByDateAndEmployee[uniqueKey] || new Date(record.timestamp) > new Date(uniqueByDateAndEmployee[uniqueKey].timestamp)) {
+                uniqueByDateAndEmployee[uniqueKey] = record;
+            }
+        });
+
+        const finalRecords = Object.values(uniqueByDateAndEmployee);
+
         return {
-            Presentes: records.filter(d => d.status === 'Presente').length,
-            Ausentes: records.filter(d => d.status === 'Ausente').length,
-            'Llegadas Tarde': records.filter(d => d.status === 'Tarde').length,
-            'Ausencias Justificadas': records.filter(d => d.status === 'Ausencia Justificada').length,
+            Presentes: finalRecords.filter(d => d.status === 'Presente').length,
+            Ausentes: finalRecords.filter(d => d.status === 'Ausente').length,
+            'Llegadas Tarde': finalRecords.filter(d => d.status === 'Tarde').length,
+            'Ausencias Justificadas': finalRecords.filter(d => d.status === 'Ausencia Justificada').length,
         };
     };
 
@@ -97,103 +99,45 @@ const Metrics = () => {
         return 'Sin Fecha';
     };
 
-    // --- Procesamiento de datos con useMemo ---
     const processData = useMemo(() => {
         if (!datosBrutos.length) {
             return [];
         }
 
         const processed = [];
-        const baseDate = new Date(fechaBase + 'T12:00:00');
 
         if (categoria === 'asistencia') {
-            if (filtroPeriodo === 'dia') {
-                const uniqueRecords = getUniqueAttendanceByDate(datosBrutos, fechaBase);
+            const groupedByPeriod = {};
+            datosBrutos.forEach(record => {
+                const periodKey = getPeriodKey(record.date, filtroPeriodo);
+                if (!groupedByPeriod[periodKey]) {
+                    groupedByPeriod[periodKey] = [];
+                }
+                groupedByPeriod[periodKey].push(record);
+            });
+
+            Object.keys(groupedByPeriod).sort((a, b) => {
+                if (filtroPeriodo === 'dia') return a.localeCompare(b);
+                if (filtroPeriodo === 'semana') {
+                    const [, weekA, , yearA] = a.split(' ');
+                    const [, weekB, , yearB] = b.split(' ');
+                    if (parseInt(yearA) !== parseInt(yearB)) return parseInt(yearA) - parseInt(yearB);
+                    return parseInt(weekA) - parseInt(weekB);
+                }
+                if (filtroPeriodo === 'mes') {
+                    const dateA = new Date(a.replace(' de ', ' 1, '));
+                    const dateB = new Date(b.replace(' de ', ' 1, '));
+                    return dateA - dateB;
+                }
+                return parseInt(a) - parseInt(b);
+            }).forEach(periodKey => {
                 processed.push({
-                    Periodo: fechaBase,
-                    ...calculateAttendanceMetrics(uniqueRecords),
+                    Periodo: periodKey,
+                    ...calculateAttendanceMetrics(groupedByPeriod[periodKey]),
                 });
-            } else if (filtroPeriodo === 'semana') {
-                const weekDates = getWeekDates(fechaBase);
-                weekDates.forEach(dayStr => {
-                    const uniqueRecords = getUniqueAttendanceByDate(datosBrutos, dayStr);
-                    processed.push({
-                        Periodo: dayStr,
-                        ...calculateAttendanceMetrics(uniqueRecords),
-                    });
-                });
-            } else if (filtroPeriodo === 'mes') {
-                const year = baseDate.getFullYear();
-                const monthlyAggregatedData = {};
+            });
 
-                datosBrutos.filter(d => {
-                    const recordDate = new Date(d.date + 'T12:00:00');
-                    return !isNaN(recordDate) && recordDate.getFullYear() === year;
-                })
-                    .forEach(record => {
-                        const recordDate = new Date(record.date + 'T12:00:00');
-                        const monthKey = recordDate.toISOString().substring(0, 7);
-                        if (!monthlyAggregatedData[monthKey]) {
-                            monthlyAggregatedData[monthKey] = [];
-                        }
-                        monthlyAggregatedData[monthKey].push(record);
-                    });
-
-                Object.keys(monthlyAggregatedData).sort().forEach(monthKey => {
-                    const recordsInMonth = monthlyAggregatedData[monthKey];
-                    const uniqueDailyRecordsForMonth = {};
-                    recordsInMonth.forEach(record => {
-                        const dateKey = record.date;
-                        const employeeId = record.employee_id;
-                        const uniqueKey = `${dateKey}-${employeeId}`;
-                        if (!uniqueDailyRecordsForMonth[uniqueKey] || new Date(record.timestamp) > new Date(uniqueDailyRecordsForMonth[uniqueKey].timestamp)) {
-                            uniqueDailyRecordsForMonth[uniqueKey] = record;
-                        }
-                    });
-                    const finalMonthlyRecords = Object.values(uniqueDailyRecordsForMonth);
-
-                    processed.push({
-                        Periodo: new Date(monthKey + '-01T12:00:00').toLocaleString('es-ES', { month: 'long', year: 'numeric' }),
-                        ...calculateAttendanceMetrics(finalMonthlyRecords),
-                    });
-                });
-
-            } else if (filtroPeriodo === 'anio') {
-                const yearlyAggregatedData = {};
-
-                datosBrutos.filter(d => {
-                    const recordDate = new Date(d.date + 'T12:00:00');
-                    return !isNaN(recordDate);
-                })
-                    .forEach(record => {
-                        const recordYear = new Date(record.date + 'T12:00:00').getFullYear();
-                        if (!yearlyAggregatedData[recordYear]) {
-                            yearlyAggregatedData[recordYear] = [];
-                        }
-                        yearlyAggregatedData[recordYear].push(record);
-                    });
-
-                Object.keys(yearlyAggregatedData).sort().forEach(yearKey => {
-                    const recordsInYear = yearlyAggregatedData[yearKey];
-                    const uniqueDailyRecordsForYear = {};
-                    recordsInYear.forEach(record => {
-                        const dateKey = record.date;
-                        const employeeId = record.employee_id;
-                        const uniqueKey = `${dateKey}-${employeeId}`;
-                        if (!uniqueDailyRecordsForYear[uniqueKey] || new Date(record.timestamp) > new Date(uniqueDailyRecordsForYear[uniqueKey].timestamp)) {
-                            uniqueDailyRecordsForYear[uniqueKey] = record;
-                        }
-                    });
-                    const finalYearlyRecords = Object.values(uniqueDailyRecordsForYear);
-
-                    processed.push({
-                        Periodo: yearKey,
-                        ...calculateAttendanceMetrics(finalYearlyRecords),
-                    });
-                });
-            }
-        }
-        else if (categoria === 'reclutamiento' || categoria === 'entrevistas') {
+        } else if (categoria === 'reclutamiento' || categoria === 'entrevistas') {
             const groupedData = {};
 
             datosBrutos.forEach(candidato => {
@@ -205,61 +149,93 @@ const Metrics = () => {
                     return;
                 }
 
-                if (!groupedData[periodKey]) {
-                    groupedData[periodKey] = {
+                const recruiterName = candidato.recruiter_name || 'Sin Reclutador';
+                const groupKey = `${periodKey}-${recruiterName}`;
+
+                if (!groupedData[groupKey]) {
+                    groupedData[groupKey] = {
                         Periodo: periodKey,
+                        Reclutador: recruiterName,
                         'Total Candidatos': 0,
                         'Candidatos Aptos': 0,
                         'Candidatos No Aptos': 0,
-                        'Candidatos Contratados': 0,
-                        'Candidatos Rechazados': 0,
-                        'Candidatos Pendientes': 0,
+                        'Entrevistados': 0,
+                        'Contratados': 0,
+                        'Rechazados': 0,
+                        'Pendientes': 0,
                     };
                 }
 
-                groupedData[periodKey]['Total Candidatos']++;
-                if (candidato.is_apt === true) {
-                    groupedData[periodKey]['Candidatos Aptos']++;
-                } else if (candidato.is_apt === false) {
-                    groupedData[periodKey]['Candidatos No Aptos']++;
-                }
-
-                if (categoria === 'entrevistas') {
-                    if (candidato.status_entrevista === 'Contratado') {
-                        groupedData[periodKey]['Candidatos Contratados']++;
-                    } else if (candidato.status_entrevista === 'Rechazado') {
-                        groupedData[periodKey]['Candidatos Rechazados']++;
-                    } else {
-                        groupedData[periodKey]['Candidatos Pendientes']++;
+                if (categoria === 'reclutamiento') {
+                    groupedData[groupKey]['Total Candidatos']++;
+                    if (candidato.is_apt === true) {
+                        groupedData[groupKey]['Candidatos Aptos']++;
+                    } else if (candidato.is_apt === false) {
+                        groupedData[groupKey]['Candidatos No Aptos']++;
+                    }
+                } else if (categoria === 'entrevistas') {
+                    if (candidato.status_entrevista) {
+                        groupedData[groupKey]['Entrevistados']++;
+                        if (candidato.status_entrevista === 'Contratado') {
+                            groupedData[groupKey]['Contratados']++;
+                        } else if (candidato.status_entrevista === 'Rechazado') {
+                            groupedData[groupKey]['Rechazados']++;
+                        } else {
+                            groupedData[groupKey]['Pendientes']++;
+                        }
                     }
                 }
             });
 
             Object.keys(groupedData).sort((a, b) => {
+                const [periodA, recruiterA] = a.split('-');
+                const [periodB, recruiterB] = b.split('-');
+
+                let comparison = 0;
                 if (filtroPeriodo === 'dia') {
-                    return new Date(a + 'T12:00:00') - new Date(b + 'T12:00:00');
+                    comparison = new Date(periodA + 'T12:00:00') - new Date(periodB + 'T12:00:00');
+                } else if (filtroPeriodo === 'semana') {
+                    const [, weekA, , yearA] = periodA.split(' ');
+                    const [, weekB, , yearB] = periodB.split(' ');
+                    if (parseInt(yearA) !== parseInt(yearB)) return parseInt(yearA) - parseInt(yearB);
+                    else comparison = parseInt(weekA) - parseInt(weekB);
+                } else if (filtroPeriodo === 'mes') {
+                    const dateA = new Date(periodA.replace(' de ', ' 1, '));
+                    const dateB = new Date(periodB.replace(' de ', ' 1, '));
+                    comparison = dateA - dateB;
+                } else if (filtroPeriodo === 'anio') {
+                    comparison = parseInt(periodA) - parseInt(periodB);
                 }
-                if (filtroPeriodo === 'semana') {
-                    const [, weekA, , yearA] = a.split(' ');
-                    const [, weekB, , yearB] = b.split(' ');
-                    if (yearA !== yearB) return parseInt(yearA) - parseInt(yearB);
-                    return parseInt(weekA) - parseInt(weekB);
+
+                if (comparison === 0) {
+                    return recruiterA.localeCompare(recruiterB);
                 }
-                if (filtroPeriodo === 'mes') {
-                    const dateA = new Date(a.replace(' de ', ' 1, '));
-                    const dateB = new Date(b.replace(' de ', ' 1, '));
-                    return dateA - dateB;
-                }
-                return parseInt(a) - parseInt(b);
+                return comparison;
             }).forEach(key => {
-                processed.push(groupedData[key]);
+                const item = groupedData[key];
+                if (categoria === 'reclutamiento') {
+                    processed.push({
+                        Periodo: item.Periodo,
+                        Reclutador: item.Reclutador,
+                        'Total Candidatos': item['Total Candidatos'],
+                        'Candidatos Aptos': item['Candidatos Aptos'],
+                        'Candidatos No Aptos': item['Candidatos No Aptos'],
+                    });
+                } else if (categoria === 'entrevistas') {
+                    processed.push({
+                        Periodo: item.Periodo,
+                        Reclutador: item.Reclutador,
+                        Entrevistados: item.Entrevistados,
+                        Contratados: item.Contratados,
+                        Rechazados: item.Rechazados,
+                    });
+                }
             });
         }
-
         return processed;
-    }, [categoria, datosBrutos, filtroPeriodo, fechaBase]);
+    }, [categoria, datosBrutos, filtroPeriodo, fechaBase, filtroRol]);
 
-    // effect para obtener datos del usuario logeado
+
     useEffect(() => {
         const token = localStorage.getItem("token");
 
@@ -322,44 +298,75 @@ const Metrics = () => {
         fetchUser();
     }, [navigate, API_URL]);
 
-    // effect para obtener datos de la API
     useEffect(() => {
         const token = localStorage.getItem("token");
+        if (!token) return;
 
         const fetchData = async () => {
-            setLoading(true); 
+            setLoading(true);
             try {
                 let url;
-                if (categoria === 'asistencia' || categoria === 'reclutamiento' || categoria === 'entrevistas') {
-                    url = categoria === 'asistencia' ? `${API_URL}/attendance` : `${API_URL}/candidatos`;
+                const params = new URLSearchParams();
+
+                if (filtroPeriodo) {
+                    params.append('periodo', filtroPeriodo);
+                }
+                if (fechaBase) {
+                    params.append('fechaBase', fechaBase);
+                }
+
+                if (categoria === 'asistencia') {
+                    url = `${API_URL}/attendance`;
+                    if (filtroRol && filtroRol !== 'Todos') {
+                        params.append('rol', filtroRol);
+                    }
+                } else if (categoria === 'reclutamiento' || categoria === 'entrevistas') {
+                    url = `${API_URL}/candidatos`;
+                    if (filtroRol && filtroRol !== 'Todos') {
+                        params.append('recruiter', filtroRol);
+                    }
                 } else {
-                    url = `${API_URL}/metrics/${categoria}?period=${filtroPeriodo}&role=${filtroRol}`;
+                    url = `${API_URL}/metrics/${categoria}`;
+                }
+
+                if (params.toString()) {
+                    url = `${url}?${params.toString()}`;
                 }
 
                 const res = await fetch(url, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+
+                if (!res.ok) {
+                    throw new Error(`Error HTTP: ${res.status} - ${res.statusText}`);
+                }
                 const data = await res.json();
+
+                if (categoria === 'reclutamiento' || categoria === 'entrevistas') {
+                    const uniqueRecruiters = [...new Set(data.map(c => c.recruiter_name).filter(Boolean))];
+                    setReclutadores(['Todos', ...uniqueRecruiters]);
+                } else if (categoria === 'asistencia') {
+                    const uniqueRoles = [...new Set(data.map(a => a.employee_role).filter(Boolean))];
+                    setRolesEmpleados(['Todos', ...uniqueRoles]);
+                }
 
                 setDatosBrutos(data);
             } catch (err) {
                 console.error('Error al obtener métricas:', err);
                 setDatosBrutos([]);
+                Swal.fire('Error', 'No se pudieron cargar los datos. Inténtalo de nuevo.', 'error');
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [categoria, filtroPeriodo, filtroRol, API_URL]);
+    }, [categoria, API_URL, filtroPeriodo, filtroRol, fechaBase]);
 
- 
     useEffect(() => {
         setDatosProcesados(processData);
     }, [processData]);
 
-    // exportar a excel y pdf
     const exportarExcel = () => {
         const datosAExportar = datosProcesados;
         if (!datosAExportar.length) {
@@ -386,22 +393,39 @@ const Metrics = () => {
         doc.save(`metricas_${categoria}_${Date.now()}.pdf`);
     };
 
-    // renderizado de la grilla y gráficos
+    const NoDataMessage = () => (
+        <div className="no-data-message">
+            <p>No hay datos para mostrar con los filtros seleccionados.</p>
+            <p>Ajusta los filtros o verifica la disponibilidad de datos.</p>
+        </div>
+    );
+
     const renderGrilla = () => {
         const dataToRender = datosProcesados;
-        if (!dataToRender.length) return <p>No hay datos para mostrar en la grilla.</p>;
+        if (!dataToRender.length) return <NoDataMessage />;
+
+        let columns = [];
+        if (categoria === 'asistencia') {
+            columns = ['Periodo', 'Presentes', 'Ausentes', 'Llegadas Tarde', 'Ausencias Justificadas'];
+        } else if (categoria === 'reclutamiento') {
+            columns = ['Periodo',  'Total Candidatos', 'Candidatos Aptos', 'Candidatos No Aptos'];
+        } else if (categoria === 'entrevistas') {
+            columns = ['Periodo', 'Reclutador', 'Entrevistados', 'Contratados', 'Rechazados'];
+        } else {
+            columns = Object.keys(dataToRender[0] || {});
+        }
 
         return (
             <table className="tabla-metricas">
                 <thead>
                     <tr>
-                        {Object.keys(dataToRender[0] || {}).map((key, i) => <th key={i}>{key}</th>)}
+                        {columns.map((key, i) => <th key={i}>{key}</th>)}
                     </tr>
                 </thead>
                 <tbody>
                     {dataToRender.map((fila, i) => (
                         <tr key={i}>
-                            {Object.values(fila).map((valor, j) => <td key={j}>{valor}</td>)}
+                            {columns.map((key, j) => <td key={j}>{fila[key]}</td>)}
                         </tr>
                     ))}
                 </tbody>
@@ -411,7 +435,7 @@ const Metrics = () => {
 
     const renderGrafico = () => {
         const dataToRender = datosProcesados;
-        if (!dataToRender.length) return <p>No hay datos para mostrar.</p>;
+        if (!dataToRender.length) return <NoDataMessage />;
 
         if (categoria === 'asistencia') {
             const totalPresentes = dataToRender.reduce((sum, d) => sum + (d.Presentes || 0), 0);
@@ -496,7 +520,7 @@ const Metrics = () => {
             );
 
         } else if (categoria === 'reclutamiento' || categoria === 'entrevistas') {
-            const labels = dataToRender.map(d => d.Periodo);
+            const labels = dataToRender.map(d => `${d.Periodo} (${d.Reclutador})`);
             const datasets = [];
 
             if (categoria === 'reclutamiento') {
@@ -515,17 +539,17 @@ const Metrics = () => {
                 });
             } else if (categoria === 'entrevistas') {
                 datasets.push({
-                    label: 'Candidatos Contratados',
+                    label: 'Entrevistados',
+                    backgroundColor: '#17a2b8',
+                    data: dataToRender.map(d => d['Entrevistados'] || 0)
+                }, {
+                    label: 'Contratados',
                     backgroundColor: '#28a745',
-                    data: dataToRender.map(d => d['Candidatos Contratados'] || 0)
+                    data: dataToRender.map(d => d['Contratados'] || 0)
                 }, {
-                    label: 'Candidatos Rechazados',
+                    label: 'Rechazados',
                     backgroundColor: '#dc3545',
-                    data: dataToRender.map(d => d['Candidatos Rechazados'] || 0)
-                }, {
-                    label: 'Candidatos Pendientes',
-                    backgroundColor: '#ffc107',
-                    data: dataToRender.map(d => d['Candidatos Pendientes'] || 0)
+                    data: dataToRender.map(d => d['Rechazados'] || 0)
                 });
             }
 
@@ -544,9 +568,9 @@ const Metrics = () => {
             return <Bar data={{ labels, datasets }} options={barOptions} />;
         }
 
-        const etiquetas = Object.keys(dataToRender[0] || {}).filter(k => k !== 'name' && k !== 'recruiter' && k !== 'busqueda' && k !== 'date' && k !== 'month' && k !== 'year' && k !== 'Periodo');
+        const etiquetas = Object.keys(dataToRender[0] || {}).filter(k => k !== 'name' && k !== 'recruiter' && k !== 'busqueda' && k !== 'date' && k !== 'month' && k !== 'year' && k !== 'Periodo' && k !== 'Reclutador');
         const datosGrafico = {
-            labels: dataToRender.map(d => d.name || d.recruiter || d.busqueda || d.date || d.month || d.year || d.Periodo),
+            labels: dataToRender.map(d => d.Periodo || d.name || d.recruiter || d.busqueda || d.date || d.month || d.year),
             datasets: etiquetas.map((k, i) => ({
                 label: k,
                 data: dataToRender.map(d => d[k]),
@@ -560,61 +584,63 @@ const Metrics = () => {
         <div className="metricas-container">
             <Header adminUser={adminUser} onLogout={handleLogout} API_URL={API_URL} />
             <div className="metricas-content">
-            <h1>Métricas del Negocio</h1>
-            <div className="filtros-metricas">
-                <select value={categoria} onChange={e => setCategoria(e.target.value)}>
-                    <option value="reclutamiento">Reclutamiento</option>
-                    <option value="entrevistas">Entrevistas y Contrataciones</option>
-                    <option value="asistencia">Asistencia</option>
-                </select>
-
-                <select value={filtroPeriodo} onChange={e => setFiltroPeriodo(e.target.value)}>
-                    <option value="dia">Día</option>
-                    <option value="semana">Semana</option>
-                    <option value="mes">Mes</option>
-                    <option value="anio">Año</option>
-                </select>
-
-                {categoria !== 'asistencia' && categoria !== 'reclutamiento' && categoria !== 'entrevistas' && (
-                    <select value={filtroRol} onChange={e => setFiltroRol(e.target.value)}>
-                        <option value="Todos">Todos los roles</option>
-                        <option value="Administrativo">Administrativo</option>
-                        <option value="Operativo">Operativo</option>
-                        <option value="Técnico">Técnico</option>
+                <h1>Métricas del Negocio</h1>
+                <div className="filtros-metricas">
+                    <select value={categoria} onChange={e => setCategoria(e.target.value)}>
+                        <option value="reclutamiento">Reclutamiento</option>
+                        <option value="entrevistas">Entrevistas y Contrataciones</option>
+                        <option value="asistencia">Asistencia</option>
                     </select>
-                )}
 
-                {(categoria === 'asistencia' || categoria === 'reclutamiento' || categoria === 'entrevistas') && (
-                    <input
-                        type="date"
-                        value={fechaBase}
-                        onChange={e => setFechaBase(e.target.value)}
-                        className="filtro-fecha-asistencia"
-                    />
-                )}
+                    <select value={filtroPeriodo} onChange={e => setFiltroPeriodo(e.target.value)}>
+                        <option value="dia">Día</option>
+                        <option value="semana">Semana</option>
+                        <option value="mes">Mes</option>
+                        <option value="anio">Año</option>
+                    </select>
 
-                <div className="botones-vista">
-                    <button onClick={() => setVista('grilla')}>Grilla</button>
-                    <button onClick={() => setVista('grafico')}>Gráfico</button>
-                </div>
+                    {(categoria === 'asistencia' || categoria === 'reclutamiento' || categoria === 'entrevistas') && (
+                        <select value={filtroRol} onChange={e => setFiltroRol(e.target.value)}>
+                            {categoria === 'asistencia' && rolesEmpleados.map(rol => (
+                                <option key={rol} value={rol}>{rol}</option>
+                            ))}
+                            {(categoria === 'reclutamiento' || categoria === 'entrevistas') && reclutadores.map(rec => (
+                                <option key={rec} value={rec}>{rec}</option>
+                            ))}
+                        </select>
+                    )}
 
-                <div className="botones-exportar">
-                    <button onClick={exportarPDF}>Descargar PDF</button>
-                    <button onClick={exportarExcel}>Descargar Excel</button>
-                </div>
-            </div>
+                    {(categoria === 'asistencia' || categoria === 'reclutamiento' || categoria === 'entrevistas') && (
+                        <input
+                            type="date"
+                            value={fechaBase}
+                            onChange={e => setFechaBase(e.target.value)}
+                            className="filtro-fecha-asistencia"
+                        />
+                    )}
 
-            <div className="contenido-metricas">
-                {loading ? ( 
-                    <div className="spinner-container">
-                        <div className="loading-spinner"></div>
-                        <p>Cargando datos...</p>
+                    <div className="botones-vista">
+                        <button onClick={() => setVista('grilla')}>Grilla</button>
+                        <button onClick={() => setVista('grafico')}>Gráfico</button>
                     </div>
-                ) : (
-                    vista === 'grilla' ? renderGrilla() : renderGrafico()
-                )}
+
+                    <div className="botones-exportar">
+                        <button onClick={exportarPDF}>Descargar PDF</button>
+                        <button onClick={exportarExcel}>Descargar Excel</button>
+                    </div>
+                </div>
+
+                <div className="contenido-metricas">
+                    {loading ? (
+                        <div className="spinner-container">
+                            <div className="loading-spinner"></div>
+                            <p>Cargando datos...</p>
+                        </div>
+                    ) : (
+                        vista === 'grilla' ? renderGrilla() : renderGrafico()
+                    )}
+                </div>
             </div>
-        </div>
         </div>
     );
 };
