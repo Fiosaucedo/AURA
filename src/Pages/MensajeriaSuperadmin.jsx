@@ -69,7 +69,7 @@ const MensajeriaSuperadmin = () => {
                 const rol = data.role;
 
           
-                if (rol !== 'superadmin') {
+                if (rol !== 'admin') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Acceso denegado',
@@ -92,7 +92,7 @@ const MensajeriaSuperadmin = () => {
 
     useEffect(() => {
        
-        if (adminUser && adminUser.role === 'superadmin') {
+        if (adminUser && adminUser.role === 'admin') {
             fetchMensajes();
         }
     }, [adminUser, API_URL]); 
