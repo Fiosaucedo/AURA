@@ -1,0 +1,132 @@
+.metricas-content {
+  padding: 2rem;
+}
+
+h1{
+  color: #2c3e50;
+  text-align: left;
+}
+
+.no-data-message {
+ 
+    color: #2c3e50; 
+ 
+    padding: 20px;
+    margin: 40px auto; 
+    text-align: center; 
+    font-size: 1.1em; 
+    max-width: 600px; 
+ 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; 
+}
+
+.asistencia-graficos{
+  display: flex;
+  flex-direction: row;
+}
+
+.bar-chart-container {
+   
+    max-width: 800px; 
+    margin: 20px auto; 
+    position: relative;
+    height: 400px; 
+ 
+       height: 350px;
+       max-height: 400px;
+  
+}
+
+.recruitment-interview-chart-container {
+    max-width: 900px; 
+    height: 450px; 
+    margin: 20px auto; 
+    position: relative; 
+}
+
+.pie-chart-container {
+    max-width: 500px; 
+    margin: 20px auto;
+    position: relative;
+    height: 400px; 
+}
+
+.no-data-message p:first-child {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.no-data-message p:last-child {
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+
+
+.filtros-metricas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  align-items: baseline;
+}
+
+.tabla-metricas {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-metricas th,
+.tabla-metricas td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.botones-vista button,
+.botones-exportar button {
+  margin-right: 0.5rem;
+}
+
+select{
+ 
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  background-color: white;
+  color: #333;
+  height: 42px;
+  box-sizing: border-box;
+}
+
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px; 
+    width: 100%;
+}
+
+.loading-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #003a77; 
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite; 
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

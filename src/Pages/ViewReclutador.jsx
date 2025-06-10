@@ -247,6 +247,24 @@ const ViewReclutador = () => {
         </div>
         {vistaActual === 'evaluacion' && (
           <section className="evaluacion-section">
+    {loading ? (
+      <div className="loading-spinner">
+        <span className="loader"></span>
+      </div>
+    ) : candidatos.length === 0 ? (
+      <p className="mensaje-vacio">Aún no recibiste postulaciones :(</p>
+    ) : (
+      <>
+        {candidatos.filter(c => {
+          const cumplePuesto = !puestoFiltro || c.job_title === puestoFiltro;
+          const cumpleApto =
+            filtroApto === 'Todos' ||
+            (filtroApto === 'Apto' && c.is_apt === true) ||
+            (filtroApto === 'No Apto' && c.is_apt === false);
+          return cumplePuesto && cumpleApto;
+        }).length === 0 ? (
+          <p className="mensaje-vacio">Ningún candidato coincide con tu búsqueda :(</p>
+        ) : (
             <table className="tabla-candidatos" border="1">
               <thead>
                 <tr>
@@ -299,11 +317,25 @@ const ViewReclutador = () => {
                   })}
               </tbody>
             </table>
-          </section>
+           )}
+      </>
+    )}
+  </section>
         )}
 
         {vistaActual === 'candidatos' && (
           <section className="candidatos-section">
+    {loading ? (
+      <div className="loading-spinner">
+        <span className="loader"></span>
+      </div>
+    ) : candidatos.length === 0 ? (
+      <p className="mensaje-vacio">aún no recibiste postulaciones :(</p>
+    ) : (
+      <>
+        {candidatos.filter(c => !puestoFiltro || c.job_title === puestoFiltro).length === 0 ? (
+          <p className="mensaje-vacio">ningún candidato coincide con tu búsqueda</p>
+        ) : (
             <table className="tabla-candidatos" border="1">
               <thead>
                 <tr>
@@ -320,14 +352,20 @@ const ViewReclutador = () => {
                     <tr key={i}>
                       <td>{c.name} {c.surname}</td>
                       <td>{c.email}</td>
-                      <td><button onClick={() => viewInfo(i)}>Ver Info</button></td>
-                      <td><button onClick={() => descargarCV(c, { openInNewTab: true })}>Ver CV</button></td>
+                      <td><button onClick={() => viewInfo(i)} className="icon-button" title="Ver Información">
+                        <FileText size={20} /></button></td>
+                      <td><button onClick={() => descargarCV(c, { openInNewTab: true })} className="icon-button" title="Ver CV">
+                        <Download size={20} />
+                      </button></td>
                     </tr>
                   ))}
               </tbody>
             </table>
-          </section>
         )}
+      </>
+    )}
+  </section>
+)}
 
         {vistaActual === 'postulaciones' && (
           <section className="postulaciones-section">

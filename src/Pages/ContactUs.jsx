@@ -55,28 +55,44 @@ const ContactUs = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      // logica para enviar el formulario
-      console.log('Datos del formulario a enviar:', formData);
-
-      setFormData({
-        userType: '',
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
-        reason: '',
-      });
-      setErrors({}); 
-
-      Swal.fire({
-        title: '¡Gracias por contactarnos!',
-        text: 'A la brevedad nos estaremos comunicando contigo por alguno de los medios que nos proporcionaste.',
-        icon: 'success',
-        confirmButtonText: 'Entendido',
-      });
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/contact`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+  
+        const data = await res.json();
+  
+        if (res.ok) {
+          setFormData({
+            userType: '',
+            name: '',
+            email: '',
+            phone: '',
+            message: '',
+            reason: '',
+          });
+          setErrors({});
+  
+          Swal.fire({
+            title: '¡Gracias por contactarnos!',
+            text: 'A la brevedad nos estaremos comunicando contigo.',
+            icon: 'success',
+            confirmButtonText: 'Entendido',
+          });
+        } else {
+          Swal.fire('Error', data.error || 'No se pudo enviar el mensaje.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Error', 'Error de red al enviar el mensaje.', 'error');
+      }
     } else {
       Swal.fire({
         title: 'Formulario Incompleto',

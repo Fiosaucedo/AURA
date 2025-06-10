@@ -46,28 +46,46 @@ const Sidebar = () => {
   if (isLoading || !isAuthenticated) return null;
 
   
+  const commonAdminMenuItems = [
+    { path: '/vista-admin', label: 'Empleados', icon: <FaUsers size={20} /> }
+   
+  ];
 
-  const menuItems = {
-    admin: [
-      { path: '/vista-admin', label: 'Empleados', icon: <FaUsers size={20} /> },
-      { path: '/create-organization', label: 'Crear Empresa', icon: <FaBuilding size={20} /> },
-      { path: '/mensajeria-superadmin', label: 'Mensajeria', icon: <FaComment size={20} /> },
-    ],
-    supervisor: [
-      { path: '/vista-supervisor', label: 'Home', icon: <FaHome size={20} />  },
-      { path: '/asistencias', label: 'Asistencias', icon: <FaClock size={20}/> },
-    ],
-    
-    recruiter: [
-      { path: '/vista-reclutador', label: 'Candidatos', icon: <FaSearch size={20}/> },
-      { path: '/reclutador-solicitudes-supervisor', label: 'Solicitudes de Busqueda', icon: <FilePlus size={20}/> },
-    
-    ],
-    recepcionista: [
-      { path: '/vista-recepcionista', label: 'Recepcionista', icon: '📠' },
-    ]
-  };
+  const superAdminMenuItems = [
+    { path: '/create-organization', label: 'Crear Empresa', icon: <FaBuilding size={20} /> },
+     { path: '/mensajeria-superadmin', label: 'Mensajeria', icon: <FaComment size={20} /> }
+  ];
 
+  const supervisorMenuItems = [
+    { path: '/vista-supervisor', label: 'Home', icon: <FaHome size={20} />  },
+    { path: '/asistencias', label: 'Asistencias', icon: <FaClock size={20}/> },
+  ];
+  
+  const recruiterMenuItems = [
+    { path: '/vista-reclutador', label: 'Candidatos', icon: <FaSearch size={20}/> },
+    { path: '/reclutador-solicitudes-supervisor', label: 'Solicitudes de Busqueda', icon: <FilePlus size={20}/> },
+  ];
+
+  const recepcionistaMenuItems = [
+    { path: '/vista-recepcionista', label: 'Recepcionista', icon: '📠' },
+  ];
+
+ 
+  let currentMenuItems = [];
+  if (user.role === 'admin') {
+    if (user.is_superadmin) {
+      currentMenuItems = superAdminMenuItems;
+    } else {
+      currentMenuItems = commonAdminMenuItems;
+    }
+  } else if (user.role === 'supervisor') {
+    currentMenuItems = supervisorMenuItems;
+  } else if (user.role === 'recruiter') {
+    currentMenuItems = recruiterMenuItems;
+  } else if (user.role === 'recepcionista') {
+    currentMenuItems = recepcionistaMenuItems;
+  }
+  
   return (
     <div
       className={`sidebar ${isHovered ? 'expanded' : 'collapsed'}`}
@@ -78,7 +96,7 @@ const Sidebar = () => {
         {isHovered && `Rol: ${user.role}`}
       </div>
       <ul className="sidebar-list">
-        {(menuItems[user.role] || []).map((item, index) => (
+        {(currentMenuItems || []).map((item, index) => (
           <li key={index}>
             <Link to={item.path} className="sidebar-link">
               <span className="icon">{item.icon}</span>
