@@ -560,12 +560,14 @@ const Metrics = () => {
                 },
                 responsive: true,
                 scales: {
-                    x: { stacked: true },
-                    y: { beginAtZero: true, stacked: true }
+                    x: { stacked: false },
+                    y: { beginAtZero: true, stacked: false, min:0 }
                 }
             };
 
-            return <Bar data={{ labels, datasets }} options={barOptions} />;
+            return (<div className="recruitment-interview-chart-container">
+                <Bar data={{ labels, datasets }} options={barOptions} />
+            </div>);
         }
 
         const etiquetas = Object.keys(dataToRender[0] || {}).filter(k => k !== 'name' && k !== 'recruiter' && k !== 'busqueda' && k !== 'date' && k !== 'month' && k !== 'year' && k !== 'Periodo' && k !== 'Reclutador');

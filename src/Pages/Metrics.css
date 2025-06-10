@@ -23,6 +23,37 @@ h1{
     gap: 10px; 
 }
 
+.asistencia-graficos{
+  display: flex;
+  flex-direction: row;
+}
+
+.bar-chart-container {
+   
+    max-width: 800px; 
+    margin: 20px auto; 
+    position: relative;
+    height: 400px; 
+ 
+       height: 350px;
+       max-height: 400px;
+  
+}
+
+.recruitment-interview-chart-container {
+    max-width: 900px; 
+    height: 450px; 
+    margin: 20px auto; 
+    position: relative; 
+}
+
+.pie-chart-container {
+    max-width: 500px; 
+    margin: 20px auto;
+    position: relative;
+    height: 400px; 
+}
+
 .no-data-message p:first-child {
     font-weight: bold;
     font-size: 1.2em;
