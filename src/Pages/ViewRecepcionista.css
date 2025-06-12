@@ -120,11 +120,10 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width: 380px; /* o el valor que te convenga */
+  width: 380px; 
 }
 
 
-/* Contenedor del selector */
 .react-select__control {
   background-color: #2d2d44;
   border: 1px solid #4e73df;
@@ -135,7 +134,6 @@
   box-shadow: none;
 }
 
-/* Texto dentro */
 .react-select__single-value {
   color: rgb(0, 0, 0)!important;
 }
@@ -144,12 +142,10 @@
   color: rgb(0, 0, 0)!important;
 }
 
-/* Placeholder */
 .react-select__placeholder {
   color: #ccc;
 }
 
-/* Menú desplegable */
 .react-select__menu {
   background-color: #2d2d44;
   color: white;
@@ -157,7 +153,6 @@
   border-radius: 8px;
 }
 
-/* Opción seleccionada o al pasar el mouse */
 .react-select__option--is-focused {
   background-color: #15348f;
 }
@@ -207,11 +202,10 @@
   color: #ccc;
   cursor: not-allowed;
   opacity: 0.6;
-  transform: none !important; /* Evita efectos al pasar el mouse */
+  transform: none !important; 
   box-shadow: none;
 }
 
-/* Nuevos estilos para botones template */
 .scan-button.template {
   background-color: #15348f;
   color: white;
@@ -300,5 +294,30 @@
   .recognized-banner {
     font-size: 0.95rem;
     padding: 8px;
+  }
+}
+/* Por defecto ocultamos el select */
+.mobile-select-actions {
+  display: none;
+}
+
+/* En móvil (<=1080px) ocultamos botones y mostramos select */
+@media (max-width: 1080px) {
+  .button-group {
+    display: none;
+  }
+
+  .mobile-select-actions {
+    display: block;
+    width: 100%;
+    max-width: 90vw;
+    margin-bottom: 20px;
+  }
+
+  
+  .camera-placeholder,
+  .webcam {
+    height: 1200px;
+    
   }
 }
