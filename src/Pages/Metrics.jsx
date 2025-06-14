@@ -93,6 +93,19 @@ const Metrics = () => {
         }
 
         const data = await res.json();
+
+        if (!['manager', 'admin'].includes(data.role)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Acceso denegado',
+            text: 'No tenés permiso para acceder a esta sección.',
+            confirmButtonText: 'Ir al login'
+          }).then(() => {
+            navigate("/login");
+          });
+          return;
+        }
+
         setAdminUser(data);
       } catch (err) {
         console.error("Error al obtener datos del usuario:", err);

@@ -13,7 +13,8 @@ const CrearOrganizacion = () => {
     cuit: '',
     direccion: '',
     tipoPlan: '',
-    logo: ''
+    logo: '',
+    emailContacto: ''
   });
   const [orgEditando, setOrgEditando] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
@@ -136,6 +137,7 @@ const CrearOrganizacion = () => {
     if (nuevaOrg.logoFile) {
       formData.append("logo", nuevaOrg.logoFile);
     }
+    formData.append("contactEmail", nuevaOrg.emailContacto);
 
     try {
       const url = orgEditando
@@ -252,7 +254,8 @@ const CrearOrganizacion = () => {
       cuit: org.cuit,
       direccion: org.direccion,
       tipoPlan: org.tipoPlan,
-      logo: org.logo || ''
+      logo: org.logo || '',
+      emailContacto: org.emailContacto || ''
     });
     setLogoPreview(org.logo || null);
     setOrgEditando(org);
@@ -381,10 +384,17 @@ const CrearOrganizacion = () => {
               required
             >
               <option value="">Seleccionar plan</option>
-              <option value="1">Básico</option>
-              <option value="2">Estándar</option>
-              <option value="3">Premium</option>
+              <option value="1">AURA Start</option>
+              <option value="2">AURA Pro</option>
             </select>
+            <input
+              type="email"
+              name="emailContacto"
+              placeholder="Email de contacto"
+              value={nuevaOrg.emailContacto}
+              onChange={handleChange}
+              required
+            />
             <input type="file" accept="image/*" onChange={handleFileChange} />
             {logoPreview && <img src={logoPreview} alt="Vista previa" style={{ width: '120px' }} />}
             <button type="submit">{orgEditando ? 'Guardar cambios' : 'Registrar empresa'}</button>
