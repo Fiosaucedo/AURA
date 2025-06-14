@@ -21,7 +21,7 @@ import CambiarPassword from './Pages/CambiarPassword';
 import RecuperarPassword from './Pages/RecuperarPassword';
 import Welcome from './Pages/Welcome';
 import MensajeriaSuperadmin from './Pages/MensajeriaSuperadmin';
-
+import CertificadosEnviados from './Pages/CertificadosEnviados';
 import Metrics from './Pages/Metrics';
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
           <Route path="/vista-postulante" element={<ViewPostulante />} />
           <Route path="/contactanos" element={<ContactUs />} />
           <Route path="/servicios" element={<Services />} />
-
+            
           <Route element={<ProtectedRouteLayout />}>
           <Route path="/bienvenida" element={<Welcome />} />
           <Route path="/vista-reclutador" element={<ViewReclutador />} />
@@ -47,6 +47,7 @@ function App() {
           <Route path="/vista-admin" element={<ViewAdmin />} />
           <Route path="/asistencias" element={<ViewAsistencias />} />
           <Route path="/mensajeria-superadmin" element={<MensajeriaSuperadmin />} />          
+          <Route path="/certificados" element={<CertificadosEnviados />} />
           <Route path="/metricas" element={<Metrics />} />
           <Route path="/vista-empleado" element={<ViewEmpleado />} />
           </Route>
