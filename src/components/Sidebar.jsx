@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
-import { FaHome, FaUsers, FaClipboardList, FaClock, FaSignOutAlt,FaSearch, FaBuilding, FaComment, } from 'react-icons/fa';
+import { FaUsers, FaClipboardList, FaClock, FaSignOutAlt,FaSearch, FaBuilding, FaComment, FaBriefcase, FaFile, } from 'react-icons/fa';
 import { FilePlus } from 'lucide-react';
 
 
@@ -57,8 +57,9 @@ const Sidebar = () => {
   ];
 
   const supervisorMenuItems = [
-    { path: '/vista-supervisor', label: 'Home', icon: <FaHome size={20} />  },
+    { path: '/vista-supervisor', label: 'Postulaciones', icon: <FaBriefcase size={20} />  },
     { path: '/asistencias', label: 'Asistencias', icon: <FaClock size={20}/> },
+    { path: '/certificados', label: 'Certificados', icon: <FaFile size={20}/> },
   ];
   
   const recruiterMenuItems = [

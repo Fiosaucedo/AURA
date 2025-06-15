@@ -17,6 +17,7 @@ const ViewRecepcionista = () => {
   const [empleados, setEmpleados] = useState([]);
   const [selectedId, setSelectedId] = useState('');
   const [hasFace, setHasFace] = useState(false);
+  const [mobileAction, setMobileAction] = useState('');
   const [recognizedEmployeeName, setRecognizedEmployeeName] = useState('');
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
@@ -160,6 +161,35 @@ const ViewRecepcionista = () => {
   value: emp.id,
   label: emp.dni + ' - ' + emp.name,
 }));
+
+const handleMobileActionChange = (e) => {
+      const action = e.target.value;
+      setMobileAction(action);
+
+      switch (action) {
+        case 'registrar-entrada':
+          registrarAsistencia("entrada");
+          break;
+        case 'registrar-salida':
+          registrarAsistencia("salida");
+          break;
+        case 'registrar-faceid':
+          recognizeFace();
+          break;
+        case 'asignar-rostro':
+          assignFaceToEmployee();
+          break;
+        case 'descargar-template':
+          descargarTemplate();
+          break;
+        case 'cargar-asistencias':
+          document.getElementById('upload-template')?.click();
+          break;
+        default:
+          break;
+      }  setMobileAction('');
+    };
+
 
   const recognizeFace = async () => {
     const token = localStorage.getItem("token");
@@ -419,6 +449,20 @@ const cargarAsistenciasManual = async (event) => {
           : '⚠️ Por favor asigne un rostro para este empleado'}
       </p>
 
+         <select
+          className="mobile-select-actions"
+          value={mobileAction}
+          onChange={handleMobileActionChange}
+          aria-label="Acciones de asistencias"
+        >
+          <option value="" disabled>Seleccione una acción</option>
+          <option value="registrar-entrada">Registrar entrada Manual</option>
+          <option value="registrar-salida">Registrar salida Manual</option>
+          <option value="registrar-faceid">Registrar Entrada con FaceID</option>
+          {!hasFace && <option value="asignar-rostro">Asignar rostro al empleado</option>}
+          <option value="descargar-template">Descargar template asistencia manual</option>
+          <option value="cargar-asistencias">Ingresar asistencias manuales</option>
+        </select>
       <div className="button-group">
         <button
           className="scan-button entrada"
@@ -457,6 +501,8 @@ const cargarAsistenciasManual = async (event) => {
         <button className="scan-button template" onClick={descargarTemplate}>
         <FaDownload style={{ marginRight: '8px' }} />
         Descargar template asistencia manual
+
+     
       </button>
 
       <button

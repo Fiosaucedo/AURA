@@ -21,9 +21,6 @@ function ViewSupervisor() {
   const [postulacionesReclutador, setPostulaciones] = useState([]);
   const [certificados, setCertificados] = useState([]);
   const [vistaCertificados, setVistaCertificados] = useState('tarjetas');
-
-
-
   const abrirModal = (descripcion) => setDescripcionSeleccionada(descripcion);
   const cerrarModal = () => setDescripcionSeleccionada(null);
 
@@ -235,10 +232,9 @@ function ViewSupervisor() {
       </header>
 
       <div className="supervisor-tabs">
-        <button onClick={() => setSolapaActiva('home')}>🏠 Inicio</button>
+        <button onClick={() => setSolapaActiva('home')}>➕ Nueva postulacion</button>
         <button onClick={() => setSolapaActiva('postulaciones')}>📄 Postulaciones del reclutador</button>
         <button onClick={() => setSolapaActiva('puestos')}>🚀 Postulaciones abiertas</button>
-        <button onClick={() => setSolapaActiva('certificados')}>📑 Certificados enviados</button>
       </div>
 
       {solapaActiva === 'home' && (
@@ -416,10 +412,5 @@ function ViewSupervisor() {
       )}
     </div>
   );
-
-
-
-
 }
-
 export default ViewSupervisor;
