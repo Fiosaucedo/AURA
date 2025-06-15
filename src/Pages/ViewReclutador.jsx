@@ -144,28 +144,48 @@ const ViewReclutador = () => {
 });
   };
 
-  const handleEnviarMail = (index, nombre, esApto) => {
+  const handleEnviarMail = async (index, nombre, esApto, idCandidato, jobTitle) => {
     const mensaje = esApto
       ? `¿Querés contactarte con ${nombre}?`
       : `¿Seguro que querés contactarte con ${nombre} si no es apto?`;
-
-    Swal.fire({
+  
+    const confirmacion = await Swal.fire({
       title: '¿Enviar mail?',
       text: mensaje,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí',
       cancelButtonText: 'No'
-    }).then(result => {
-      if (result.isConfirmed) {
+    });
+  
+    if (!confirmacion.isConfirmed) return;
+  
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${VITE_API_URL}/contact-candidate/${idCandidato}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ job_title: jobTitle })
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
         Swal.fire('¡Mail enviado!', `Te has contactado con ${nombre}.`, 'success');
-        // Guardar que ya se contactó, pero no contratado todavía
         setContactados(prev => ({
           ...prev,
           [index]: { contactado: true, contratado: null, fijo: false }
         }));
+      } else {
+        Swal.fire('Error', data.message || 'No se pudo enviar el correo.', 'error');
       }
-    });
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+      Swal.fire('Error', 'Hubo un problema al contactar al candidato.', 'error');
+    }
   };
 
   const marcarContratado = (index) => {
@@ -290,7 +310,7 @@ const ViewReclutador = () => {
                     return cumplePuesto && cumpleApto;
                   })
                   .map((c, i) => {
-                    const estado = contactados[i];
+                    const yaContactado = c.contacted;
                     return (
                       <tr key={i}>
                         <td>{c.name}</td>
@@ -302,15 +322,13 @@ const ViewReclutador = () => {
                         <td className={c.is_apt ? 'apto' : 'no-apto'}>{c.is_apt ? 'Sí' : 'No'}</td>
                         <td>{c.apt_score != null ? `${Number(c.apt_score).toFixed(2)}%` : 'N/A'}</td>
                         <td>
-                          {!estado?.contactado ? (
-                            <button className='contactarse-button' onClick={() => handleEnviarMail(i, c.name, c.is_apt)}>✉️ Contactarse</button>
-                          ) : estado.contratado ? (
-                            <span style={{ color: 'green', fontWeight: 'bold' }}>Contratado</span>
-                          ) : (
-                            <>
-                              <button className='marcar-contratado-button' onClick={() => marcarContratado(i)}>Marcar contratado</button>
-                            </>
-                          )}
+                        {!yaContactado ? (
+                          <button className='contactarse-button' onClick={() => handleEnviarMail(i, c.name, c.is_apt, c.candidate_id, c.job_title)}>✉️ Contactarse</button>
+                        ) : c.contacted ? (
+                          <span style={{ color: 'green', fontWeight: 'bold' }}>Contactado</span>
+                        ) : (
+                          <button className='marcar-contratado-button' onClick={() => marcarContratado(i)}>Marcar contratado</button>
+                        )}
                         </td>
                       </tr>
                     );

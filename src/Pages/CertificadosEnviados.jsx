@@ -36,11 +36,18 @@ const CertificadosEnviados = () => {
       showCancelButton: true,
       confirmButtonText: 'Sí, aprobar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        // Aquí podés hacer la llamada al backend para aprobar
-        // Por ahora simulamos el resultado
-        Swal.fire('Aprobado', 'El certificado ha sido aprobado.', 'success');
+        await fetch(`${import.meta.env.VITE_API_URL}/certificates/approve/${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({ comment: 'Aprobado por el supervisor.' })
+        });
+        Swal.fire({ icon: 'success', title: 'Certificado aprobado' });
+        setCertificados(prev => prev.filter(c => c.id !== id));
       }
     });
   };
@@ -61,10 +68,19 @@ const CertificadosEnviados = () => {
         }
         return comentario;
       },
-    }).then((result) => {
+    }).then(async (result) => {
+      const comentario = result.value;
       if (result.isConfirmed) {
-        // Aquí podés hacer la llamada al backend para rechazar con el comentario result.value
+        await fetch(`${import.meta.env.VITE_API_URL}/certificates/reject/${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({ comment: comentario })
+        });
         Swal.fire('Rechazado', 'El certificado ha sido rechazado.', 'success');
+        setCertificados(prev => prev.filter(c => c.id !== id));
       }
     });
   };
@@ -96,8 +112,12 @@ const CertificadosEnviados = () => {
             <div key={c.id} className="certificado-card">
               <h4>{c.employee_name}</h4>
               <p>
-                <strong>Fecha del certificado:</strong>{' '}
-                {new Date(c.certificate_date).toLocaleDateString()}
+                <strong>Inicio de licencia:</strong>{' '}
+                {new Date(c.start_date).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Fin del licencia:</strong>{' '}
+                {new Date(c.end_date).toLocaleDateString()}
               </p>
               <p>
                 <strong>Estado:</strong> {c.last_state}
@@ -120,7 +140,8 @@ const CertificadosEnviados = () => {
           <thead>
             <tr>
               <th>Empleado</th>
-              <th>Fecha</th>
+              <th>Inicio de licencia</th>
+              <th>Fin de licencia</th>
               <th>Estado</th>
               <th>Comentario</th>
               <th>Acciones</th>
@@ -130,7 +151,8 @@ const CertificadosEnviados = () => {
             {certificados.map((c) => (
               <tr key={c.id}>
                 <td>{c.employee_name}</td>
-                <td>{new Date(c.certificate_date).toLocaleDateString()}</td>
+                <td>{new Date(c.start_date).toLocaleDateString()}</td>
+                <td>{new Date(c.end_date).toLocaleDateString()}</td>
                 <td>{c.last_state}</td>
                 <td>{c.last_comment}</td>
                 <td>

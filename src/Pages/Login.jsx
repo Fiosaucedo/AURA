@@ -88,9 +88,9 @@ function Login() {
             setTimeout(() => {
               navigate("/vista-empleado");
             }, 500);
-            } else if (data.role === 'gerente') {
+            } else if (data.role === 'manager') {
             setTimeout(() => {
-              navigate("/vista-asistencias");
+              navigate("/metricas");
             }, 500);
           
           } else {

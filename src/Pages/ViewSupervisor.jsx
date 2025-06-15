@@ -357,7 +357,8 @@ function ViewSupervisor() {
               {certificados.map(c => (
                 <div key={c.id} className="certificado-card">
                   <h4>{c.employee_name}</h4>
-                  <p><strong>Fecha del certificado:</strong> {new Date(c.certificate_date).toLocaleDateString()}</p>
+                  <p><strong>Fecha de inicio del certificado:</strong> {new Date(c.start_date).toLocaleDateString()}</p>
+                  <p><strong>Fecha de fin del certificado:</strong> {new Date(c.end_date).toLocaleDateString()}</p>
                   <p><strong>Estado:</strong> {c.last_state}</p>
                   <p><strong>Comentario:</strong> {c.last_comment}</p>
                   <div className="certificado-buttons">
@@ -375,7 +376,8 @@ function ViewSupervisor() {
               <thead>
                 <tr>
                   <th>Empleado</th>
-                  <p><strong>Fecha del certificado:</strong> </p>
+                  <th>Fecha de inicio del certificado</th>
+                  <th>Fecha de fin del certificado</th>
                   <th>Estado</th>
                   <th>Comentario</th>
                   <th>Acciones</th>
@@ -385,9 +387,10 @@ function ViewSupervisor() {
                 {certificados.map(c => (
                   <tr key={c.id}>
                     <td>{c.employee_name}</td>
-                    <td>{new Date(c.certificate_date).toLocaleDateString()}</td>
-                    <p><strong>Estado:</strong> {c.last_state}</p>
-                    <p><strong>Comentario:</strong> {c.last_comment}</p>
+                    <td>{new Date(c.start_date).toLocaleDateString()}</td>
+                    <td>{new Date(c.end_date).toLocaleDateString()}</td>
+                    <td>Estado: {c.last_state}</td>
+                    <td>Comentario: {c.last_comment}</td>
                     <td>
                       <button onClick={() => verArchivo(c.file_path)}>📄 Ver</button>
                       <button onClick={() => aprobarCertificado(c.id)}>✅</button>
