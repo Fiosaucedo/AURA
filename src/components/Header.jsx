@@ -31,7 +31,7 @@ const Header = ({ adminUser, VITE_API_URL, onLogout }) => {
           <div className="landing-nav-buttons">
             <Link to="/contactanos" className="nav-button">Contáctanos</Link>
             <Link to="/servicios" className="nav-button">Servicios</Link>
-            <Link to="/nuestra-mision" className="nav-button">Nuestra Misión</Link> 
+            <Link to="/mision" className="nav-button">Nuestra Misión</Link> 
           </div>
         )}
 

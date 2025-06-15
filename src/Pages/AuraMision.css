@@ -1,0 +1,45 @@
+.aura-mision-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: #f9f9fc;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  gap: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+  flex-wrap: wrap;
+}
+
+.aura-mision-content {
+  flex: 1;
+  min-width: 280px;
+}
+
+.aura-mision-label {
+  font-size: 2rem;
+  color: #360991;
+  margin-bottom: 15px;
+}
+
+.aura-mision-text {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+.aura-mision-image {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  justify-content: center;
+}
+
+.aura-mision-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}

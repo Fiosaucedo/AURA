@@ -42,12 +42,12 @@ const CertificadosEnviados = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-          body: JSON.stringify({ comment: 'Aprobado por el supervisor.' })
+          body: JSON.stringify({ comment: 'Aprobado por el supervisor.' }),
         });
         Swal.fire({ icon: 'success', title: 'Certificado aprobado' });
-        setCertificados(prev => prev.filter(c => c.id !== id));
+        actualizarEstadoCertificado(id, 'Aprobado', 'Aprobado por el supervisor.');
       }
     });
   };
@@ -75,14 +75,34 @@ const CertificadosEnviados = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-          body: JSON.stringify({ comment: comentario })
+          body: JSON.stringify({ comment: comentario }),
         });
         Swal.fire('Rechazado', 'El certificado ha sido rechazado.', 'success');
-        setCertificados(prev => prev.filter(c => c.id !== id));
+        actualizarEstadoCertificado(id, 'Rechazado', comentario);
       }
     });
+  };
+
+  const actualizarEstadoCertificado = (id, nuevoEstado, nuevoComentario) => {
+    setCertificados(prev =>
+      prev.map(c =>
+        c.id === id
+          ? { ...c, last_state: nuevoEstado, last_comment: nuevoComentario }
+          : c
+      )
+    );
+  };
+
+  const estaEvaluado = (estado) => {
+    return estado === 'Aprobado' || estado === 'Rechazado';
+  };
+
+  const iconoEstado = (estado) => {
+    if (estado === 'Aprobado') return '✅';
+    if (estado === 'Rechazado') return '❌';
+    return '⏳';
   };
 
   return (
@@ -109,26 +129,19 @@ const CertificadosEnviados = () => {
       {vistaCertificados === 'tarjetas' && (
         <div className="certificados-tarjetas">
           {certificados.map((c) => (
-            <div key={c.id} className="certificado-card">
+            <div
+              key={c.id}
+              className={`certificado-card ${c.last_state === 'Aprobado' ? 'aprobado' : c.last_state === 'Rechazado' ? 'rechazado' : ''}`}
+            >
               <h4>{c.employee_name}</h4>
-              <p>
-                <strong>Inicio de licencia:</strong>{' '}
-                {new Date(c.start_date).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>Fin del licencia:</strong>{' '}
-                {new Date(c.end_date).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>Estado:</strong> {c.last_state}
-              </p>
-              <p>
-                <strong>Comentario:</strong> {c.last_comment}
-              </p>
+              <p><strong>Inicio de licencia:</strong> {new Date(c.start_date).toLocaleDateString()}</p>
+              <p><strong>Fin del licencia:</strong> {new Date(c.end_date).toLocaleDateString()}</p>
+              <p><strong>Estado:</strong> {iconoEstado(c.last_state)} {c.last_state}</p>
+              <p><strong>Comentario:</strong> {c.last_comment}</p>
               <div className="certificado-buttons">
                 <button onClick={() => verArchivo(c.file_path)}>📄 Ver archivo</button>
-                <button onClick={() => aprobarCertificado(c.id)}>✅ Aprobar</button>
-                <button onClick={() => rechazarCertificado(c.id)}>❌ Rechazar</button>
+                <button onClick={() => aprobarCertificado(c.id)} disabled={estaEvaluado(c.last_state)}>✅ Aprobar</button>
+                <button onClick={() => rechazarCertificado(c.id)} disabled={estaEvaluado(c.last_state)}>❌ Rechazar</button>
               </div>
             </div>
           ))}
@@ -153,12 +166,12 @@ const CertificadosEnviados = () => {
                 <td>{c.employee_name}</td>
                 <td>{new Date(c.start_date).toLocaleDateString()}</td>
                 <td>{new Date(c.end_date).toLocaleDateString()}</td>
-                <td>{c.last_state}</td>
+                <td>{iconoEstado(c.last_state)} {c.last_state}</td>
                 <td>{c.last_comment}</td>
                 <td>
                   <button onClick={() => verArchivo(c.file_path)}>📄 Ver</button>
-                  <button onClick={() => aprobarCertificado(c.id)}>✅</button>
-                  <button onClick={() => rechazarCertificado(c.id)}>❌</button>
+                  <button onClick={() => aprobarCertificado(c.id)} disabled={estaEvaluado(c.last_state)}>✅</button>
+                  <button onClick={() => rechazarCertificado(c.id)} disabled={estaEvaluado(c.last_state)}>❌</button>
                 </td>
               </tr>
             ))}
