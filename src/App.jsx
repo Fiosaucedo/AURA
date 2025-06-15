@@ -20,6 +20,7 @@ import NotFoundPage from './Pages/NotFoundPage';
 import CambiarPassword from './Pages/CambiarPassword';
 import RecuperarPassword from './Pages/RecuperarPassword';
 import Welcome from './Pages/Welcome';
+import AuraMision from './Pages/AuraMision';
 import MensajeriaSuperadmin from './Pages/MensajeriaSuperadmin';
 import CertificadosEnviados from './Pages/CertificadosEnviados';
 import Metrics from './Pages/Metrics';
@@ -35,6 +36,7 @@ function App() {
           <Route path="/vista-postulante" element={<ViewPostulante />} />
           <Route path="/contactanos" element={<ContactUs />} />
           <Route path="/servicios" element={<Services />} />
+          <Route path="/mision" element={<AuraMision />} />
             
           <Route element={<ProtectedRouteLayout />}>
           <Route path="/bienvenida" element={<Welcome />} />
