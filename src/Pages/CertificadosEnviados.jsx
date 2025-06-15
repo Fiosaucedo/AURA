@@ -26,7 +26,8 @@ const CertificadosEnviados = () => {
   }, []);
 
   const verArchivo = (filePath) => {
-    window.open(filePath, '_blank');
+    const url = `${import.meta.env.VITE_API_URL}/${filePath}`;
+    window.open(url, '_blank');
   };
 
   const aprobarCertificado = (id) => {
