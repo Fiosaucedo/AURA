@@ -135,8 +135,8 @@ const CertificadosEnviados = () => {
               className={`certificado-card ${c.last_state === 'Aprobado' ? 'aprobado' : c.last_state === 'Rechazado' ? 'rechazado' : ''}`}
             >
               <h4>{c.employee_name}</h4>
-              <p><strong>Inicio de licencia:</strong> {new Date(c.start_date).toLocaleDateString()}</p>
-              <p><strong>Fin del licencia:</strong> {new Date(c.end_date).toLocaleDateString()}</p>
+              <p><strong>Inicio de licencia:</strong> {new Date(c.start_date + 'T00:00:00').toLocaleDateString('es-AR')}</p>
+              <p><strong>Fin de licencia:</strong> {new Date(c.end_date + 'T00:00:00').toLocaleDateString('es-AR')}</p>
               <p><strong>Estado:</strong> {iconoEstado(c.last_state)} {c.last_state}</p>
               <p><strong>Comentario:</strong> {c.last_comment}</p>
               <div className="certificado-buttons">
@@ -165,8 +165,8 @@ const CertificadosEnviados = () => {
             {certificados.map((c) => (
               <tr key={c.id}>
                 <td>{c.employee_name}</td>
-                <td>{new Date(c.start_date).toLocaleDateString()}</td>
-                <td>{new Date(c.end_date).toLocaleDateString()}</td>
+                <td>{new Date(c.start_date + 'T00:00:00').toLocaleDateString('es-AR')}</td>
+                <td>{new Date(c.end_date + 'T00:00:00').toLocaleDateString('es-AR')}</td>
                 <td>{iconoEstado(c.last_state)} {c.last_state}</td>
                 <td>{c.last_comment}</td>
                 <td>

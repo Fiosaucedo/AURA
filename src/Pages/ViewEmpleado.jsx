@@ -207,8 +207,8 @@ const ViewEmpleado = () => {
                       Ver
                     </button>
                   </p>
-                  <p><strong>Fecha Inicio:</strong> {cert.start_date}</p>
-                  <p><strong>Fecha Fin:</strong> {cert.end_date}</p>
+                  <p><strong>Fecha Inicio:</strong> {new Date(cert.start_date + 'T00:00:00').toLocaleDateString('es-AR')}</p>
+                  <p><strong>Fecha Fin:</strong> {new Date(cert.end_date + 'T00:00:00').toLocaleDateString('es-AR')}</p>
                   <p><strong>Último Estado:</strong> {ultimoEstado?.state}</p>
                   <p><strong>Comentario:</strong> {ultimoEstado?.comment}</p>
                 </div>
