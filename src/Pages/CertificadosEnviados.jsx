@@ -1,10 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
+import Header from '../components/Header.jsx';
 import './CertificadosEnviados.css';
+import { useNavigate } from 'react-router-dom';
 
 const CertificadosEnviados = () => {
   const [certificados, setCertificados] = useState([]);
   const [vistaCertificados, setVistaCertificados] = useState('tarjetas');
+  const [adminUser, setAdminUser] = useState(null);
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const validateUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${VITE_API_URL}/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (!res.ok || !['supervisor', 'admin'].includes(data.role)) {
+          Swal.fire({ icon: 'error', title: 'Acceso denegado', text: 'No tenés permiso.' })
+            .then(() => navigate("/login"));
+          return;
+        }
+
+        setAdminUser(data);
+      } catch (err) {
+        console.error("Error validating user:", err);
+        Swal.fire({ icon: 'error', title: 'Error de autenticación', text: 'Hubo un problema al verificar tu sesión.' })
+          .then(() => navigate("/login"));
+      }
+    };
+    validateUser();
+  }, [navigate, VITE_API_URL]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -13,7 +48,7 @@ const CertificadosEnviados = () => {
       Authorization: token ? `Bearer ${token}` : '',
     };
 
-    fetch(`${import.meta.env.VITE_API_URL}/certificates`, { headers })
+    fetch(`${VITE_API_URL}/certificates`, { headers })
       .then((res) => res.json())
       .then(setCertificados)
       .catch(() =>
@@ -23,10 +58,10 @@ const CertificadosEnviados = () => {
           text: 'Error al cargar certificados.',
         })
       );
-  }, []);
+  }, [VITE_API_URL]);
 
   const verArchivo = (filePath) => {
-    const url = `${import.meta.env.VITE_API_URL}/${filePath}`;
+    const url = `${VITE_API_URL}/${filePath}`;
     window.open(url, '_blank');
   };
 
@@ -39,7 +74,7 @@ const CertificadosEnviados = () => {
       cancelButtonText: 'Cancelar',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await fetch(`${import.meta.env.VITE_API_URL}/certificates/approve/${id}`, {
+        await fetch(`${VITE_API_URL}/certificates/approve/${id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -72,7 +107,7 @@ const CertificadosEnviados = () => {
     }).then(async (result) => {
       const comentario = result.value;
       if (result.isConfirmed) {
-        await fetch(`${import.meta.env.VITE_API_URL}/certificates/reject/${id}`, {
+        await fetch(`${VITE_API_URL}/certificates/reject/${id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -106,8 +141,24 @@ const CertificadosEnviados = () => {
     return '⏳';
   };
 
+  const handleLogout = () => {
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then(result => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+    });
+  };
+
   return (
     <div className="certificados-container">
+      <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={VITE_API_URL} />
       <h2 className="certificados-title">📑 Certificados Enviados</h2>
 
       <div className="vista-toggle">
@@ -140,9 +191,9 @@ const CertificadosEnviados = () => {
               <p><strong>Estado:</strong> {iconoEstado(c.last_state)} {c.last_state}</p>
               <p><strong>Comentario:</strong> {c.last_comment}</p>
               <div className="certificado-buttons">
-                <button onClick={() => verArchivo(c.file_path)}>📄 Ver archivo</button>
                 <button onClick={() => aprobarCertificado(c.id)} disabled={estaEvaluado(c.last_state)}>✅ Aprobar</button>
                 <button onClick={() => rechazarCertificado(c.id)} disabled={estaEvaluado(c.last_state)}>❌ Rechazar</button>
+                <button onClick={() => verArchivo(c.file_path)}>📄 Ver archivo</button>
               </div>
             </div>
           ))}

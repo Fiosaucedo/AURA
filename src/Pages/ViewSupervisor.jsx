@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import './ViewSupervisor.css';
 import { useNavigate } from 'react-router-dom';
+import Header from '../Components/Header';
 
 function ViewSupervisor() {
   const navigate = useNavigate();
   const [hasAccess, setHasAccess] = useState(false);
   const [puestos, setPuestos] = useState([]);
   const [descripcionSeleccionada, setDescripcionSeleccionada] = useState(null);
-  const [solapaActiva, setSolapaActiva] = useState('home');
+  const [solapaActiva, setSolapaActiva] = useState('puestos');
   const [formulario, setFormulario] = useState({
     puesto: '',
     ubicacion: '',
@@ -23,6 +24,8 @@ function ViewSupervisor() {
   const [vistaCertificados, setVistaCertificados] = useState('tarjetas');
   const abrirModal = (descripcion) => setDescripcionSeleccionada(descripcion);
   const cerrarModal = () => setDescripcionSeleccionada(null);
+   const [adminUser, setAdminUser] = useState(null);
+   const VITE_API_URL = import.meta.env.VITE_API_URL;
 
   const verArchivo = (path) => {
     const fullUrl = `${import.meta.env.VITE_API_URL}/${path}`;
@@ -43,6 +46,7 @@ function ViewSupervisor() {
           Swal.fire({ icon: 'error', title: 'Acceso denegado', text: 'No tenés permiso.' })
             .then(() => navigate("/login"));
         } else setHasAccess(true);
+        setAdminUser(data)
       } catch (err) {
         console.error(err);
         navigate("/login");
@@ -224,22 +228,45 @@ function ViewSupervisor() {
 
   if (!hasAccess) return null;
 
+   const handleLogout = () => {
+          Swal.fire({
+            title: '¿Cerrar sesión?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí',
+            cancelButtonText: 'No'
+          }).then(result => {
+            if (result.isConfirmed) {
+              localStorage.removeItem('token');
+              window.location.href = '/login';
+            }
+          });
+        };
+
   return (
     <div className="supervisor-container">
-      <header className="supervisor-header">
-        <h1 className="supervisor-logo">✨Aura✨</h1>
-        <a href="/login" className="supervisor-volver">Cerrar sesión</a>
-      </header>
-
+      <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={VITE_API_URL} />
+      <h1 className="supervisor-title">Gestión de Búsquedas Laborales</h1>
       <div className="supervisor-tabs">
-        <button onClick={() => setSolapaActiva('home')}>➕ Nueva postulacion</button>
-        <button onClick={() => setSolapaActiva('postulaciones')}>📄 Postulaciones del reclutador</button>
-        <button onClick={() => setSolapaActiva('puestos')}>🚀 Postulaciones abiertas</button>
+        <button
+            className={solapaActiva === 'formulario' ? 'active-tab' : ''}
+            onClick={() => setSolapaActiva('formulario')}>
+            ➕ Nueva busqueda
+        </button>
+        <button
+            className={solapaActiva === 'postulaciones' ? 'active-tab' : ''}
+            onClick={() => setSolapaActiva('postulaciones')}>
+            📄 Revision de Busquedas
+        </button>
+       <button
+            className={solapaActiva === 'puestos' ? 'active-tab' : ''}
+            onClick={() => setSolapaActiva('puestos')}>
+            🚀 Busquedas abiertas
+        </button>
       </div>
 
       {solapaActiva === 'home' && (
         <div className="supervisor-home">
-          <h2 className="supervisor-title">Bienvenido, Supervisor</h2>
           <div className="supervisor-card-container">
             <div className="supervisor-card" onClick={() => setSolapaActiva('formulario')}>
               <h3>✍️ Enviar solicitud de creación de puesto</h3>
@@ -251,7 +278,7 @@ function ViewSupervisor() {
 
       {solapaActiva === 'puestos' && (
         <section className="puestos-section">
-          <table className="tabla-puestos" border="1">
+          <table className="tabla-puestos" >
             <thead>
               <tr>
                 <th>Título del puesto</th>
@@ -289,33 +316,40 @@ function ViewSupervisor() {
       )}
 
       {solapaActiva === 'formulario' && (
-        <section className="formulario-section">
-          <form onSubmit={handleSubmit} className="formulario">
-            <h2 className="form-title">Formulario de solicitud</h2>
-            <input type="text" name="puesto" placeholder="Puesto" value={formulario.puesto} onChange={handleChange} required />
-            <input type="text" name="ubicacion" placeholder="Ubicación del trabajo" value={formulario.ubicacion} onChange={handleChange} required />
-            <select name="jornada" value={formulario.jornada} onChange={handleChange} required>
-              <option value="">Tipo de jornada</option>
-              <option value="Full-time">Full-time</option>
-              <option value="Part-time">Part-time</option>
-              <option value="Freelance">Freelance</option>
-            </select>
-            <input type="text" name="remuneracion" placeholder="Remuneración ofrecida (opcional)" value={formulario.remuneracion} onChange={handleChange} />
-            <input type="number" name="experiencia" placeholder="Años de experiencia requeridos" value={formulario.experiencia} onChange={handleChange} min="0" />
-            <select name="educacion" value={formulario.educacion} onChange={handleChange} required>
-              <option value="">Nivel de estudios</option>
-              <option value="secundario">Secundario</option>
-              <option value="terciario">Terciario</option>
-              <option value="universitario">Universitario</option>
-            </select>
-            <textarea name="habilidades" placeholder="Habilidades requeridas" value={formulario.habilidades} onChange={handleChange} required />
-            <div className="botones-form">
-              <button type="submit">Enviar solicitud</button>
-              <button type="button" className="volver" onClick={() => setSolapaActiva('home')}>Volver</button>
-            </div>
-          </form>
-        </section>
-      )}
+  <section className="formulario-section">
+    <form onSubmit={handleSubmit} className="formulario">
+      <h2 className="form-title">Formulario de solicitud</h2>
+  
+      <div className="form-columns"> 
+        <div className="form-column"> 
+          <input type="text" name="puesto" placeholder="Puesto" value={formulario.puesto} onChange={handleChange} required />
+          <input type="text" name="ubicacion" placeholder="Ubicación del trabajo" value={formulario.ubicacion} onChange={handleChange} required />
+          <select name="jornada" value={formulario.jornada} onChange={handleChange} required>
+            <option value="">Tipo de jornada</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Freelance">Freelance</option>
+          </select>
+        </div>
+        <div className="form-column"> 
+          <input type="text" name="remuneracion" placeholder="Remuneración ofrecida (opcional)" value={formulario.remuneracion} onChange={handleChange} />
+          <input type="number" name="experiencia" placeholder="Años de experiencia requeridos" value={formulario.experiencia} onChange={handleChange} min="0" />
+          <select name="educacion" value={formulario.educacion} onChange={handleChange} required>
+            <option value="">Nivel de estudios</option>
+            <option value="secundario">Secundario</option>
+            <option value="terciario">Terciario</option>
+            <option value="universitario">Universitario</option>
+          </select>
+        </div>
+      </div>
+      <textarea name="habilidades" placeholder="Habilidades requeridas" value={formulario.habilidades} onChange={handleChange} required />
+      <div className="botones-form">
+        <button type="submit">Enviar solicitud</button>
+        <button type="button" className="volver" onClick={() => setSolapaActiva('home')}>Borrar</button>
+      </div>
+    </form>
+  </section>
+)}
 
       {solapaActiva === 'postulaciones' && (
         <section className="postulaciones-section">
