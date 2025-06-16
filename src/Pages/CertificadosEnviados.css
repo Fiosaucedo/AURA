@@ -1,11 +1,8 @@
-
-
 .certificados-container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 0 15px;
+  
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
+  max-width: 100%; /* Limita el ancho del contenedor principal */
 }
 
 .certificados-title {
@@ -33,15 +30,18 @@
   transition: all 0.3s ease;
 }
 
-.vista-toggle button.active{
+.vista-toggle button.active {
   background-color: #0f1a4b;
   color: white;
 }
 
 .certificados-tarjetas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-  gap: 50px;
+  /* Establece exactamente dos columnas con un tamaño mínimo de 300px.
+     Esto asegura que no haya más de dos por fila y que sean responsivas. */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem; /* Espacio entre filas y columnas */
+  padding: 20px;
 }
 
 .certificado-card {
@@ -53,6 +53,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  justify-content: space-between; 
+  width: 90%;
 }
 
 .certificado-card h4 {
@@ -65,44 +67,50 @@
 .certificado-buttons {
   margin-top: auto;
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap; /* Permite que los botones salten de línea */
+  gap: 8px; /* Espacio más compacto entre los botones */
+  justify-content: center; /* Centra los botones si hay espacio */
 }
 
 .certificado-buttons button {
-  flex: 1;
+  flex: 1 1 auto; /* Permite que los botones crezcan y se encojan, con un tamaño base automático */
+  min-width: 100px; /* Asegura un ancho mínimo para cada botón */
   padding: 8px 10px;
   border: none;
   border-radius: 5px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  white-space: nowrap; /* Evita que el texto del botón se rompa */
 }
 
 .certificado-buttons button:first-child {
-  background-color: #4a90e2;
+  
+   background-color: #28a745;
   color: white;
 }
 
 .certificado-buttons button:first-child:hover {
-  background-color: #357abd;
-}
-
-.certificado-buttons button:nth-child(2) {
-  background-color: #28a745;
-  color: white;
-}
-
-.certificado-buttons button:nth-child(2):hover {
+  
   background-color: #1e7e34;
 }
 
-.certificado-buttons button:nth-child(3) {
+.certificado-buttons button:nth-child(2) {
   background-color: #dc3545;
   color: white;
 }
 
+.certificado-buttons button:nth-child(2):hover {
+   background-color: #a71d2a;
+}
+
+.certificado-buttons button:nth-child(3) {
+ background-color: #4a90e2;
+  color: white;
+}
+
 .certificado-buttons button:nth-child(3):hover {
-  background-color: #a71d2a;
+ background-color: #357abd;
 }
 
 .tabla-certificados {
@@ -128,8 +136,15 @@
   background-color: #f5faff;
 }
 
+.tabla-certificados td:last-child {
+  /* Asegura que la celda de acciones use flexbox para organizar los botones */
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap; /* Permite que los botones en la tabla también se envuelvan si es necesario */
+}
+
 .tabla-certificados button {
-  margin-right: 5px;
+  /* margin-right: 5px; Esto ahora se maneja con 'gap' en el td:last-child */
   padding: 5px 8px;
   border: none;
   border-radius: 4px;
@@ -138,41 +153,44 @@
   color: white;
 }
 
-.tabla-certificados button:nth-child(1) {
+.tabla-certificados button:nth-child(3) {
   background-color: #4a90e2;
 }
 
-.tabla-certificados button:nth-child(1):hover {
+.tabla-certificados button:nth-child(3):hover {
   background-color: #357abd;
 }
 
-.tabla-certificados button:nth-child(2) {
+.tabla-certificados button:nth-child(1) {
   background-color: #28a745;
 }
 
-.tabla-certificados button:nth-child(2):hover {
+.tabla-certificados button:nth-child(1):hover {
   background-color: #1e7e34;
 }
 
-.tabla-certificados button:nth-child(3) {
+.tabla-certificados button:nth-child(2) {
   background-color: #dc3545;
 }
 
-.tabla-certificados button:nth-child(3):hover {
+.tabla-certificados button:nth-child(2):hover {
   background-color: #a71d2a;
 }
 
 @media (max-width: 600px) {
   .certificados-tarjetas {
     grid-template-columns: 1fr;
+    padding: 10px; /* Ajusta padding para pantallas pequeñas */
   }
 
   .certificado-buttons {
     flex-direction: column;
+    gap: 10px; /* Ajusta el espacio para la disposición en columna */
   }
 
   .certificado-buttons button {
     width: 100%;
+    min-width: unset; /* Resetea el min-width para ocupar el 100% */
   }
 }
 

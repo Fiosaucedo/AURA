@@ -45,7 +45,7 @@
 }
 
 .supervisor-tabs button {
-  background-color: #4a84c2;
+  background-color: #042a53;
   color: white;
   border: none;
   padding: 14px 28px;
@@ -59,6 +59,21 @@
 .supervisor-tabs button:hover {
   background-color: #336ca6;
   transform: translateY(-2px);
+}
+
+.supervisor-tabs button.active-tab {
+  background-color: #336ca6; 
+  color: white; 
+  border-color: #007bff; 
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); 
+  transform: translateY(1px); 
+}
+
+
+.supervisor-tabs button.active-tab:hover {
+  background-color: #336ca6; 
+  color: white;
+  border-color: #007bff;
 }
 
 .supervisor-home {
@@ -136,74 +151,74 @@
 
 .formulario {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  background-color: white;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  flex-direction: column; /* Para apilar el título y los botones */
+  gap: 15px; /* Espacio entre los elementos del formulario */
+  max-width: 800px; /* Ajusta según tus necesidades */
+  margin: 20px auto;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
 }
 
-.formulario label {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-  font-size: 16px;
+.form-columns {
+  display: flex;
+  flex-wrap: wrap; /* Permite que las columnas se envuelvan en pantallas pequeñas */
+  gap: 20px; /* Espacio entre las columnas */
+  width: 100%;
+}
+
+.form-column {
+  flex: 1; /* Ocupa el espacio disponible */
+  min-width: 280px; /* Ancho mínimo para cada columna antes de envolver */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espacio entre los campos dentro de cada columna */
 }
 
 .formulario input,
-.formulario textarea,
-.formulario select {
-  padding: 16px;
-  border-radius: 10px;
-  border: 1px solid #ccd;
-  font-size: 16px;
-  width: 100%;
-  resize: vertical;
-  transition: border 0.3s ease;
-}
-
-.formulario input:focus,
-.formulario textarea:focus,
-.formulario select:focus {
-  border-color: #4a84c2;
-  outline: none;
-  box-shadow: 0 0 5px rgba(74, 132, 194, 0.5);
+.formulario select,
+.formulario textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%; /* Asegura que los campos llenen su columna */
+  box-sizing: border-box; /* Incluye padding y border en el ancho total */
 }
 
 .botones-form {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 30px;
-  gap: 15px;
+  gap: 10px;
+  justify-content: flex-end; /* Alinea los botones a la derecha */
+  margin-top: 20px;
 }
 
-.formulario button {
-  flex-grow: 0;
-  padding: 14px 22px;
+.botones-form button {
+  padding: 10px 20px;
   border: none;
-  border-radius: 10px;
-  font-size: 16px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
-.formulario button[type="submit"] {
-  background-color: #4a84c2;
+.botones-form button[type="submit"] {
+  background-color: #042a53;
   color: white;
 }
 
-.formulario button.volver {
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ccc;
+.botones-form button[type="submit"]:hover {
+  background-color: #336ca6;
 }
 
-.formulario button:hover {
-  opacity: 0.95;
-  transform: translateY(-2px);
-  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+.botones-form button.volver {
+  background-color: #6c757d;
+  color: white;
+}
+
+.botones-form button.volver:hover {
+  background-color: #5a6268;
 }
 
 .supervisor-postulaciones {
@@ -431,4 +446,41 @@
 
 .popup-info-container {
   text-align: left;
+}
+.tabla-puestos {
+     border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    overflow: hidden;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  
+}
+
+th,
+td {
+  border: white;
+  padding: 12px 8px;
+  text-align: center ;
+  word-wrap: break-word;
+  overflow: hidden;
+}
+
+th {
+  background-color: rgba(211, 220, 238, 0.9);
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: bold;
+  height: 60px;
+}
+
+td {
+  background-color: #fff;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+info-cell {
+  text-align: center ;
 }
