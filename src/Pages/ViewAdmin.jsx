@@ -3,6 +3,7 @@ import './ViewAdmin.css';
 import Swal from "sweetalert2";
 import { LayoutGrid, LayoutList, UserPlus, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 
 
 const ViewAdmin = () => {
@@ -430,23 +431,7 @@ const ViewAdmin = () => {
 
   return (
     <div className="employee-admin">
-      <header className="header">
-        <nav className="nav-bar">
-          <div className="logo-logged">
-            {adminUser?.organization_logo && (
-              <img src={`https://aura-back-3h9b.onrender.com/${adminUser.organization_logo}`} alt="Logo" height="30" style={{ marginRight: "10px" }} />
-            )}
-            ✨Aura✨
-          </div>
-          <div className="admin-info">
-            <span>{adminUser?.organization_name}</span>
-            <span style={{ marginLeft: '10px' }}>{adminUser?.email}</span>
-          </div>
-          <button className="logout-button" onClick={handleLogout} title="Cerrar sesión">
-            Cerrar Sesión
-          </button>
-        </nav>
-      </header>
+      <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={VITE_API_URL} />
 
       <main>
         <h1>Administración de Empleados</h1>

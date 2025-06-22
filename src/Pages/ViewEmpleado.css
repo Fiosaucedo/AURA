@@ -143,10 +143,11 @@
 }
 
 .solicitudes-tarjetas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
+  grid-template-columns:auto;
   gap: 25px;
   padding: 20px;
+  flex-direction: row;
 }
 
 .tarjeta-solicitud {

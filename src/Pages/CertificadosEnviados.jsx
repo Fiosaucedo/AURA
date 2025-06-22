@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import Header from '../components/Header.jsx';
 import './CertificadosEnviados.css';
 import { useNavigate } from 'react-router-dom';
+import { LayoutGrid, LayoutList } from 'lucide-react';
 
 const CertificadosEnviados = () => {
   const [certificados, setCertificados] = useState([]);
@@ -159,22 +160,18 @@ const CertificadosEnviados = () => {
   return (
     <div className="certificados-container">
       <Header adminUser={adminUser} onLogout={handleLogout} VITE_API_URL={VITE_API_URL} />
-      <h2 className="certificados-title">📑 Certificados Enviados</h2>
+      
 
       <div className="vista-toggle">
-        <button
-          className={vistaCertificados === 'tarjetas' ? 'active' : ''}
-          onClick={() => setVistaCertificados('tarjetas')}
-        >
-          Vista Tarjetas
-        </button>
-        <button
-          className={vistaCertificados === 'lista' ? 'active' : ''}
-          onClick={() => setVistaCertificados('lista')}
-        >
-          Vista Lista
-        </button>
-      </div>
+  <h2 className="certificados-title">Gestión de Certificados</h2>
+  <button
+    onClick={() => setVistaCertificados(vistaCertificados === 'lista' ? 'tarjetas' : 'lista')}
+    title={vistaCertificados === 'lista' ? 'Cambiar a vista de tarjetas' : 'Cambiar a vista de lista'}
+    className="toggle-view-button" 
+  >
+    {vistaCertificados === 'lista' ? <LayoutGrid size={24} /> : <LayoutList size={24} />}
+  </button>
+</div>
 
       {certificados.length === 0 && <p>No hay certificados para revisar.</p>}
 

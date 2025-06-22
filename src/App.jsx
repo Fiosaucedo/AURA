@@ -24,6 +24,7 @@ import AuraMision from './Pages/AuraMision';
 import MensajeriaSuperadmin from './Pages/MensajeriaSuperadmin';
 import CertificadosEnviados from './Pages/CertificadosEnviados';
 import Metrics from './Pages/Metrics';
+import ViewProfile from './Pages/ViewProfile';
 
 function App() {
   return (
@@ -52,9 +53,11 @@ function App() {
           <Route path="/certificados" element={<CertificadosEnviados />} />
           <Route path="/metricas" element={<Metrics />} />
           <Route path="/vista-empleado" element={<ViewEmpleado />} />
+          <Route path="/perfil" element={<ViewProfile />} />
           </Route>
           <Route path="/cambiar-password" element={<CambiarPassword />} />
           <Route path="/recuperar-password" element={<RecuperarPassword />} />
+          
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>

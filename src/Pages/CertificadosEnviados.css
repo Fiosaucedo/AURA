@@ -14,20 +14,21 @@
 
 .vista-toggle {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   gap: 15px;
-  margin-bottom: 25px;
+  margin: 25px;
+align-items: baseline;
 }
 
 .vista-toggle button {
   padding: 8px 20px;
-  border: 2px solid #0f1a4b;
-  background-color: gray;
+  background-color: #042a53;
   color: white;
   cursor: pointer;
   font-weight: 600;
-  border-radius: 5px;
+  border-radius: 50px;
   transition: all 0.3s ease;
+  display: flex;
 }
 
 .vista-toggle button.active {
@@ -37,10 +38,8 @@
 
 .certificados-tarjetas {
   display: grid;
-  /* Establece exactamente dos columnas con un tamaño mínimo de 300px.
-     Esto asegura que no haya más de dos por fila y que sean responsivas. */
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem; /* Espacio entre filas y columnas */
+  gap: 2rem; 
   padding: 20px;
 }
 
