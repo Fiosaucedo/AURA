@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
-import { FaUsers, FaClipboardList, FaClock, FaSignOutAlt,FaSearch, FaBuilding, FaComment, FaBriefcase, FaFile, } from 'react-icons/fa';
+// Importa FaCog junto con los otros íconos
+import { FaUsers, FaClipboardList, FaClock, FaSignOutAlt, FaSearch, FaBuilding, FaComment, FaBriefcase, FaFile, FaCog } from 'react-icons/fa';
 import { FilePlus } from 'lucide-react';
 
 
@@ -45,33 +46,30 @@ const Sidebar = () => {
 
   if (isLoading || !isAuthenticated) return null;
 
-  
   const commonAdminMenuItems = [
     { path: '/vista-admin', label: 'Empleados', icon: <FaUsers size={20} /> }
-   
   ];
 
   const superAdminMenuItems = [
     { path: '/create-organization', label: 'Crear Empresa', icon: <FaBuilding size={20} /> },
-     { path: '/mensajeria-superadmin', label: 'Mensajeria', icon: <FaComment size={20} /> }
+    { path: '/mensajeria-superadmin', label: 'Mensajeria', icon: <FaComment size={20} /> }
   ];
 
   const supervisorMenuItems = [
-    { path: '/vista-supervisor', label: 'Postulaciones', icon: <FaBriefcase size={20} />  },
-    { path: '/asistencias', label: 'Asistencias', icon: <FaClock size={20}/> },
-    { path: '/certificados', label: 'Certificados', icon: <FaFile size={20}/> },
+    { path: '/vista-supervisor', label: 'Postulaciones', icon: <FaBriefcase size={20} /> },
+    { path: '/asistencias', label: 'Asistencias', icon: <FaClock size={20} /> },
+    { path: '/certificados', label: 'Certificados', icon: <FaFile size={20} /> },
   ];
-  
+
   const recruiterMenuItems = [
-    { path: '/vista-reclutador', label: 'Candidatos', icon: <FaSearch size={20}/> },
-    { path: '/reclutador-solicitudes-supervisor', label: 'Solicitudes de Busqueda', icon: <FilePlus size={20}/> },
+    { path: '/vista-reclutador', label: 'Candidatos', icon: <FaSearch size={20} /> },
+    { path: '/reclutador-solicitudes-supervisor', label: 'Solicitudes de Busqueda', icon: <FilePlus size={20} /> },
   ];
 
   const recepcionistaMenuItems = [
     { path: '/vista-recepcionista', label: 'Recepcionista', icon: '📠' },
   ];
 
- 
   let currentMenuItems = [];
   if (user.role === 'admin') {
     if (user.is_superadmin) {
@@ -86,7 +84,7 @@ const Sidebar = () => {
   } else if (user.role === 'recepcionista') {
     currentMenuItems = recepcionistaMenuItems;
   }
-  
+
   return (
     <div
       className={`sidebar ${isHovered ? 'expanded' : 'collapsed'}`}
@@ -106,6 +104,15 @@ const Sidebar = () => {
           </li>
         ))}
       </ul>
+      
+      <div className="sidebar-bottom-actions">
+        <li>
+          <Link to="/perfil" className="sidebar-link">
+            <span className="icon"><FaCog size={20} /></span>
+            {isHovered && <span className="label">Mi Perfil</span>}
+          </Link>
+        </li>
+      </div>
     </div>
   );
 };
