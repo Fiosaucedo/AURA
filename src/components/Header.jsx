@@ -1,11 +1,11 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Header.css';
 import { LogOut } from 'lucide-react';
 
 const Header = ({ adminUser, VITE_API_URL, onLogout }) => {
   const navigate = useNavigate();
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleLogout = () => {
     if (onLogout) {
@@ -13,10 +13,19 @@ const Header = ({ adminUser, VITE_API_URL, onLogout }) => {
     }
   };
 
+  const handleMouseEnter = () => {
+    setShowPopup(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowPopup(false);
+  };
+
+ 
+  const defaultProfileImage = 'https://www.gravatar.com/avatar/?d=mp&s=200'; 
   return (
     <header className="header">
       <nav className="nav-bar">
-     
         <div className="logo-section">
           <Link to="/" className="main-logo">
             ✨Aura✨
@@ -26,25 +35,37 @@ const Header = ({ adminUser, VITE_API_URL, onLogout }) => {
           )}
         </div>
 
-        
-        {!adminUser && ( 
+        {!adminUser && (
           <div className="landing-nav-buttons">
             <Link to="/contactanos" className="nav-button">Contáctanos</Link>
             <Link to="/servicios" className="nav-button">Servicios</Link>
-            <Link to="/mision" className="nav-button">Nuestra Misión</Link> 
+            <Link to="/mision" className="nav-button">Nuestra Misión</Link>
           </div>
         )}
 
- 
         {adminUser ? (
           <div className="user-actions-logged">
-            <div className="admin-info">
-              <span>{adminUser.organization_name}</span>
-              <span className="admin-email">{adminUser.email}</span>
+            <div
+              className="profile-container"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={adminUser.profile_image ? `https://aura-back-3h9b.onrender.com/${adminUser.profile_image}` : defaultProfileImage}
+                alt="Profile"
+                className="profile-picture"
+              />
+              {showPopup && (
+                <div className="profile-popup">
+                  <p><strong>Mail:</strong> {adminUser.email}</p>
+                  <p><strong>Empresa:</strong> {adminUser.organization_name}</p> 
+                  <p><strong>Rol:</strong> {adminUser.role || 'Admin'}</p> 
+                </div>
+              )}
             </div>
-            <button className="logout-button" onClick={handleLogout} title="Cerrar Sesión"> 
-            <LogOut size={20} /> 
-          </button>
+            <button className="logout-button" onClick={handleLogout} title="Cerrar Sesión">
+              <LogOut size={20} />
+            </button>
           </div>
         ) : (
           <Link to="/login" className="mi-aura-button">

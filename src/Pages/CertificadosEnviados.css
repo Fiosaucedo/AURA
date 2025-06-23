@@ -1,197 +1,362 @@
 
-
 .certificados-container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 0 15px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+.certificados-content {
+    padding: 0 20px;
 }
 
 .certificados-title {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
-  color: #0f1a4b;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #0f1a4b;
 }
 
 .vista-toggle {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 25px;
+    align-items: baseline;
 }
 
 .vista-toggle button {
-  padding: 8px 20px;
-  border: 2px solid #0f1a4b;
-  background-color: gray;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-  border-radius: 5px;
-  transition: all 0.3s ease;
+    padding: 8px 20px;
+    background-color: #042a53;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    display: flex;
 }
 
-.vista-toggle button.active{
-  background-color: #0f1a4b;
-  color: white;
+.vista-toggle button.active {
+    background-color: #0f1a4b;
+    color: white;
 }
 
 .certificados-tarjetas {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-  gap: 50px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 20px;
 }
 
 .certificado-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px 20px;
-  box-shadow: 0 2px 6px rgb(30 144 255 / 0.15);
-  background-color: #f9faff;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px 20px;
+    box-shadow: 0 2px 6px rgb(30 144 255 / 0.15);
+    background-color: #f9faff;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-between;
+    width: 90%;
 }
 
 .certificado-card h4 {
-  margin: 0 0 8px 0;
-  color: #0f1a4b;
-  font-weight: 700;
-  font-size: 1.1rem;
+    margin: 0 0 8px 0;
+    color: #0f1a4b;
+    font-weight: 700;
+    font-size: 1.1rem;
 }
 
 .certificado-buttons {
-  margin-top: auto;
-  display: flex;
-  gap: 12px;
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
 }
 
 .certificado-buttons button {
-  flex: 1;
-  padding: 8px 10px;
-  border: none;
-  border-radius: 5px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    flex: 1 1 auto;
+    min-width: 100px;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
 }
 
 .certificado-buttons button:first-child {
-  background-color: #4a90e2;
-  color: white;
+    background-color: #28a745;
+    color: white;
 }
 
 .certificado-buttons button:first-child:hover {
-  background-color: #357abd;
+    background-color: #1e7e34;
 }
 
-.certificado-buttons button:nth-child(2) {
-  background-color: #28a745;
-  color: white;
+.certificado-buttons button:nth-child(2) { 
+    background-color: #dc3545;
+    color: white;
 }
 
 .certificado-buttons button:nth-child(2):hover {
-  background-color: #1e7e34;
+    background-color: #a71d2a;
 }
 
-.certificado-buttons button:nth-child(3) {
-  background-color: #dc3545;
-  color: white;
+.certificado-buttons button:nth-child(3) { 
+    background-color: #4a90e2;
+    color: white;
 }
 
 .certificado-buttons button:nth-child(3):hover {
-  background-color: #a71d2a;
+    background-color: #357abd;
 }
 
+
 .tabla-certificados {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    overflow: hidden;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
 .tabla-certificados th,
 .tabla-certificados td {
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  text-align: left;
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .tabla-certificados th {
-  background-color: #0f1a4b;
-  color: white;
-  font-weight: 600;
+    background-color: #0f1a4b;
+    color: white;
+    font-weight: 600;
 }
 
 .tabla-certificados tr:nth-child(even) {
-  background-color: #f5faff;
+    background-color: #f5faff;
+}
+
+.tabla-certificados td:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.tabla-certificados .top-buttons-group {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+    justify-content: center;
 }
 
 .tabla-certificados button {
-  margin-right: 5px;
-  padding: 5px 8px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  color: white;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    color: white;
+    width: 90%; /* Ajuste para los botones dentro de la tabla */
+    box-sizing: border-box;
 }
 
-.tabla-certificados button:nth-child(1) {
-  background-color: #4a90e2;
+/* --- ESTOS SON LOS ESTILOS DE BOTONES PARA LA TABLA (usan clases) --- */
+.tabla-certificados .button-aprobar {
+    background-color: #28a745;
 }
 
-.tabla-certificados button:nth-child(1):hover {
-  background-color: #357abd;
+.tabla-certificados .button-aprobar:hover {
+    background-color: #1e7e34;
 }
 
-.tabla-certificados button:nth-child(2) {
-  background-color: #28a745;
+.tabla-certificados .button-rechazar {
+    background-color: #dc3545;
 }
 
-.tabla-certificados button:nth-child(2):hover {
-  background-color: #1e7e34;
+.tabla-certificados .button-rechazar:hover {
+    background-color: #a71d2a;
 }
 
-.tabla-certificados button:nth-child(3) {
-  background-color: #dc3545;
+.tabla-certificados .button-ver-archivo {
+    background-color: #4a90e2;
 }
 
-.tabla-certificados button:nth-child(3):hover {
-  background-color: #a71d2a;
+.tabla-certificados .button-ver-archivo:hover {
+    background-color: #357abd;
+}
+
+
+.tabla-certificados thead tr:first-child th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.tabla-certificados thead tr:first-child th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.tabla-certificados tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 12px;
+}
+
+.tabla-certificados tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 12px;
 }
 
 @media (max-width: 600px) {
-  .certificados-tarjetas {
-    grid-template-columns: 1fr;
-  }
+    .certificados-tarjetas {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
 
-  .certificado-buttons {
-    flex-direction: column;
-  }
+    .certificado-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
 
-  .certificado-buttons button {
-    width: 100%;
-  }
+    .certificado-buttons button {
+        width: 100%;
+        min-width: unset;
+    }
 }
 
-/* Fondo especial según estado */
 .certificado-card.aprobado {
-  background-color: #e0f8e9; /* verde suave */
-  border-color: #28a745;
+    background-color: #e0f8e9;
+    border-color: #28a745;
 }
 
 .certificado-card.rechazado {
-  background-color: #fdecea; /* rojo suave */
-  border-color: #dc3545;
+    background-color: #fdecea;
+    border-color: #dc3545;
 }
 
-/* Botones deshabilitados */
 .certificado-buttons button:disabled,
 .tabla-certificados button:disabled {
-  background-color: #ccc !important;
-  color: #666 !important;
-  cursor: not-allowed;
-  opacity: 0.7;
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.filters-and-view-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+}
+
+.filters-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+
+.filter-item label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+    font-size: 0.95em;
+}
+
+.filter-item select,
+.filter-item input[type="date"] {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.filter-item select:focus,
+.filter-item input[type="date"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.toggle-view-button {
+    background-color: #15348f;
+    border-radius: 5px;
+    padding: 8px 12px;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.toggle-view-button:hover {
+    background-color: #3f60c2;
+    color: white;
+}
+
+.certificados-header {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px; 
+    gap: 15px;
+    color: #0f1a4b;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.spinner {
+    border: 8px solid #f3f3f3; 
+    border-top: 8px solid #0f1a4b; 
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite; 
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+.no-certificados-message {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #555;
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
 }

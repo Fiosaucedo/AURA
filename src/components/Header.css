@@ -122,3 +122,56 @@ h6 {
 .nav-button:hover {
   transform: translateY(-2px);
 }
+
+.user-actions-logged {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-picture {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #084485;
+}
+
+.profile-popup {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.profile-container:hover .profile-popup {
+  opacity: 1;
+}
+
+.profile-popup p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.profile-popup p:first-child {
+  margin-top: 0;
+}
+
+.profile-popup p:last-child {
+  margin-bottom: 0;
+}

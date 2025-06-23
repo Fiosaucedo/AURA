@@ -28,6 +28,7 @@ input {
     gap: 10px;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: baseline;
+    padding: 20px;
 }
 

@@ -8,6 +8,7 @@ import './Metrics.css';
 import Header from '../components/Header';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { BarChart, Table2, FileSpreadsheet} from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -210,27 +211,37 @@ const Metrics = () => {
   };
 
   const renderGrafico = () => {
-    if (!datosProcesados.length) return <NoDataMessage />;
+  if (!datosProcesados.length) return <NoDataMessage />;
 
-    const etiquetas = Object.keys(datosProcesados[0] || {}).filter(k => k !== 'Periodo' && k !== 'Reclutador');
-    const labels = datosProcesados.map(d => d.Periodo + (d.Reclutador ? ` (${d.Reclutador})` : ''));
-    const datasets = etiquetas.map((k, i) => ({
-      label: k,
-      data: datosProcesados.map(d => d[k]),
-      backgroundColor: `hsl(${i * 50}, 70%, 60%)`
-    }));
+  const etiquetas = Object.keys(datosProcesados[0] || {}).filter(k => k !== 'Periodo' && k !== 'Reclutador');
+  const labels = datosProcesados.map(d => d.Periodo + (d.Reclutador ? ` (${d.Reclutador})` : ''));
+  const datasets = etiquetas.map((k, i) => ({
+    label: k,
+    data: datosProcesados.map(d => d[k]),
+    backgroundColor: `hsl(${i * 50}, 70%, 60%)`
+  }));
 
-    const options = {
-      plugins: {
-        legend: { position: 'bottom' },
-        title: { display: true, text: `Métricas de ${categoria} por ${filtroPeriodo}` }
-      },
-      responsive: true,
-      scales: { y: { beginAtZero: true } }
-    };
-
-    return <Bar data={{ labels, datasets }} options={options} />;
+  const options = {
+    plugins: {
+      legend: { position: 'bottom' },
+      title: { display: true, text: `Métricas de ${categoria} por ${filtroPeriodo}` }
+    },
+    responsive: true,
+    maintainAspectRatio: false, 
+    scales: { y: { beginAtZero: true } }
   };
+
+  return (
+    
+    <div className="chart-container">
+      <Bar data={{ labels, datasets }} options={options} />
+    </div>
+  );
+};
+const toggleView = () => {
+    setVista(prevVista => (prevVista === 'grilla' ? 'grafico' : 'grilla'));
+  };
+
 
   return (
     <div className="metricas-container">
@@ -263,12 +274,21 @@ const Metrics = () => {
           )}
 
           <div className="botones-vista">
-            <button onClick={() => setVista('grilla')}>Grilla</button>
-            <button onClick={() => setVista('grafico')}>Gráfico</button>
+            <button onClick={toggleView} title="Cambiar de vista">
+              {vista === 'grilla' ? (
+                <>
+                  <BarChart size={20} />
+                </>
+              ) : (
+                <>
+                  <Table2 size={20} /> 
+                </>
+              )}
+            </button>
           </div>
 
           <div className="botones-exportar">
-            <button onClick={exportarExcel}>Descargar Excel</button>
+            <button onClick={exportarExcel} title="Exportar en Excel"><FileSpreadsheet size={20}/></button>
           </div>
         </div>
 
