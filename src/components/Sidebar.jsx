@@ -67,7 +67,15 @@ const Sidebar = () => {
   ];
 
   const recepcionistaMenuItems = [
-    { path: '/vista-recepcionista', label: 'Recepcionista', icon: '📠' },
+    { path: '/vista-recepcionista', label: 'Recepcion', icon: '📠' },
+  ];
+
+    const empleadoMenuItems = [
+    { path: '/vista-recepcionista', label: 'Mis Certificados', icon: <FaFile size={20} /> },
+  ];
+
+   const managerMenuItems = [
+    { path: '/metricas', label: 'Metricas', icon: '📠' },
   ];
 
   let currentMenuItems = [];
@@ -81,8 +89,12 @@ const Sidebar = () => {
     currentMenuItems = supervisorMenuItems;
   } else if (user.role === 'recruiter') {
     currentMenuItems = recruiterMenuItems;
-  } else if (user.role === 'recepcionista') {
+  } else if (user.role === 'receptionist') {
     currentMenuItems = recepcionistaMenuItems;
+  } else if (user.role === 'employee') {
+    currentMenuItems = empleadoMenuItems;
+  } else if (user.role === 'manager') {
+    currentMenuItems = managerMenuItems;
   }
 
   return (
