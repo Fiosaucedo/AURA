@@ -11,6 +11,7 @@ const ViewReclutador = () => {
   const [puestoFiltro, setPuestoFiltro] = useState('');
   const [puestosUnicos, setPuestosUnicos] = useState([]);
   const [filtroApto, setFiltroApto] = useState('Todos');
+  const [puestos, setPuestos] = useState([]);
   const [adminUser, setAdminUser] = useState(null);
   const [contactados, setContactados] = useState({});
 
@@ -32,7 +33,7 @@ const ViewReclutador = () => {
       });
       return;
     }
-
+    
     const fetchUser = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
@@ -84,6 +85,22 @@ const ViewReclutador = () => {
     fetchCandidatos();
   }, []);
 
+  useEffect(() => {
+          const token = localStorage.getItem("token");
+          fetch(`${VITE_API_URL}/job-posts/by-status/approved`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+            .then(res => res.json())
+            .then(setPuestos)
+            .catch(() =>
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al cargar puestos.'
+              })
+            );
+        }, []);
+
   const handleLogout = () => {
     Swal.fire({
       title: '¿Cerrar sesión?',
@@ -98,6 +115,13 @@ const ViewReclutador = () => {
       }
     });
   };
+const abrirModal = (descripcion) => {
+  Swal.fire({
+    title: 'Descripción del puesto',
+    html: `<p style="text-align:left">${descripcion}</p>`,
+    confirmButtonText: 'Cerrar'
+  });
+};
 
   const descargarCV = (candidato, { openInNewTab = false } = {}) => {
     if (!candidato.file_path) {
@@ -386,14 +410,38 @@ const ViewReclutador = () => {
 )}
 
         {vistaActual === 'postulaciones' && (
-          <section className="postulaciones-section">
-            <ul>
-              {puestosUnicos.map((p, i) => (
-                <li key={i}>{p}</li>
-              ))}
-            </ul>
-          </section>
-        )}
+  <section className="postulaciones-section">
+    <table className="tabla-puestos" border="1">
+      <thead>
+        <tr>
+          <th>Título del puesto</th>
+          <th>Descripción</th>
+          <th>Fecha de creación</th>
+          <th>Cantidad de postulantes</th>
+          <th>Cantidad de aptos</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {puestos.map((p, i) => (
+          <tr key={i}>
+            <td>{p.title}</td>
+            <td className="info-cell">
+              <button className="info-button" onClick={() => abrirModal(p.description)}>i</button>
+            </td>
+            <td>{p.created_at}</td>
+            <td>{p.candidates}</td>
+            <td>{p.apt_candidates}</td>
+            <td className={p.is_active ? 'active' : 'hide'}>
+              {p.is_active ? 'En curso' : 'Deshabilitada'}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+)}
+
       </main>
     </div>
   );

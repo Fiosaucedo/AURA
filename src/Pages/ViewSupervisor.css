@@ -168,12 +168,24 @@
   width: 100%;
 }
 
+.formulario input,
+.formulario textarea,
+.formulario select {
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccd;
+  width: 100%;
+  resize: vertical;
+  transition: border 0.3s ease;
+}
+
 .form-column {
   flex: 1; /* Ocupa el espacio disponible */
   min-width: 280px; /* Ancho mínimo para cada columna antes de envolver */
   display: flex;
   flex-direction: column;
   gap: 15px; /* Espacio entre los campos dentro de cada columna */
+
 }
 
 .formulario input,
@@ -292,34 +304,60 @@
   justify-content: center;
   z-index: 999;
 }
-
 .modal {
-  background: #4a84c2;
-  padding: 20px 30px;
-  border-radius: 10px;
-  max-width: 500px;
+  background: #f9f9f9;
+  padding: 30px 40px;
+  border-radius: 12px;
+  max-width: 600px;
   max-height: 80%;
   overflow-y: auto;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 25px rgba(0,0,0,0.2);
+  text-align: center;
+  color: #333;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.modal h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #111;
 }
 
 .modal h3 {
-  margin-top: 0;
+  font-size: 18px;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.modal p {
+  margin: 10px 0;
+  line-height: 1.6;
+  font-size: 16px;
+  color: #555;
+}
+
+.modal .emoji-title {
+  font-weight: bold;
+  margin-top: 20px;
 }
 
 .modal button {
   margin-top: 20px;
-  background-color: #0c3b6d;
+  background-color: #1e2a3a;
   color: white;
+  padding: 10px 20px;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .modal button:hover {
-  background-color: #0056b3;
+  background-color: #34495e;
 }
+
 
 /* Certificados Enviados */
 .supervisor-certificados {
