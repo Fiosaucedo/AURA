@@ -39,6 +39,19 @@ h1{
        max-height: 400px;
   
 }
+.chart-container {
+  position: relative; 
+  height: 400px; 
+  width: 80%; 
+  margin: auto; 
+  max-width: 900px; 
+}
+
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
 
 .recruitment-interview-chart-container {
     max-width: 900px; 
@@ -90,6 +103,7 @@ h1{
 .botones-vista button,
 .botones-exportar button {
   margin-right: 0.5rem;
+  display: flex;
 }
 
 select{

@@ -4,7 +4,7 @@ import { FaCamera, FaVideo, FaSignInAlt, FaSignOutAlt, FaUserPlus, FaDownload,Fa
 import Webcam from 'react-webcam';
 import './ViewRecepcionista.css';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
+import Header from '../components/Header.jsx';
 import { VideoOff } from 'lucide-react';
 import Select from 'react-select';
 

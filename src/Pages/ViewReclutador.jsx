@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import './ViewReclutador.css';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Download } from 'lucide-react';
-import Header from '../components/Header'; 
+import Header from '../components/Header.jsx'; 
 
 const ViewReclutador = () => {
   const [candidatos, setCandidatos] = useState([]);
