@@ -124,6 +124,7 @@ const ContactUs = () => {
               <option value="candidato">Candidato</option>
               <option value="cliente">Cliente</option>
               <option value="empleado">Empleado</option>
+              <option value="cliente">Interesado</option>
             </select>
             {errors.userType && <span className="error-message">{errors.userType}</span>}
           </div>

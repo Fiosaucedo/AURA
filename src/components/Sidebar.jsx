@@ -71,7 +71,7 @@ const Sidebar = () => {
   ];
 
     const empleadoMenuItems = [
-    { path: '/vista-recepcionista', label: 'Mis Certificados', icon: <FaFile size={20} /> },
+    { path: '/vista-empleado', label: 'Mis Certificados', icon: <FaFile size={20} /> },
   ];
 
    const managerMenuItems = [
