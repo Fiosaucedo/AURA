@@ -7,8 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import SueldoEmpleados from './SueldoEmpleados';
 import Header from '../components/Header';
 
-
-
 const Asistencia = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [adminUser, setAdminUser] = useState(null);
@@ -65,6 +63,22 @@ const Asistencia = () => {
     });
   };
 
+  // ✅ Función para formatear fechas según la región del usuario
+  const formatDate = (dateStr, withTime = false) => {
+    if (!adminUser || !adminUser.region) return dateStr;
+    const date = new Date(dateStr);
+
+    return new Intl.DateTimeFormat(adminUser.region.locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      ...(withTime && {
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      timeZone: adminUser.region.timezone
+    }).format(date);
+  };
 
   return (
     <div className="asistencia-container">
@@ -87,14 +101,14 @@ const Asistencia = () => {
         </div>
         {activeTab === 'dashboard' && (
           <div className="dashboard-filters">
-            <DashboardAsistencia />
+            <DashboardAsistencia formatDate={formatDate} />
           </div>
         )}
       </div>
 
       <div className="tab-content">
-        {activeTab === 'calendario' && <CalendarioAsistencia />}
-        {activeTab === 'sueldos' && <SueldoEmpleados />}
+        {activeTab === 'calendario' && <CalendarioAsistencia formatDate={formatDate} />}
+        {activeTab === 'sueldos' && <SueldoEmpleados formatDate={formatDate} />}
       </div>
     </div>
   );

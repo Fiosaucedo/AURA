@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import './ViewEmpleado.css';
 import Header from '../components/Header';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, List, Eye } from 'lucide-react'; 
+import { LayoutGrid, List, Eye } from 'lucide-react';
 
 const ViewEmpleado = () => {
   const [archivoSeleccionado, setArchivoSeleccionado] = useState(null);
@@ -13,7 +13,7 @@ const ViewEmpleado = () => {
   const [otroMotivo, setOtroMotivo] = useState('');
 
   const [certificados, setCertificados] = useState([]);
-  const [vista, setVista] = useState('tarjetas'); 
+  const [vista, setVista] = useState('tarjetas');
   const [adminUser, setAdminUser] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
 
@@ -31,12 +31,12 @@ const ViewEmpleado = () => {
         });
         const data = await res.json();
         if (res.ok && Array.isArray(data)) {
-      
+
           const sortedData = data.sort((a, b) => {
-           
+
             const dateA = new Date(a.created_at || a.issue_date || a.start_date);
             const dateB = new Date(b.created_at || b.issue_date || b.start_date);
-            return dateB.getTime() - dateA.getTime(); 
+            return dateB.getTime() - dateA.getTime();
           });
           setCertificados(sortedData);
         } else {
@@ -102,6 +102,18 @@ const ViewEmpleado = () => {
     });
   };
 
+  const formatDate = (dateStr) => {
+    if (!adminUser || !adminUser.region) return dateStr;
+
+    const date = new Date(dateStr + 'T00:00:00Z'); // asumimos UTC
+    return new Intl.DateTimeFormat(adminUser.region.locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timeZone: adminUser.region.timezone
+    }).format(date);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -150,7 +162,7 @@ const ViewEmpleado = () => {
         setMotivo('');
         setOtroMotivo('');
 
-     
+
         const nuevaRespuesta = await fetch(`${API_URL}/certificates`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -255,17 +267,17 @@ const ViewEmpleado = () => {
       <section className="ver-solicitudes">
         <h2>Mis Certificados</h2>
         <div className="selector-vista">
-          
+
           <button onClick={toggleVista} className="toggle-view-button">
             {vista === 'tarjetas' ? (
               <>
                 <List size={20} />
-                
+
               </>
             ) : (
               <>
                 <LayoutGrid size={20} />
-                
+
               </>
             )}
           </button>
@@ -287,12 +299,12 @@ const ViewEmpleado = () => {
                         onClick={() => window.open(`${API_URL}/${cert.file_path}`, '_blank')}
                         className="ver-archivo-boton"
                       >
-                        <Eye size={16} /> 
-                      
+                        <Eye size={16} />
+
                       </button>
                     </p>
-                    <p><strong>Fecha Inicio:</strong> {new Date(cert.start_date + 'T00:00:00').toLocaleDateString('es-AR')}</p>
-                    <p><strong>Fecha Fin:</strong> {new Date(cert.end_date + 'T00:00:00').toLocaleDateString('es-AR')}</p>
+                    <p><strong>Fecha Inicio:</strong> {formatDate(cert.start_date)}</p>
+                    <p><strong>Fecha Fin:</strong> {formatDate(cert.end_date)}</p>
                     <p><strong>Motivo:</strong> {cert.reason || 'N/A'}</p>
                     <p><strong>Último Estado:</strong> {ultimoEstado?.state}</p>
                     <p><strong>Comentario:</strong> {ultimoEstado?.comment}</p>
@@ -325,8 +337,8 @@ const ViewEmpleado = () => {
                           onClick={() => window.open(`${API_URL}/${cert.file_path}`, '_blank')}
                           className="ver-boton"
                         >
-                          <Eye size={16} /> 
-                     
+                          <Eye size={16} />
+
                         </button>
                       </td>
                       <td>{new Date(cert.start_date + 'T00:00:00').toLocaleDateString('es-AR')}</td>

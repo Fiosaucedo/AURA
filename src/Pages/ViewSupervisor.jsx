@@ -24,12 +24,28 @@ function ViewSupervisor() {
   const [vistaCertificados, setVistaCertificados] = useState('tarjetas');
   const abrirModal = (descripcion) => setDescripcionSeleccionada(descripcion);
   const cerrarModal = () => setDescripcionSeleccionada(null);
-   const [adminUser, setAdminUser] = useState(null);
-   const VITE_API_URL = import.meta.env.VITE_API_URL;
+  const [adminUser, setAdminUser] = useState(null);
+  const VITE_API_URL = import.meta.env.VITE_API_URL;
 
   const verArchivo = (path) => {
     const fullUrl = `${import.meta.env.VITE_API_URL}/${path}`;
     window.open(fullUrl, '_blank');
+  };
+
+  const formatDate = (dateStr, withTime = false) => {
+    if (!adminUser || !adminUser.region) return dateStr;
+    const date = new Date(dateStr);
+
+    return new Intl.DateTimeFormat(adminUser.region.locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      ...(withTime && {
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      timeZone: adminUser.region.timezone
+    }).format(date);
   };
 
   useEffect(() => {
@@ -228,20 +244,20 @@ function ViewSupervisor() {
 
   if (!hasAccess) return null;
 
-   const handleLogout = () => {
-          Swal.fire({
-            title: '¿Cerrar sesión?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí',
-            cancelButtonText: 'No'
-          }).then(result => {
-            if (result.isConfirmed) {
-              localStorage.removeItem('token');
-              window.location.href = '/login';
-            }
-          });
-        };
+  const handleLogout = () => {
+    Swal.fire({
+      title: '¿Cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    }).then(result => {
+      if (result.isConfirmed) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
+    });
+  };
 
   return (
     <div className="supervisor-container">
@@ -249,19 +265,19 @@ function ViewSupervisor() {
       <h1 className="supervisor-title">Gestión de Búsquedas Laborales</h1>
       <div className="supervisor-tabs">
         <button
-            className={solapaActiva === 'formulario' ? 'active-tab' : ''}
-            onClick={() => setSolapaActiva('formulario')}>
-            ➕ Nueva busqueda
+          className={solapaActiva === 'formulario' ? 'active-tab' : ''}
+          onClick={() => setSolapaActiva('formulario')}>
+          ➕ Nueva busqueda
         </button>
         <button
-            className={solapaActiva === 'postulaciones' ? 'active-tab' : ''}
-            onClick={() => setSolapaActiva('postulaciones')}>
-            📄 Revision de Busquedas
+          className={solapaActiva === 'postulaciones' ? 'active-tab' : ''}
+          onClick={() => setSolapaActiva('postulaciones')}>
+          📄 Revision de Busquedas
         </button>
-       <button
-            className={solapaActiva === 'puestos' ? 'active-tab' : ''}
-            onClick={() => setSolapaActiva('puestos')}>
-            🚀 Busquedas abiertas
+        <button
+          className={solapaActiva === 'puestos' ? 'active-tab' : ''}
+          onClick={() => setSolapaActiva('puestos')}>
+          🚀 Busquedas abiertas
         </button>
       </div>
 
@@ -297,7 +313,7 @@ function ViewSupervisor() {
                   <td className="info-cell">
                     <button className="info-button" onClick={() => abrirModal(p.description)}>i</button>
                   </td>
-                  <td>{p.created_at}</td>
+                  <td>{formatDate(p.created_at, true)}</td>
                   <td>{p.candidates}</td>
                   <td>{p.apt_candidates}</td>
                   <td className={p.is_active ? 'active' : 'hide'}>
@@ -316,40 +332,40 @@ function ViewSupervisor() {
       )}
 
       {solapaActiva === 'formulario' && (
-  <section className="formulario-section">
-    <form onSubmit={handleSubmit} className="formulario">
-      <h2 className="form-title">Formulario de solicitud</h2>
-  
-      <div className="form-columns"> 
-        <div className="form-column"> 
-          <input type="text" name="puesto" placeholder="Puesto" value={formulario.puesto} onChange={handleChange} required />
-          <input type="text" name="ubicacion" placeholder="Ubicación del trabajo" value={formulario.ubicacion} onChange={handleChange} required />
-          <select name="jornada" value={formulario.jornada} onChange={handleChange} required>
-            <option value="">Tipo de jornada</option>
-            <option value="Full-time">Full-time</option>
-            <option value="Part-time">Part-time</option>
-            <option value="Freelance">Freelance</option>
-          </select>
-        </div>
-        <div className="form-column"> 
-          <input type="text" name="remuneracion" placeholder="Remuneración ofrecida (opcional)" value={formulario.remuneracion} onChange={handleChange} />
-          <input type="number" name="experiencia" placeholder="Años de experiencia requeridos" value={formulario.experiencia} onChange={handleChange} min="0" />
-          <select name="educacion" value={formulario.educacion} onChange={handleChange} required>
-            <option value="">Nivel de estudios</option>
-            <option value="secundario">Secundario</option>
-            <option value="terciario">Terciario</option>
-            <option value="universitario">Universitario</option>
-          </select>
-        </div>
-      </div>
-      <textarea name="habilidades" placeholder="Habilidades requeridas" value={formulario.habilidades} onChange={handleChange} required />
-      <div className="botones-form">
-        <button type="submit">Enviar solicitud</button>
-        <button type="button" className="volver" onClick={() => setSolapaActiva('home')}>Borrar</button>
-      </div>
-    </form>
-  </section>
-)}
+        <section className="formulario-section">
+          <form onSubmit={handleSubmit} className="formulario">
+            <h2 className="form-title">Formulario de solicitud</h2>
+
+            <div className="form-columns">
+              <div className="form-column">
+                <input type="text" name="puesto" placeholder="Puesto" value={formulario.puesto} onChange={handleChange} required />
+                <input type="text" name="ubicacion" placeholder="Ubicación del trabajo" value={formulario.ubicacion} onChange={handleChange} required />
+                <select name="jornada" value={formulario.jornada} onChange={handleChange} required>
+                  <option value="">Tipo de jornada</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Freelance">Freelance</option>
+                </select>
+              </div>
+              <div className="form-column">
+                <input type="text" name="remuneracion" placeholder="Remuneración ofrecida (opcional)" value={formulario.remuneracion} onChange={handleChange} />
+                <input type="number" name="experiencia" placeholder="Años de experiencia requeridos" value={formulario.experiencia} onChange={handleChange} min="0" />
+                <select name="educacion" value={formulario.educacion} onChange={handleChange} required>
+                  <option value="">Nivel de estudios</option>
+                  <option value="secundario">Secundario</option>
+                  <option value="terciario">Terciario</option>
+                  <option value="universitario">Universitario</option>
+                </select>
+              </div>
+            </div>
+            <textarea name="habilidades" placeholder="Habilidades requeridas" value={formulario.habilidades} onChange={handleChange} required />
+            <div className="botones-form">
+              <button type="submit">Enviar solicitud</button>
+              <button type="button" className="volver" onClick={() => setSolapaActiva('home')}>Borrar</button>
+            </div>
+          </form>
+        </section>
+      )}
 
       {solapaActiva === 'postulaciones' && (
         <section className="postulaciones-section">
@@ -391,8 +407,8 @@ function ViewSupervisor() {
               {certificados.map(c => (
                 <div key={c.id} className="certificado-card">
                   <h4>{c.employee_name}</h4>
-                  <p><strong>Fecha de inicio del certificado:</strong> {new Date(c.start_date).toLocaleDateString()}</p>
-                  <p><strong>Fecha de fin del certificado:</strong> {new Date(c.end_date).toLocaleDateString()}</p>
+                  <p><strong>Fecha de inicio del certificado:</strong> {formatDate(c.start_date)}</p>
+                  <p><strong>Fecha de fin del certificado:</strong> {formatDate(c.end_date)}</p>
                   <p><strong>Estado:</strong> {c.last_state}</p>
                   <p><strong>Comentario:</strong> {c.last_comment}</p>
                   <div className="certificado-buttons">
@@ -421,8 +437,8 @@ function ViewSupervisor() {
                 {certificados.map(c => (
                   <tr key={c.id}>
                     <td>{c.employee_name}</td>
-                    <td>{new Date(c.start_date).toLocaleDateString()}</td>
-                    <td>{new Date(c.end_date).toLocaleDateString()}</td>
+                    <td>{formatDate(c.start_date)}</td>
+                    <td>{formatDate(c.end_date)}</td>
                     <td>Estado: {c.last_state}</td>
                     <td>Comentario: {c.last_comment}</td>
                     <td>
