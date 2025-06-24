@@ -142,7 +142,7 @@ const ViewEmpleado = () => {
     formData.append('file', archivoSeleccionado);
     formData.append('start_date', startDate);
     formData.append('end_date', endDate);
-    formData.append('reason', motivo === 'Otro' ? otroMotivo : motivo);
+    formData.append('reason', motivo === 'otro' ? otroMotivo : motivo);
 
     try {
       const res = await fetch(`${API_URL}/certificates`, {
@@ -231,9 +231,9 @@ const ViewEmpleado = () => {
                 }}
               >
                 <option value="">Seleccione un motivo</option>
-                <option value="Gripe">Gripe</option>
-                <option value="Lesion">Lesión</option>
-                <option value="Otro">Otro</option>
+                <option value="gripe">Gripe</option>
+                <option value="lesion">Lesión</option>
+                <option value="otro">Otro</option>
               </select>
             </div>
           </div>
